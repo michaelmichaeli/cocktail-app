@@ -83,7 +83,7 @@ export function RecipePage() {
             <ul className="mt-2 space-y-2">
               {cocktail.ingredients.map((ingredient, index) => (
                 <li key={index} className="text-gray-600">
-                  {ingredient.measure ? `${ingredient.measure} ${ingredient.name}` : ingredient.name}
+                  {ingredient?.measure ? `${ingredient.measure} ${ingredient.name}` : ingredient?.name}
                 </li>
               ))}
             </ul>

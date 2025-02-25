@@ -37,6 +37,7 @@ export function AddCocktailPage() {
       await addCustomCocktail(newCocktail)
       navigate('/')
     } catch (err) {
+      console.error(err);      
       setError('Failed to save cocktail')
     }
   }
