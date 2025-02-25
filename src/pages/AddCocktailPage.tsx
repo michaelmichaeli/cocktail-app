@@ -1,10 +1,18 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Plus, Trash2, AlertCircle } from 'lucide-react'
 import { useCocktails } from '../hooks/useCocktails'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import { Textarea } from '../components/ui/textarea'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { useToast } from '../components/ui/use-toast'
 import { CustomCocktail } from '../types/cocktail'
 
 export function AddCocktailPage() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const { addCustomCocktail, isAddingCocktail } = useCocktails()
 
   const [name, setName] = useState('')
@@ -35,9 +43,13 @@ export function AddCocktailPage() {
 
     try {
       await addCustomCocktail(newCocktail)
+      toast({
+        title: "Success",
+        description: "Cocktail was successfully saved!",
+      })
       navigate('/')
     } catch (err) {
-      console.error(err);      
+      console.error(err)
       setError('Failed to save cocktail')
     }
   }
@@ -61,101 +73,102 @@ export function AddCocktailPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Add New Cocktail</h1>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded text-red-600">
-            {error}
-          </div>
-        )}
-
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Ingredients</label>
-          <div className="space-y-3 mt-2">
-            {ingredients.map((ingredient, index) => (
-              <div key={index} className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="Ingredient"
-                  value={ingredient.name}
-                  onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
-                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Amount"
-                  value={ingredient.measure}
-                  onChange={(e) => handleIngredientChange(index, 'measure', e.target.value)}
-                  className="w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                {ingredients.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveIngredient(index)}
-                    className="px-2 py-1 text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
-                )}
+    <div className="container max-w-2xl mx-auto p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Add New Cocktail</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
+                {error}
               </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={handleAddIngredient}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-800"
-          >
-            Add Ingredient
-          </button>
-        </div>
+            )}
 
-        <div>
-          <label htmlFor="instructions" className="block text-sm font-medium text-gray-700">
-            Instructions
-          </label>
-          <textarea
-            id="instructions"
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            rows={4}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
 
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={isAddingCocktail}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {isAddingCocktail ? 'Saving...' : 'Save Cocktail'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+            <div className="space-y-2">
+              <Label>Ingredients</Label>
+              <div className="space-y-3">
+                {ingredients.map((ingredient, index) => (
+                  <div key={index} className="flex gap-3">
+                    <Input
+                      placeholder="Ingredient"
+                      value={ingredient.name}
+                      onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                      className="flex-1"
+                    />
+                    <Input
+                      placeholder="Amount"
+                      value={ingredient.measure}
+                      onChange={(e) => handleIngredientChange(index, 'measure', e.target.value)}
+                      className="w-32"
+                    />
+                    {ingredients.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleRemoveIngredient(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAddIngredient}
+                className="mt-2"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Ingredient
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="instructions">Instructions</Label>
+              <Textarea
+                id="instructions"
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                rows={4}
+                required
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={isAddingCocktail}
+              >
+                {isAddingCocktail ? 'Saving...' : 'Save Cocktail'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => navigate('/')}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }

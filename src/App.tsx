@@ -1,66 +1,88 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createBrowserRouter, RouterProvider, useRouteError, Outlet } from 'react-router-dom'
+import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from '@tanstack/react-query'
+import { Suspense } from 'react'
 import { HomePage } from './pages/HomePage'
 import { RecipePage } from './pages/RecipePage'
 import { AddCocktailPage } from './pages/AddCocktailPage'
+import { Toaster } from './components/ui/toaster'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { Button } from './components/ui/button'
+import { Navbar } from './components/Navbar'
+
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  )
+}
+
+function RouteErrorBoundary() {
+  const error = useRouteError() as Error
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
+      <h2 className="text-2xl font-bold mb-4">Page Error</h2>
+      <p className="text-gray-600 mb-6">{error?.message || 'An unexpected error occurred'}</p>
+      <Button onClick={() => window.location.reload()}>Reload Page</Button>
+    </div>
+  )
+}
+
+function RootLayout() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="py-6">
+        <Outlet />
+      </main>
+    </div>
+  )
+}
+
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    errorElement: <RouteErrorBoundary />,
+    children: [
+      {
+        path: '/',
+        element: <HomePage />
+      },
+      {
+        path: '/recipe/:id',
+        element: <RecipePage />
+      },
+      {
+        path: '/add',
+        element: <AddCocktailPage />
+      }
+    ]
+  }
+])
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,
-      retry: 1
+      staleTime: 5 * 60 * 1000,
+      retry: false
     }
   }
 })
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <div className="min-h-screen bg-gray-50">
-          <nav className="bg-white shadow">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex justify-between h-16">
-                <div className="flex">
-                  <Link to="/" className="flex items-center px-2 py-2 text-gray-900">
-                    Cocktail App
-                  </Link>
-                  <div className="ml-6 flex space-x-4">
-                    <Link
-                      to="/"
-                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-900 hover:text-gray-700"
-                    >
-                      Home
-                    </Link>
-                    <Link
-                      to="/add"
-                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-900 hover:text-gray-700"
-                    >
-                      Add New
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </nav>
-
-          <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/recipe/:id" element={<RecipePage />} />
-              <Route path="/add" element={<AddCocktailPage />} />
-              <Route path="*" element={
-                <div className="text-center py-12">
-                  <h2 className="text-2xl font-bold text-gray-900">404 - Page Not Found</h2>
-                  <Link to="/" className="mt-4 text-blue-600 hover:text-blue-800">
-                    Return to Home
-                  </Link>
-                </div>
-              } />
-            </Routes>
-          </main>
-        </div>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <QueryErrorResetBoundary>
+      {() => (
+        <ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <Suspense fallback={<LoadingFallback />}>
+              <RouterProvider router={router} />
+            </Suspense>
+            <Toaster />
+          </QueryClientProvider>
+        </ErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
   )
 }

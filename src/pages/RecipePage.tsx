@@ -1,7 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { api } from '../lib/api'
 import { storage } from '../lib/storage'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
 
 export function RecipePage() {
   const { id } = useParams()
@@ -23,22 +26,31 @@ export function RecipePage() {
 
   if (isLoading) {
     return (
-      <div className="text-center py-12">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+      <div className="flex items-center justify-center h-[50vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
 
   if (!apiCocktail && !customCocktail) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">Cocktail not found.</p>
-        <button
-          onClick={() => navigate('/')}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Back to Home
-        </button>
+      <div className="container mx-auto p-6">
+        <Card className="max-w-md mx-auto bg-destructive/10 border-destructive/30">
+          <CardHeader>
+            <CardTitle className="text-center text-destructive">Not Found</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-destructive mb-4">Cocktail not found.</p>
+            <Button
+              onClick={() => navigate('/')}
+              variant="outline"
+              className="mx-auto"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -56,45 +68,51 @@ export function RecipePage() {
   }
 
   return (
-    <div className="bg-white shadow rounded-lg overflow-hidden">
-      <div className="md:flex">
-        {cocktail.imageUrl && (
-          <div className="md:flex-shrink-0">
-            <img
-              src={cocktail.imageUrl}
-              alt={cocktail.name}
-              className="h-72 w-full object-cover md:w-96"
-            />
-          </div>
-        )}
-        <div className="p-8">
-          <div className="flex justify-between items-start">
-            <h1 className="text-2xl font-bold text-gray-900">{cocktail.name}</h1>
-            <button
-              onClick={() => navigate('/')}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              Back
-            </button>
-          </div>
+    <div className="container max-w-4xl mx-auto p-6">
+      <Card>
+        <div className="md:flex">
+          {cocktail.imageUrl && (
+            <div className="md:w-96 relative">
+              <img
+                src={cocktail.imageUrl}
+                alt={cocktail.name}
+                className="h-72 w-full md:h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none"
+              />
+            </div>
+          )}
+          <div className="flex-1">
+            <CardHeader className="flex flex-row items-start justify-between">
+              <CardTitle className="text-2xl">{cocktail.name}</CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="text-muted-foreground"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h2 className="font-semibold mb-2">Ingredients</h2>
+                <ul className="space-y-1 text-muted-foreground">
+                  {cocktail.ingredients.map((ingredient, index) => (
+                    <li key={index}>
+                      {ingredient?.measure ? `${ingredient.measure} ${ingredient.name}` : ingredient?.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          <div className="mt-6">
-            <h2 className="text-lg font-medium text-gray-900">Ingredients</h2>
-            <ul className="mt-2 space-y-2">
-              {cocktail.ingredients.map((ingredient, index) => (
-                <li key={index} className="text-gray-600">
-                  {ingredient?.measure ? `${ingredient.measure} ${ingredient.name}` : ingredient?.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="mt-6">
-            <h2 className="text-lg font-medium text-gray-900">Instructions</h2>
-            <p className="mt-2 text-gray-600">{cocktail.instructions}</p>
+              <div>
+                <h2 className="font-semibold mb-2">Instructions</h2>
+                <p className="text-muted-foreground whitespace-pre-line">{cocktail.instructions}</p>
+              </div>
+            </CardContent>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

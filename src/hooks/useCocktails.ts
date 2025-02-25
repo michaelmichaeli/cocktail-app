@@ -1,4 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { api } from '../lib/api'
 import { storage } from '../lib/storage'
 import { Cocktail, CustomCocktail } from '../types/cocktail'
@@ -12,7 +13,9 @@ export function useCocktails(searchQuery = '') {
     error: apiError
   } = useQuery({
     queryKey: ['cocktails', searchQuery],
-    queryFn: () => searchQuery ? api.searchCocktails(searchQuery) : api.getAllCocktails(),
+    queryFn: async ({ signal }) => {
+      return searchQuery ? api.searchCocktails(searchQuery, signal) : api.getAllCocktails(signal)
+    },
     select: (data) => data || [] // ensure we always have an array
   })
 
@@ -21,7 +24,8 @@ export function useCocktails(searchQuery = '') {
     isLoading: isLoadingCustom
   } = useQuery({
     queryKey: ['customCocktails', searchQuery],
-    queryFn: () => storage.searchCustomCocktails(searchQuery)
+    queryFn: async () => storage.searchCustomCocktails(searchQuery),
+    retry: false
   })
 
   const addCustomCocktailMutation = useMutation({
@@ -41,7 +45,7 @@ export function useCocktails(searchQuery = '') {
   })
 
   const isLoading = isLoadingApi || isLoadingCustom
-  const error = apiError
+  const error = apiError || addCustomCocktailMutation.error || deleteCustomCocktailMutation.error
 
   function normalizeApiCocktail(cocktail: Cocktail): CustomCocktail {
     const ingredients = []
@@ -65,8 +69,16 @@ export function useCocktails(searchQuery = '') {
     }
   }
 
+  // Reset error state when searchQuery changes
+  const { reset } = useQueryErrorResetBoundary()
+  useEffect(() => {
+    reset()
+  }, [searchQuery, reset])
+
   const normalizedApiCocktails = (apiCocktails || []).map(normalizeApiCocktail)
   const allCocktails = [...normalizedApiCocktails, ...(customCocktails || [])]
+
+  const isError = Boolean(error)
 
   return {
     cocktails: allCocktails,
@@ -75,6 +87,8 @@ export function useCocktails(searchQuery = '') {
     addCustomCocktail: addCustomCocktailMutation.mutate,
     deleteCustomCocktail: deleteCustomCocktailMutation.mutate,
     isAddingCocktail: addCustomCocktailMutation.isPending,
-    isDeletingCocktail: deleteCustomCocktailMutation.isPending
+    isDeletingCocktail: deleteCustomCocktailMutation.isPending,
+    isError,
+    reset
   }
 }

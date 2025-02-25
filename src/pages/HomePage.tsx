@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Search } from 'lucide-react'
 import { useCocktails } from '../hooks/useCocktails'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Input } from '../components/ui/input'
 
 export function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -19,60 +22,75 @@ export function HomePage() {
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">Failed to load cocktails. Please try again later.</p>
+      <div className="flex items-center justify-center h-[50vh]">
+        <Card className="w-[450px] bg-destructive/10 border-destructive/50">
+          <CardHeader>
+            <CardTitle className="text-destructive text-center">Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-destructive">Failed to load cocktails. Please try again later.</p>
+          </CardContent>
+        </Card>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="relative">
-        <input
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="relative max-w-xl mx-auto">
+        <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+        <Input
           type="search"
           placeholder="Search cocktails..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="pl-10"
         />
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+        <div className="flex justify-center py-12">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cocktails.map((cocktail) => (
-            <div
+            <Card
               key={cocktail.id}
               onClick={() => navigate(`/recipe/${cocktail.id}`)}
-              className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-200"
+              className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
             >
               {cocktail.imageUrl && (
-                <img
-                  src={cocktail.imageUrl}
-                  alt={cocktail.name}
-                  className="w-full h-48 object-cover"
-                />
+                <div className="aspect-[4/3] relative overflow-hidden rounded-t-xl">
+                  <img
+                    src={cocktail.imageUrl}
+                    alt={cocktail.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
               )}
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {cocktail.name}
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
+              <CardHeader>
+                <CardTitle className="text-lg">{cocktail.name}</CardTitle>
+                <p className="text-sm text-muted-foreground">
                   {cocktail.ingredients.length} ingredients
                 </p>
-              </div>
-            </div>
+              </CardHeader>
+            </Card>
           ))}
         </div>
       )}
 
       {!isLoading && cocktails.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No cocktails found. Try a different search term.</p>
-        </div>
+        <Card className="mx-auto max-w-md bg-muted/50">
+          <CardHeader>
+            <CardTitle className="text-center text-muted-foreground">No Results</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-sm text-muted-foreground">
+              No cocktails found. Try a different search term.
+            </p>
+          </CardContent>
+        </Card>
       )}
     </div>
   )
