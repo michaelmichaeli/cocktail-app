@@ -1,54 +1,49 @@
-import React from 'react'
-import { Button } from './ui/button'
-import { useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { Component, ErrorInfo, ReactNode } from 'react'
 
 interface Props {
-  children: React.ReactNode
+  children?: ReactNode
 }
 
 interface State {
   hasError: boolean
-  error: Error | null
+  error?: Error
 }
 
-export class ErrorBoundary extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false, error: null }
+export class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error }
   }
 
-  render() {
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Uncaught error:', error, errorInfo)
+  }
+
+  public render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
-          <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
-          <p className="text-gray-600 mb-6">
-            {this.state.error?.message || 'An unexpected error occurred'}
-          </p>
-          <ErrorBoundaryReset />
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <div className="card w-96 bg-error bg-opacity-10">
+            <div className="card-body text-center">
+              <h2 className="card-title justify-center text-error">Something went wrong</h2>
+              <p className="text-error">{this.state.error?.message || 'An unexpected error occurred'}</p>
+              <div className="card-actions justify-center mt-4">
+                <button 
+                  className="btn btn-error"
+                  onClick={() => window.location.reload()}
+                >
+                  Reload page
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )
     }
 
     return this.props.children
   }
-}
-
-function ErrorBoundaryReset() {
-  const { reset } = useQueryErrorResetBoundary()
-
-  return (
-    <Button
-      onClick={() => {
-        reset()
-        window.location.reload()
-      }}
-    >
-      Try again
-    </Button>
-  )
 }

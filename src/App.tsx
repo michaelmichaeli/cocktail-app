@@ -4,15 +4,13 @@ import { Suspense } from 'react'
 import { HomePage } from './pages/HomePage'
 import { RecipePage } from './pages/RecipePage'
 import { AddCocktailPage } from './pages/AddCocktailPage'
-import { Toaster } from './components/ui/toaster'
 import { ErrorBoundary } from './components/ErrorBoundary'
-import { Button } from './components/ui/button'
 import { Navbar } from './components/Navbar'
 
 function LoadingFallback() {
   return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <span className="loading loading-spinner loading-lg text-primary"></span>
     </div>
   )
 }
@@ -23,19 +21,25 @@ function RouteErrorBoundary() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
       <h2 className="text-2xl font-bold mb-4">Page Error</h2>
-      <p className="text-gray-600 mb-6">{error?.message || 'An unexpected error occurred'}</p>
-      <Button onClick={() => window.location.reload()}>Reload Page</Button>
+      <p className="text-base-content/70 mb-6">{error?.message || 'An unexpected error occurred'}</p>
+      <button 
+        className="btn btn-primary"
+        onClick={() => window.location.reload()}
+      >
+        Reload Page
+      </button>
     </div>
   )
 }
 
 function RootLayout() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-base-100">
       <Navbar />
       <main className="py-6">
         <Outlet />
       </main>
+      <div id="toast-container" className="toast toast-top toast-end"></div>
     </div>
   )
 }
@@ -79,7 +83,6 @@ export default function App() {
             <Suspense fallback={<LoadingFallback />}>
               <RouterProvider router={router} />
             </Suspense>
-            <Toaster />
           </QueryClientProvider>
         </ErrorBoundary>
       )}

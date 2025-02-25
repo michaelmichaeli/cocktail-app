@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, useQueryErrorResetBoundary } fro
 import { useEffect } from 'react'
 import { api } from '../lib/api'
 import { storage } from '../lib/storage'
+import { showToast } from '../lib/toast'
 import { Cocktail, CustomCocktail } from '../types/cocktail'
 
 export function useCocktails(searchQuery = '') {
@@ -33,6 +34,10 @@ export function useCocktails(searchQuery = '') {
       Promise.resolve(storage.saveCustomCocktail(newCocktail)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customCocktails'] })
+      showToast('Cocktail successfully added!', 'success')
+    },
+    onError: (error: Error) => {
+      showToast(error.message || 'Failed to add cocktail', 'error')
     }
   })
 
@@ -41,6 +46,10 @@ export function useCocktails(searchQuery = '') {
       Promise.resolve(storage.deleteCustomCocktail(id)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customCocktails'] })
+      showToast('Cocktail successfully deleted!', 'success')
+    },
+    onError: (error: Error) => {
+      showToast(error.message || 'Failed to delete cocktail', 'error')
     }
   })
 

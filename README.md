@@ -1,50 +1,51 @@
-# React + TypeScript + Vite
+# Cocktail App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern cocktail recipe application built with React, Vite, and daisyUI.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Search cocktails from an external API
+- View detailed cocktail recipes with ingredients and instructions
+- Add custom cocktails
+- Responsive design
+- Toast notifications
+- Unsaved changes warnings
+- Image preview modal
+- Dark/light theme support
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React + TypeScript
+- Vite
+- TailwindCSS
+- daisyUI for UI components
+- React Query for data fetching
+- React Router for navigation
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm dev
+
+# Build for production
+pnpm build
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## UI Components
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+The app uses daisyUI components for all UI elements:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- `card` - For cocktail cards and content containers
+- `btn` - For buttons and actions
+- `input` - For text inputs
+- `textarea` - For multiline text input
+- `form-control` - For form elements
+- `modal` - For dialogs and image preview
+- `alert` - For notifications and errors
+- `navbar` - For navigation
+- `loading` - For loading states
+- `toast` - For toast notifications

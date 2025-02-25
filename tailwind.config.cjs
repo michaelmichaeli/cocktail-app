@@ -75,5 +75,32 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("daisyui")
+  ],
+  daisyui: {
+    themes: [
+      {
+        light: {
+          ...require("daisyui/src/theming/themes")["light"],
+          primary: "hsl(var(--primary))",
+          secondary: "hsl(var(--secondary))",
+          accent: "hsl(var(--accent))",
+          neutral: "hsl(var(--muted))",
+          "base-100": "hsl(var(--background))",
+          info: "hsl(var(--info))",
+          success: "hsl(var(--success))",
+          warning: "hsl(var(--warning))",
+          error: "hsl(var(--destructive))",
+        }
+      }
+    ],
+    base: true,
+    styled: true,
+    utils: true,
+    prefix: "",
+    logs: false,
+    themeRoot: ":root",
+  },
 }

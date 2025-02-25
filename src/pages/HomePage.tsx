@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { useCocktails } from '../hooks/useCocktails'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Input } from '../components/ui/input'
-
 export function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
@@ -23,14 +20,12 @@ export function HomePage() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
-        <Card className="w-[450px] bg-destructive/10 border-destructive/50">
-          <CardHeader>
-            <CardTitle className="text-destructive text-center">Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-destructive">Failed to load cocktails. Please try again later.</p>
-          </CardContent>
-        </Card>
+          <div className="card w-96 bg-error bg-opacity-10 text-error">
+            <div className="card-body">
+              <h2 className="card-title justify-center">Error</h2>
+              <p className="text-center">Failed to load cocktails. Please try again later.</p>
+            </div>
+          </div>
       </div>
     )
   }
@@ -38,59 +33,74 @@ export function HomePage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="relative max-w-xl mx-auto">
-        <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search cocktails..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
-        />
+        <div className="relative">
+          <Search className="absolute left-3 top-3.5 h-5 w-5 text-base-content/50" />
+          <input
+            type="search"
+            placeholder="Search cocktails..."
+            value={searchQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            className="input input-bordered w-full pl-10"
+          />
+        </div>
       </div>
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+          <span className="loading loading-spinner loading-lg text-primary"></span>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cocktails.map((cocktail) => (
-            <Card
+            <div 
               key={cocktail.id}
               onClick={() => navigate(`/recipe/${cocktail.id}`)}
-              className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+              className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-200 cursor-pointer group"
             >
               {cocktail.imageUrl && (
-                <div className="aspect-[4/3] relative overflow-hidden rounded-t-xl">
+                <figure className="relative">
                   <img
                     src={cocktail.imageUrl}
                     alt={cocktail.name}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="aspect-[4/3] object-cover w-full transition-transform group-hover:scale-105"
                   />
-                </div>
+                  <div className="tooltip tooltip-left absolute top-0 right-0 m-2" data-tip={`${cocktail.ingredients.length} ingredients`}>
+                    <div className="badge badge-primary">{cocktail.ingredients.length}</div>
+                  </div>
+                </figure>
               )}
-              <CardHeader>
-                <CardTitle className="text-lg">{cocktail.name}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {cocktail.ingredients.length} ingredients
-                </p>
-              </CardHeader>
-            </Card>
+              <div className="card-body">
+                <h2 className="card-title">{cocktail.name}</h2>
+                <div className="collapse collapse-arrow">
+                  <input type="checkbox" /> 
+                  <div className="collapse-title text-sm opacity-60">
+                    View ingredients
+                  </div>
+                  <div className="collapse-content">
+                    <ul className="space-y-1">
+                      {cocktail.ingredients.map((ingredient, index) => (
+                        <li key={index} className="text-sm">
+                          • {ingredient.name} - {ingredient.measure}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       )}
 
       {!isLoading && cocktails.length === 0 && (
-        <Card className="mx-auto max-w-md bg-muted/50">
-          <CardHeader>
-            <CardTitle className="text-center text-muted-foreground">No Results</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-sm text-muted-foreground">
+        <div className="card max-w-md mx-auto bg-base-200">
+          <div className="card-body text-center">
+            <h2 className="card-title justify-center text-base-content/60">No Results</h2>
+            <p className="text-sm text-base-content/60">
               No cocktails found. Try a different search term.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   )
