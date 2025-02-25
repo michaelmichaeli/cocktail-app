@@ -24,10 +24,18 @@ export interface CustomCocktail {
   name: string
   instructions: string
   imageUrl?: string
+  imageFile?: File
   ingredients: Array<{
     name: string
     measure: string
   }>
+}
+
+export interface ImageUploadState {
+  file: File | null
+  preview: string | null
+  error: string | null
+  isUploading: boolean
 }
 
 export interface CocktailApiResponse {

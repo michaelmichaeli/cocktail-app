@@ -1,49 +1,59 @@
 import { CustomCocktail } from '../types/cocktail'
+import { generateId } from './utils'
 
 const STORAGE_KEY = 'custom_cocktails'
 
-export const storage = {
-  getCustomCocktails(): CustomCocktail[] {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      return stored ? JSON.parse(stored) : []
-    } catch {
-      return []
-    }
-  },
+const getCustomCocktails = (): CustomCocktail[] => {
+  const stored = localStorage.getItem(STORAGE_KEY)
+  return stored ? JSON.parse(stored) : []
+}
 
-  saveCustomCocktail(cocktail: Omit<CustomCocktail, 'id'>): CustomCocktail {
+const saveCustomCocktails = (cocktails: CustomCocktail[]) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cocktails))
+}
+
+const convertImageToBase64 = async (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = error => reject(error)
+  })
+}
+
+const addCustomCocktail = async (cocktail: Omit<CustomCocktail, 'id'>): Promise<CustomCocktail> => {
+  let imageUrl: string | undefined = undefined
+
+  if (cocktail.imageFile) {
     try {
-      const cocktails = this.getCustomCocktails()
-      const newCocktail: CustomCocktail = {
-        ...cocktail,
-        id: crypto.randomUUID()
-      }
-      cocktails.push(newCocktail)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cocktails))
-      return newCocktail
+      imageUrl = await convertImageToBase64(cocktail.imageFile)
     } catch (error) {
-      throw new Error('Failed to save cocktail')
+      console.error('Failed to convert image:', error)
+      throw new Error('Failed to process image')
     }
-  },
-
-  deleteCustomCocktail(id: string): void {
-    try {
-      const cocktails = this.getCustomCocktails()
-      const filtered = cocktails.filter(c => c.id !== id)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered))
-    } catch (error) {
-      throw new Error('Failed to delete cocktail')
-    }
-  },
-
-  searchCustomCocktails(query: string): CustomCocktail[] {
-    const cocktails = this.getCustomCocktails()
-    const lowerQuery = query.toLowerCase()
-    return cocktails.filter(
-      c => 
-        c.name.toLowerCase().includes(lowerQuery) || 
-        c.ingredients.some(i => i.name.toLowerCase().includes(lowerQuery))
-    )
   }
+
+  const newCocktail: CustomCocktail = {
+    ...cocktail,
+    id: generateId(),
+    imageUrl
+  }
+
+  const cocktails = getCustomCocktails()
+  cocktails.push(newCocktail)
+  saveCustomCocktails(cocktails)
+
+  return newCocktail
+}
+
+const deleteCustomCocktail = (id: string): void => {
+  const cocktails = getCustomCocktails()
+  const updatedCocktails = cocktails.filter(c => c.id !== id)
+  saveCustomCocktails(updatedCocktails)
+}
+
+export const storage = {
+  getCustomCocktails,
+  addCustomCocktail,
+  deleteCustomCocktail,
 }

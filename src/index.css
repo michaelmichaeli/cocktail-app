@@ -11,6 +11,41 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply transition-all duration-200;
+  }
+
+  .btn:hover {
+    @apply shadow-md transform -translate-y-0.5;
+  }
+
+  .card {
+    @apply transition-all duration-300;
+  }
+
+  .card:hover {
+    @apply shadow-lg;
+  }
+
+  .input, .textarea {
+    @apply transition-all duration-200;
+  }
+
+  .input:focus, .textarea:focus {
+    @apply ring-2 ring-primary/20;
+  }
+}
+
 .animate-in {
   animation: animate-in 0.3s ease-out;
 }
@@ -43,4 +78,69 @@
   to {
     opacity: 1;
   }
+}
+
+/* Custom hover effects */
+.hover-lift {
+  @apply transition-transform duration-200 ease-out;
+}
+
+.hover-lift:hover {
+  @apply -translate-y-1;
+}
+
+.hover-glow {
+  @apply transition-all duration-300;
+}
+
+.hover-glow:hover {
+  @apply brightness-110;
+}
+
+.hover-scale {
+  @apply transition-transform duration-200;
+}
+
+.hover-scale:hover {
+  @apply scale-105;
+}
+
+/* Loading skeleton animations */
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    theme('colors.base-200') 25%,
+    theme('colors.base-300') 37%,
+    theme('colors.base-200') 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+/* Smooth scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary));
+  border-radius: 3px;
 }

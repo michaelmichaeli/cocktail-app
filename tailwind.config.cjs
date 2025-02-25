@@ -23,32 +23,35 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#FF6B6B",
+          light: "#FF8787",
+          dark: "#FA5252",
+          foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#4ECDC4",
+          light: "#72D8D2",
+          dark: "#45B7AE",
+          foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#FFD93D",
+          light: "#FFE066",
+          dark: "#FCC419",
+          foreground: "#000000",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+        destructive: {
+          DEFAULT: "#FF6B6B",
+          foreground: "#FFFFFF",
+        },
+        muted: {
+          DEFAULT: "#6C757D",
+          light: "#ADB5BD",
+          foreground: "#FFFFFF",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "#FFFFFF",
+          foreground: "#000000",
         },
       },
       borderRadius: {

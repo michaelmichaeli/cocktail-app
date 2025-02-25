@@ -1,103 +1,64 @@
-import { useQuery, useMutation, useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import { storage } from '../lib/storage'
 import { showToast } from '../lib/toast'
 import { Cocktail, CustomCocktail } from '../types/cocktail'
 
-export function useCocktails(searchQuery = '') {
+export function useCocktails(searchQuery: string = '') {
   const queryClient = useQueryClient()
 
-  const {
-    data: apiCocktails,
-    isLoading: isLoadingApi,
-    error: apiError
-  } = useQuery({
+  const { data: apiCocktails = [], isLoading: isLoadingApi, error: apiError } = useQuery({
     queryKey: ['cocktails', searchQuery],
-    queryFn: async ({ signal }) => {
-      return searchQuery ? api.searchCocktails(searchQuery, signal) : api.getAllCocktails(signal)
-    },
-    select: (data) => data || [] // ensure we always have an array
+    queryFn: () => api.searchCocktails(searchQuery),
+    enabled: !searchQuery.includes('my-') // Only fetch from API if not searching custom cocktails
   })
 
-  const {
-    data: customCocktails = [],
-    isLoading: isLoadingCustom
-  } = useQuery({
-    queryKey: ['customCocktails', searchQuery],
-    queryFn: async () => storage.searchCustomCocktails(searchQuery),
-    retry: false
+  const { data: customCocktails = [], isLoading: isLoadingCustom } = useQuery({
+    queryKey: ['customCocktails'],
+    queryFn: storage.getCustomCocktails,
+    staleTime: 0 // Always fetch fresh data
   })
 
   const addCustomCocktailMutation = useMutation({
-    mutationFn: (newCocktail: Omit<CustomCocktail, 'id'>) => 
-      Promise.resolve(storage.saveCustomCocktail(newCocktail)),
+    mutationFn: (cocktail: Omit<CustomCocktail, 'id'>) => storage.addCustomCocktail(cocktail),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customCocktails'] })
-      showToast('Cocktail successfully added!', 'success')
     },
-    onError: (error: Error) => {
-      showToast(error.message || 'Failed to add cocktail', 'error')
+    onError: (error) => {
+      showToast('Failed to save cocktail: ' + error, 'error')
     }
   })
 
-  const deleteCustomCocktailMutation = useMutation({
-    mutationFn: (id: string) => 
-      Promise.resolve(storage.deleteCustomCocktail(id)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customCocktails'] })
-      showToast('Cocktail successfully deleted!', 'success')
-    },
-    onError: (error: Error) => {
-      showToast(error.message || 'Failed to delete cocktail', 'error')
-    }
-  })
+  // Filter custom cocktails if search query starts with 'my-'
+  const filteredCustomCocktails = searchQuery.startsWith('my-')
+    ? customCocktails.filter(c => 
+        c.name.toLowerCase().includes(searchQuery.replace('my-', '').toLowerCase())
+      )
+    : customCocktails
 
-  const isLoading = isLoadingApi || isLoadingCustom
-  const error = apiError || addCustomCocktailMutation.error || deleteCustomCocktailMutation.error
-
-  function normalizeApiCocktail(cocktail: Cocktail): CustomCocktail {
-    const ingredients = []
-    for (let i = 1; i <= 5; i++) {
-      const ingredient = cocktail[`strIngredient${i}` as keyof Cocktail]
-      const measure = cocktail[`strMeasure${i}` as keyof Cocktail]
-      if (ingredient) {
-        ingredients.push({
-          name: ingredient,
-          measure: measure || ''
-        })
-      }
-    }
-
-    return {
-      id: cocktail.idDrink,
-      name: cocktail.strDrink,
-      instructions: cocktail.strInstructions,
-      imageUrl: cocktail.strDrinkThumb,
-      ingredients
-    }
-  }
-
-  // Reset error state when searchQuery changes
-  const { reset } = useQueryErrorResetBoundary()
-  useEffect(() => {
-    reset()
-  }, [searchQuery, reset])
-
-  const normalizedApiCocktails = (apiCocktails || []).map(normalizeApiCocktail)
-  const allCocktails = [...normalizedApiCocktails, ...(customCocktails || [])]
-
-  const isError = Boolean(error)
+  // Combine and format results
+  const cocktails = searchQuery.startsWith('my-')
+    ? filteredCustomCocktails
+    : [
+        ...customCocktails,
+        ...apiCocktails.map((c: Cocktail) => ({
+          id: c.idDrink,
+          name: c.strDrink,
+          instructions: c.strInstructions,
+          imageUrl: c.strDrinkThumb,
+          ingredients: Array.from({ length: 5 }, (_, i) => {
+            const ingredient = c[`strIngredient${i + 1}` as keyof typeof c]
+            const measure = c[`strMeasure${i + 1}` as keyof typeof c]
+            return ingredient ? { name: ingredient as string, measure: measure as string || '' } : null
+          }).filter(Boolean) as { name: string; measure: string }[]
+        }))
+      ]
 
   return {
-    cocktails: allCocktails,
-    isLoading,
-    error,
-    addCustomCocktail: addCustomCocktailMutation.mutate,
-    deleteCustomCocktail: deleteCustomCocktailMutation.mutate,
-    isAddingCocktail: addCustomCocktailMutation.isPending,
-    isDeletingCocktail: deleteCustomCocktailMutation.isPending,
-    isError,
-    reset
+    cocktails,
+    isLoading: isLoadingApi || isLoadingCustom,
+    error: apiError,
+    addCustomCocktail: addCustomCocktailMutation.mutateAsync,
+    isAddingCocktail: addCustomCocktailMutation.isPending
   }
 }

@@ -65,96 +65,95 @@ export function RecipePage() {
   }
 
   return (
-      <div className="container max-w-4xl mx-auto p-6">
-        <div className="card bg-base-100 shadow-xl">
-          <div className="md:flex">
-            {cocktail.imageUrl && (
-              <div className="md:w-96 relative group">
-                <figure className="relative">
+    <div className="container max-w-4xl mx-auto p-6 space-y-4">
+      <button
+        className="btn btn-ghost gap-2 hover:bg-base-200 hover:scale-105 transform transition-all duration-200 group"
+        onClick={() => navigate('/')}
+      >
+        <ArrowLeft className="h-5 w-5 transition-transform duration-200 group-hover:-translate-x-1" />
+        <span>Back to Cocktails</span>
+      </button>
+
+      <div className="card bg-base-100 shadow-xl">
+        <div className="md:flex">
+          {cocktail.imageUrl && (
+            <div className="md:w-96 relative group">
+              <figure className="relative">
+                <img
+                  src={cocktail.imageUrl}
+                  alt={cocktail.name}
+                  className="h-72 w-full md:h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                />
+                <button
+                  onClick={() => {
+                    const modal = document.getElementById('imageModal') as HTMLDialogElement;
+                    modal?.showModal();
+                  }}
+                  className="btn btn-circle btn-ghost absolute top-2 right-2 bg-base-100/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-base-100 hover:scale-110"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </button>
+              </figure>
+
+              <dialog id="imageModal" className="modal">
+                <div className="modal-box max-w-3xl">
+                  <h3 className="font-bold text-lg mb-4">{cocktail.name}</h3>
                   <img
                     src={cocktail.imageUrl}
                     alt={cocktail.name}
-                    className="h-72 w-full md:h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none"
+                    className="w-full rounded-lg"
                   />
-                  <button
-                    onClick={() => {
-                      const modal = document.getElementById('imageModal') as HTMLDialogElement;
-                      modal?.showModal();
-                    }}
-                    className="btn btn-circle btn-ghost absolute top-2 right-2 bg-base-100/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Maximize2 className="h-4 w-4" />
-                  </button>
-                </figure>
-
-                <dialog id="imageModal" className="modal">
-                  <div className="modal-box max-w-3xl">
-                    <h3 className="font-bold text-lg mb-4">{cocktail.name}</h3>
-                    <img
-                      src={cocktail.imageUrl}
-                      alt={cocktail.name}
-                      className="w-full rounded-lg"
-                    />
-                  </div>
-                  <form method="dialog" className="modal-backdrop">
-                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                  </form>
-                </dialog>
-              </div>
-            )}
-            <div className="flex-1">
-              <div className="card-body">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="card-title text-2xl">{cocktail.name}</h2>
-                    {navigator.share && (
-                      <button
-                        className="btn btn-ghost btn-sm mt-2 text-base-content/60"
-                        onClick={() => {
-                          navigator.share({
-                            title: cocktail.name,
-                            text: `Check out this ${cocktail.name} recipe!`,
-                            url: window.location.href,
-                          })
-                        }}
-                      >
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Share Recipe
-                      </button>
-                    )}
-                  </div>
-                  <button
-                    className="btn btn-ghost btn-sm text-base-content/60"
-                    onClick={() => navigate('/')}
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back
-                  </button>
                 </div>
-                <div className="divider"></div>
-                <div className="overflow-y-auto max-h-[calc(100vh-20rem)] pr-4">
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="font-semibold mb-2">Ingredients</h3>
-                      <ul className="list-disc list-inside space-y-1 text-base-content/70">
-                        {cocktail.ingredients.map((ingredient, index) => (
-                          <li key={index}>
-                            {ingredient?.measure ? `${ingredient.measure} ${ingredient.name}` : ingredient?.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                <form method="dialog" className="modal-backdrop">
+                  <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+              </dialog>
+            </div>
+          )}
+          <div className="flex-1">
+            <div className="card-body">
+              <div>
+                <h2 className="card-title text-2xl mb-2">{cocktail.name}</h2>
+                {navigator.share && (
+                  <button
+                    className="btn btn-ghost btn-sm text-base-content/60 hover:text-base-content transition-colors duration-200"
+                    onClick={() => {
+                      navigator.share({
+                        title: cocktail.name,
+                        text: `Check out this ${cocktail.name} recipe!`,
+                        url: window.location.href,
+                      })
+                    }}
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share Recipe
+                  </button>
+                )}
+              </div>
+              <div className="divider"></div>
+              <div className="overflow-y-auto max-h-[calc(100vh-20rem)] pr-4">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="font-semibold mb-2">Ingredients</h3>
+                    <ul className="list-disc list-inside space-y-1 text-base-content/70">
+                      {cocktail.ingredients.map((ingredient, index) => (
+                        <li key={index}>
+                          {ingredient?.measure ? `${ingredient.measure} ${ingredient.name}` : ingredient?.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                    <div>
-                      <h3 className="font-semibold mb-2">Instructions</h3>
-                      <p className="text-base-content/70 whitespace-pre-line">{cocktail.instructions}</p>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold mb-2">Instructions</h3>
+                    <p className="text-base-content/70 whitespace-pre-line">{cocktail.instructions}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </div>
   )
 }

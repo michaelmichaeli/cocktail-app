@@ -4,6 +4,7 @@ import { Plus, Trash2, AlertCircle, ArrowLeft } from 'lucide-react'
 import { useCocktails } from '../hooks/useCocktails'
 import { showToast } from '../lib/toast'
 import { CustomCocktail } from '../types/cocktail'
+import { ImageUpload } from '../components/ImageUpload'
 
 export function AddCocktailPage() {
   const navigate = useNavigate()
@@ -15,16 +16,18 @@ export function AddCocktailPage() {
   const [error, setError] = useState('')
   const [showDialog, setShowDialog] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
 
   const hasUnsavedChanges = useCallback(() => {
     return name.trim() !== '' || 
            instructions.trim() !== '' || 
-           ingredients.some(i => i.name.trim() !== '' || i.measure.trim() !== '')
-  }, [name, instructions, ingredients])
+           ingredients.some(i => i.name.trim() !== '' || i.measure.trim() !== '') ||
+           imageFile !== null
+  }, [name, instructions, ingredients, imageFile])
 
   useEffect(() => {
     setIsDirty(hasUnsavedChanges())
-  }, [name, instructions, ingredients, hasUnsavedChanges])
+  }, [name, instructions, ingredients, imageFile, hasUnsavedChanges])
 
   useBeforeUnload(
     useCallback(
@@ -64,7 +67,8 @@ export function AddCocktailPage() {
     const newCocktail: Omit<CustomCocktail, 'id'> = {
       name: name.trim(),
       instructions: instructions.trim(),
-      ingredients: validIngredients
+      ingredients: validIngredients,
+      imageFile: imageFile || undefined
     }
 
     try {
@@ -134,10 +138,10 @@ export function AddCocktailPage() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="card-title text-2xl">Add New Cocktail</h2>
               <button
-                className="btn btn-ghost btn-sm"
+                className="btn btn-ghost btn-sm gap-2 hover:bg-base-200 transition-all duration-200 group"
                 onClick={handleNavigateAway}
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                 Back
               </button>
             </div>
@@ -150,6 +154,16 @@ export function AddCocktailPage() {
                     <span>{error}</span>
                   </div>
                 )}
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Image</span>
+                  </label>
+                  <ImageUpload
+                    onImageSelect={(file) => setImageFile(file)}
+                    onImageClear={() => setImageFile(null)}
+                  />
+                </div>
 
                 <div className="form-control">
                   <label className="label" htmlFor="name">
@@ -189,7 +203,7 @@ export function AddCocktailPage() {
                         {ingredients.length > 1 && (
                           <button
                             type="button"
-                            className="btn btn-ghost btn-square"
+                            className="btn btn-ghost btn-square hover:bg-base-200 transition-colors duration-200"
                             onClick={() => handleRemoveIngredient(index)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -200,10 +214,10 @@ export function AddCocktailPage() {
                   </div>
                   <button
                     type="button"
-                    className="btn btn-ghost mt-2"
+                    className="btn btn-ghost mt-2 gap-2 hover:bg-base-200 transition-all duration-200 group"
                     onClick={handleAddIngredient}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 transition-transform group-hover:rotate-180" />
                     Add Ingredient
                   </button>
                 </div>
