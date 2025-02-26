@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, KeyboardEvent as ReactKeyboar
 import { useNavigate } from "react-router-dom";
 import { Search, Trash2, SearchX, AlertCircle } from "lucide-react";
 import { useCocktails } from "../hooks/useCocktails";
-import { CocktailCardSkeletonGrid } from "../components/CocktailCardSkeleton";
+import { CocktailCardSkeleton } from "../components/CocktailCardSkeleton";
 import { EmptyState } from "../components/EmptyState";
 import { CustomCocktail } from "../types/cocktail";
 import { DeleteDialog } from "../components/DeleteDialog";
@@ -326,41 +326,38 @@ export function HomePage() {
         </header>
 
         <main id="main-content" className="relative z-0" tabIndex={-1}>
-          {(isLoading || isLoadingRandomSuggestions) ? (
-            <div className="py-6" role="status" aria-label="Loading cocktails">
-              <CocktailCardSkeletonGrid />
-            </div>
-          ) : (
-            <div 
-              ref={mainGridRef}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              role="grid"
-              aria-label="Cocktail recipes grid"
-              aria-rowcount={gridLayout.getRowCount(displayedCocktails.length)}
-              aria-colcount={gridLayout.columns}
-            >
-              {displayedCocktails.map((cocktail, index) => renderCocktailCard(cocktail, index))}
-            </div>
-          )}
-          
-          {isLoadingMore && displayedCocktails.length < cocktails.length && (
-            <div className="mt-6" role="status" aria-label="Loading more cocktails">
-              <CocktailCardSkeletonGrid columns={gridLayout.columns} />
-              <div className="flex justify-center mt-8">
-                <span className="loading loading-spinner loading-lg text-primary" aria-hidden="true" />
-              </div>
-            </div>
-          )}
+          <div 
+            ref={mainGridRef}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            role="grid"
+            aria-label="Cocktail recipes grid"
+            aria-rowcount={gridLayout.getRowCount(displayedCocktails.length)}
+            aria-colcount={gridLayout.columns}
+          >
+            {/* Initial loading or random suggestions loading */}
+            {(isLoading || isLoadingRandomSuggestions) ? 
+              Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} role="gridcell">
+                  <CocktailCardSkeleton />
+                </div>
+              ))
+            : displayedCocktails.map((cocktail, index) => renderCocktailCard(cocktail, index))}
+            
+            {/* Loading more items on scroll */}
+            {isLoadingMore && displayedCocktails.length < cocktails.length &&
+              Array.from({ length: 5 }).map((_, index) => (
+                <div key={`loading-more-${index}`} role="gridcell">
+                  <CocktailCardSkeleton />
+                </div>
+              ))
+            }
+          </div>
 
-          {!isLoading && cocktails.length === 0 && (
+          {!isLoading && cocktails.length === 0 && searchQuery && (
             <EmptyState
-              icon={searchQuery ? <SearchX className="h-12 w-12 text-base-content/20" /> : undefined}
-              title={searchQuery ? "No Results Found" : "No Cocktails Yet"}
-              message={
-                searchQuery 
-                  ? "Try adjusting your search term or add your own custom cocktail."
-                  : "Get started by searching for cocktails or adding your own custom recipe."
-              }
+              icon={<SearchX className="h-12 w-12 text-base-content/20" />}
+              title={"No Results Found"}
+              message={"Try adjusting your search term or add your own custom cocktail."              }
             />
           )}
 
