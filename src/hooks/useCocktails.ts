@@ -100,10 +100,13 @@ export function useCocktails(searchQuery: string = "") {
 
   const formattedRandomCocktails = randomCocktails.map(formatApiCocktail);
 
-  const cocktails = [
-    ...filteredCustomCocktails.map(c => ({ ...c, isCustom: true })),
-    ...formattedApiCocktails
-  ];
+  // Combine and deduplicate cocktails based on ID
+  const cocktails = Array.from(
+    new Map(
+      [...filteredCustomCocktails.map(c => ({ ...c, isCustom: true })), ...formattedApiCocktails]
+        .map(cocktail => [cocktail.id, cocktail])
+    ).values()
+  );
 
   const randomSuggestions = !searchQuery ? formattedRandomCocktails : [];
 

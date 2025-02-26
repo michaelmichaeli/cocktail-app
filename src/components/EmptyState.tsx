@@ -15,9 +15,9 @@ export function EmptyState({ title, message, icon = <Wine className="h-12 w-12 t
       <h3 className="text-lg font-semibold text-base-content/60 mb-2">
         {title}
       </h3>
-      <p className="text-base-content/50 text-sm max-w-[24rem] mx-auto">
+      <div className="text-base-content/50 text-sm max-w-[24rem] mx-auto">
         {message}
-      </p>
+      </div>
     </div>
   );
 }

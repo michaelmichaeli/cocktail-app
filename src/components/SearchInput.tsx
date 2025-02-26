@@ -37,13 +37,6 @@ export function SearchInput({ initialValue = "", onSearch, className = "" }: Sea
         placeholder="Search cocktails..."
         defaultValue={initialValue}
         className="input input-bordered w-full pl-10 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 [&::-webkit-search-cancel-button]:cursor-pointer"
-        onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            e.preventDefault();
-            e.currentTarget.value = "";
-            e.currentTarget.blur();
-          }
-        }}
       />
     </form>
   );
