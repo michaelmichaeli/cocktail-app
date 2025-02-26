@@ -98,9 +98,9 @@ export function AddCocktailPage() {
     };
 
     try {
-      await addCustomCocktail(newCocktail);
+      const savedCocktail = await addCustomCocktail(newCocktail);
       showToast("Cocktail was successfully saved!", "success");
-      navigate("/");
+      navigate(`/recipe/${savedCocktail.id}`);
     } catch (err) {
       console.error(err);
       setError("Failed to save cocktail");
