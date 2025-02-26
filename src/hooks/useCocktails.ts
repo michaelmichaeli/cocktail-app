@@ -1,64 +1,113 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../lib/api'
-import { storage } from '../lib/storage'
-import { showToast } from '../lib/toast'
-import { Cocktail, CustomCocktail } from '../types/cocktail'
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "../lib/api";
+import { storage } from "../lib/storage";
+import { showToast } from "../lib/toast";
+import { Cocktail, CustomCocktail, CocktailWithIngredients, Ingredient } from "../types/cocktail";
 
-export function useCocktails(searchQuery: string = '') {
-  const queryClient = useQueryClient()
+const parseMeasurement = (measure: string = ""): { amount: string; unitOfMeasure: string } => {
+  const match = measure.trim().match(/^([\d./\s]+)?\s*(.*)$/);
+  return {
+    amount: (match?.[1] || "").trim(),
+    unitOfMeasure: (match?.[2] || "").trim(),
+  };
+};
+
+const formatApiCocktail = (c: Cocktail): CocktailWithIngredients => {
+  const ingredients: Ingredient[] = [];
+  let i = 1;
+  
+  while (true) {
+    const ingredient = c[`strIngredient${i}` as keyof typeof c];
+    if (!ingredient) break;
+    
+    const measure = c[`strMeasure${i}` as keyof typeof c] || "";
+    const { amount, unitOfMeasure } = parseMeasurement(measure);
+    
+    ingredients.push({
+      name: ingredient,
+      amount,
+      unitOfMeasure
+    });
+    i++;
+  }
+
+  return {
+    id: c.idDrink,
+    name: c.strDrink,
+    instructions: c.strInstructions,
+    imageUrl: c.strDrinkThumb,
+    ingredients
+  };
+};
+
+export function useCocktails(searchQuery: string = "") {
+  const queryClient = useQueryClient();
 
   const { data: apiCocktails = [], isLoading: isLoadingApi, error: apiError } = useQuery({
-    queryKey: ['cocktails', searchQuery],
-    queryFn: () => api.searchCocktails(searchQuery),
-    enabled: !searchQuery.includes('my-') // Only fetch from API if not searching custom cocktails
-  })
+    queryKey: ["cocktails", searchQuery],
+    queryFn: () => api.searchCocktails(searchQuery)
+  });
+
+  const { data: randomCocktail, isLoading: isLoadingRandom } = useQuery({
+    queryKey: ["randomCocktail"],
+    queryFn: () => api.getRandomCocktail(),
+    enabled: apiCocktails.length === 0 && searchQuery !== ""
+  });
 
   const { data: customCocktails = [], isLoading: isLoadingCustom } = useQuery({
-    queryKey: ['customCocktails'],
+    queryKey: ["customCocktails"],
     queryFn: storage.getCustomCocktails,
-    staleTime: 0 // Always fetch fresh data
-  })
+    staleTime: 0
+  });
 
   const addCustomCocktailMutation = useMutation({
-    mutationFn: (cocktail: Omit<CustomCocktail, 'id'>) => storage.addCustomCocktail(cocktail),
+    mutationFn: (cocktail: Omit<CustomCocktail, "id">) => storage.addCustomCocktail(cocktail),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customCocktails'] })
+      queryClient.invalidateQueries({ queryKey: ["customCocktails"] });
     },
     onError: (error) => {
-      showToast('Failed to save cocktail: ' + error, 'error')
+      showToast("Failed to save cocktail: " + error, "error");
     }
-  })
+  });
 
-  // Filter custom cocktails if search query starts with 'my-'
-  const filteredCustomCocktails = searchQuery.startsWith('my-')
-    ? customCocktails.filter(c => 
-        c.name.toLowerCase().includes(searchQuery.replace('my-', '').toLowerCase())
-      )
-    : customCocktails
+  const deleteCustomCocktailMutation = useMutation({
+    mutationFn: storage.deleteCustomCocktail,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customCocktails"] });
+      showToast("Cocktail deleted successfully", "success");
+    },
+    onError: (error) => {
+      showToast("Failed to delete cocktail: " + error, "error");
+    }
+  });
 
-  // Combine and format results
-  const cocktails = searchQuery.startsWith('my-')
-    ? filteredCustomCocktails
-    : [
-        ...customCocktails,
-        ...apiCocktails.map((c: Cocktail) => ({
-          id: c.idDrink,
-          name: c.strDrink,
-          instructions: c.strInstructions,
-          imageUrl: c.strDrinkThumb,
-          ingredients: Array.from({ length: 5 }, (_, i) => {
-            const ingredient = c[`strIngredient${i + 1}` as keyof typeof c]
-            const measure = c[`strMeasure${i + 1}` as keyof typeof c]
-            return ingredient ? { name: ingredient as string, measure: measure as string || '' } : null
-          }).filter(Boolean) as { name: string; measure: string }[]
-        }))
-      ]
+  // Filter custom cocktails based on search query
+  const filteredCustomCocktails = customCocktails.filter(c => 
+    searchQuery ? c.name.toLowerCase().includes(searchQuery.toLowerCase()) : true
+  );
+
+  // Format API cocktails
+  const formattedApiCocktails = apiCocktails.map(formatApiCocktail);
+
+  // Add random cocktail if search has no results
+  const randomCocktails = randomCocktail && apiCocktails.length === 0 && searchQuery
+    ? [formatApiCocktail(randomCocktail)]
+    : [];
+
+  // Combine all results
+  const cocktails = [
+    ...filteredCustomCocktails.map(c => ({ ...c, isCustom: true })),
+    ...formattedApiCocktails,
+    ...randomCocktails
+  ];
 
   return {
     cocktails,
-    isLoading: isLoadingApi || isLoadingCustom,
+    isLoading: isLoadingApi || isLoadingCustom || isLoadingRandom,
     error: apiError,
     addCustomCocktail: addCustomCocktailMutation.mutateAsync,
-    isAddingCocktail: addCustomCocktailMutation.isPending
-  }
+    deleteCustomCocktail: deleteCustomCocktailMutation.mutateAsync,
+    isAddingCocktail: addCustomCocktailMutation.isPending,
+    isDeletingCocktail: deleteCustomCocktailMutation.isPending
+  };
 }

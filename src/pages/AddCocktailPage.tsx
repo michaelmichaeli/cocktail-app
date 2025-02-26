@@ -1,160 +1,146 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useBeforeUnload } from 'react-router-dom'
-import { Plus, Trash2, AlertCircle, ArrowLeft } from 'lucide-react'
-import { useCocktails } from '../hooks/useCocktails'
-import { showToast } from '../lib/toast'
-import { CustomCocktail } from '../types/cocktail'
-import { ImageUpload } from '../components/ImageUpload'
+import { useCallback, useEffect, useState, useRef } from "react";
+import { useNavigate, useBeforeUnload } from "react-router-dom";
+import { Plus, Trash2, AlertCircle } from "lucide-react";
+import { useCocktails } from "../hooks/useCocktails";
+import { showToast } from "../lib/toast";
+import { CustomCocktail } from "../types/cocktail";
+import { ImageUpload } from "../components/ImageUpload";
+import { DeleteDialog } from "../components/DeleteDialog";
 
 export function AddCocktailPage() {
-  const navigate = useNavigate()
-  const { addCustomCocktail, isAddingCocktail } = useCocktails()
+  const navigate = useNavigate();
+  const { addCustomCocktail, isAddingCocktail } = useCocktails();
 
-  const [name, setName] = useState('')
-  const [instructions, setInstructions] = useState('')
-  const [ingredients, setIngredients] = useState([{ name: '', measure: '' }])
-  const [error, setError] = useState('')
-  const [showDialog, setShowDialog] = useState(false)
-  const [isDirty, setIsDirty] = useState(false)
-  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [name, setName] = useState("");
+  const [instructions, setInstructions] = useState("");
+  const [ingredients, setIngredients] = useState<Array<{ name: string; amount: string; unitOfMeasure: string }>>([
+    { name: "", amount: "", unitOfMeasure: "" }
+  ]);
+  const [error, setError] = useState("");
+  const [errorField, setErrorField] = useState<"name" | "ingredients" | "instructions" | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const hasUnsavedChanges = useCallback(() => {
-    return name.trim() !== '' || 
-           instructions.trim() !== '' || 
-           ingredients.some(i => i.name.trim() !== '' || i.measure.trim() !== '') ||
-           imageFile !== null
-  }, [name, instructions, ingredients, imageFile])
+    return (
+      name.trim() !== "" ||
+      instructions.trim() !== "" ||
+      ingredients.some(
+        (i) =>
+          i.name.trim() !== "" ||
+          i.amount.trim() !== "" ||
+          i.unitOfMeasure.trim() !== ""
+      ) ||
+      imageFile !== null
+    );
+  }, [name, instructions, ingredients, imageFile]);
 
   useEffect(() => {
-    setIsDirty(hasUnsavedChanges())
-  }, [name, instructions, ingredients, imageFile, hasUnsavedChanges])
+    setIsDirty(hasUnsavedChanges());
+  }, [name, instructions, ingredients, imageFile, hasUnsavedChanges]);
 
   useBeforeUnload(
     useCallback(
       (event) => {
         if (isDirty) {
-          event.preventDefault()
-          event.returnValue = ''
+          event.preventDefault();
+          event.returnValue = "";
         }
       },
       [isDirty]
     )
-  )
+  );
 
-  const handleNavigateAway = () => {
-    if (isDirty) {
-      setShowDialog(true)
-    } else {
-      navigate('/')
-    }
-  }
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const ingredientInputRef = useRef<HTMLInputElement>(null);
+  const instructionsInputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
+    setErrorField(null);
 
-    if (!name.trim() || !instructions.trim()) {
-      setError('Name and instructions are required')
-      return
+    if (!name.trim()) {
+      setError("Name is required");
+      setErrorField("name");
+      nameInputRef.current?.focus();
+      return;
     }
 
-    const validIngredients = ingredients.filter(i => i.name.trim())
+    if (!instructions.trim()) {
+      setError("Instructions are required");
+      setErrorField("instructions");
+      instructionsInputRef.current?.focus();
+      return;
+    }
+
+    const validIngredients = ingredients
+      .filter((i) => i.name.trim())
+      .map((i) => ({
+        name: i.name.trim(),
+        amount: i.amount.trim(),
+        unitOfMeasure: i.unitOfMeasure.trim(),
+      }));
+
     if (validIngredients.length === 0) {
-      setError('At least one ingredient is required')
-      return
+      setError("At least one ingredient is required");
+      setErrorField("ingredients");
+      ingredientInputRef.current?.focus();
+      return;
     }
 
-    const newCocktail: Omit<CustomCocktail, 'id'> = {
+    const newCocktail: Omit<CustomCocktail, "id"> = {
       name: name.trim(),
       instructions: instructions.trim(),
       ingredients: validIngredients,
-      imageFile: imageFile || undefined
-    }
+      imageFile: imageFile || undefined,
+    };
 
     try {
-      await addCustomCocktail(newCocktail)
-      showToast('Cocktail was successfully saved!', 'success')
-      navigate('/')
+      await addCustomCocktail(newCocktail);
+      showToast("Cocktail was successfully saved!", "success");
+      navigate("/");
     } catch (err) {
-      console.error(err)
-      setError('Failed to save cocktail')
+      console.error(err);
+      setError("Failed to save cocktail");
     }
-  }
+  };
 
   const handleAddIngredient = () => {
-    setIngredients([...ingredients, { name: '', measure: '' }])
-  }
+    setIngredients([...ingredients, { name: "", amount: "", unitOfMeasure: "" }]);
+  };
 
   const handleRemoveIngredient = (index: number) => {
-    setIngredients(ingredients.filter((_, i) => i !== index))
-  }
+    setIngredients(ingredients.filter((_, i) => i !== index));
+  };
 
   const handleIngredientChange = (
     index: number,
-    field: 'name' | 'measure',
+    field: "name" | "amount" | "unitOfMeasure",
     value: string
   ) => {
-    const newIngredients = [...ingredients]
-    newIngredients[index] = { ...newIngredients[index], [field]: value }
-    setIngredients(newIngredients)
-  }
+    const newIngredients = [...ingredients];
+    newIngredients[index] = { ...newIngredients[index], [field]: value };
+    setIngredients(newIngredients);
+  };
+
+  const ErrorMessage = ({ message }: { message: string }) => (
+    <span className="mt-2 text-sm text-error flex items-center gap-2">
+      <AlertCircle className="h-4 w-4" />
+      {message}
+    </span>
+  );
 
   return (
     <>
-      <dialog 
-        id="unsavedChangesModal" 
-        className={`modal ${showDialog ? 'modal-open' : ''}`}
-        onClose={() => setShowDialog(false)}
-      >
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Unsaved Changes</h3>
-          <p className="py-4">You have unsaved changes. Are you sure you want to leave?</p>
-          <div className="modal-action">
-            <button 
-              className="btn btn-ghost mr-2" 
-              onClick={() => setShowDialog(false)}
-            >
-              Continue Editing
-            </button>
-            <button 
-              className="btn btn-error" 
-              onClick={() => {
-                setShowDialog(false)
-                navigate('/')
-              }}
-            >
-              Discard Changes
-            </button>
-          </div>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button onClick={() => setShowDialog(false)}>close</button>
-        </form>
-      </dialog>
-
       <div className="container max-w-2xl mx-auto p-6">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="card-title text-2xl">Add New Cocktail</h2>
-              <button
-                className="btn btn-ghost btn-sm gap-2 hover:bg-base-200 transition-all duration-200 group"
-                onClick={handleNavigateAway}
-              >
-                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                Back
-              </button>
-            </div>
+            <h2 className="card-title text-2xl mb-6">Add New Cocktail</h2>
 
             <div className="overflow-y-auto max-h-[calc(100vh-16rem)]">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {error && (
-                  <div className="alert alert-error">
-                    <AlertCircle className="h-5 w-5" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Image</span>
@@ -169,36 +155,65 @@ export function AddCocktailPage() {
                   <label className="label" htmlFor="name">
                     <span className="label-text">Name</span>
                   </label>
-                  <input
-                    type="text"
-                    id="name"
-                    className="input input-bordered w-full"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      ref={nameInputRef}
+                      id="name"
+                      className={`input input-bordered w-full ${errorField === "name" ? "input-error" : ""}`}
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        setError("");
+                        setErrorField(null);
+                      }}
+                      required
+                    />
+                    {errorField === "name" && <ErrorMessage message={error} />}
+                  </div>
                 </div>
 
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Ingredients</span>
                   </label>
+                  {errorField === "ingredients" && <ErrorMessage message={error} />}
                   <div className="space-y-3">
                     {ingredients.map((ingredient, index) => (
                       <div key={index} className="flex gap-3">
                         <input
                           type="text"
+                          ref={index === 0 ? ingredientInputRef : undefined}
                           placeholder="Ingredient"
-                          className="input input-bordered flex-1"
+                          className={`input input-bordered flex-1 ${errorField === "ingredients" ? "input-error" : ""}`}
                           value={ingredient.name}
-                          onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                          onChange={(e) => {
+                            handleIngredientChange(index, "name", e.target.value);
+                            setError("");
+                            setErrorField(null);
+                          }}
                         />
                         <input
                           type="text"
                           placeholder="Amount"
-                          className="input input-bordered w-32"
-                          value={ingredient.measure}
-                          onChange={(e) => handleIngredientChange(index, 'measure', e.target.value)}
+                          className={`input input-bordered w-24 ${errorField === "ingredients" ? "input-error" : ""}`}
+                          value={ingredient.amount}
+                          onChange={(e) => {
+                            handleIngredientChange(index, "amount", e.target.value);
+                            setError("");
+                            setErrorField(null);
+                          }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Unit"
+                          className={`input input-bordered w-24 ${errorField === "ingredients" ? "input-error" : ""}`}
+                          value={ingredient.unitOfMeasure}
+                          onChange={(e) => {
+                            handleIngredientChange(index, "unitOfMeasure", e.target.value);
+                            setError("");
+                            setErrorField(null);
+                          }}
                         />
                         {ingredients.length > 1 && (
                           <button
@@ -226,36 +241,48 @@ export function AddCocktailPage() {
                   <label className="label" htmlFor="instructions">
                     <span className="label-text">Instructions</span>
                   </label>
-                  <textarea
-                    id="instructions"
-                    className="textarea textarea-bordered h-24"
-                    value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
-                    required
-                  />
+                  <div>
+                    <textarea
+                      ref={instructionsInputRef}
+                      id="instructions"
+                      className={`textarea textarea-bordered h-24 ${errorField === "instructions" ? "textarea-error" : ""}`}
+                      value={instructions}
+                      onChange={(e) => {
+                        setInstructions(e.target.value);
+                        setError("");
+                        setErrorField(null);
+                      }}
+                      required
+                    />
+                    {errorField === "instructions" && <ErrorMessage message={error} />}
+                  </div>
                 </div>
 
-                <div className="flex gap-4">
-                  <button
-                    type="submit"
-                    className={`btn btn-primary flex-1 ${isAddingCocktail ? 'loading' : ''}`}
-                    disabled={isAddingCocktail}
-                  >
-                    {isAddingCocktail ? 'Saving...' : 'Save Cocktail'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn flex-1"
-                    onClick={handleNavigateAway}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  className={`btn btn-primary w-full ${
+                    isAddingCocktail ? "loading" : ""
+                  }`}
+                  disabled={isAddingCocktail}
+                >
+                  {isAddingCocktail ? "Saving..." : "Save Cocktail"}
+                </button>
               </form>
             </div>
           </div>
         </div>
       </div>
+
+      <DeleteDialog
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        onConfirm={() => {
+          setShowDialog(false);
+          navigate("/");
+        }}
+        title="Unsaved Changes"
+        message="You have unsaved changes. Are you sure you want to leave?"
+      />
     </>
-  )
+  );
 }

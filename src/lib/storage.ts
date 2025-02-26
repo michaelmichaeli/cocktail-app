@@ -46,7 +46,7 @@ const addCustomCocktail = async (cocktail: Omit<CustomCocktail, 'id'>): Promise<
   return newCocktail
 }
 
-const deleteCustomCocktail = (id: string): void => {
+const deleteCustomCocktail = async (id: string): Promise<void> => {
   const cocktails = getCustomCocktails()
   const updatedCocktails = cocktails.filter(c => c.id !== id)
   saveCustomCocktails(updatedCocktails)

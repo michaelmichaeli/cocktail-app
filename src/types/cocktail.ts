@@ -1,34 +1,33 @@
+export interface Ingredient {
+  name: string;
+  amount: string;
+  unitOfMeasure: string;
+}
+
 export interface Cocktail {
-  idDrink: string
-  strDrink: string
-  strInstructions: string
-  strDrinkThumb: string
-  strIngredient1?: string
-  strIngredient2?: string
-  strIngredient3?: string
-  strIngredient4?: string
-  strIngredient5?: string
-  strMeasure1?: string
-  strMeasure2?: string
-  strMeasure3?: string
-  strMeasure4?: string
-  strMeasure5?: string
+  idDrink: string;
+  strDrink: string;
+  strInstructions: string;
+  strDrinkThumb: string;
+  [key: string]: string | undefined;
 }
 
 export interface CocktailList {
-  drinks: Cocktail[]
+  drinks: Cocktail[];
 }
 
 export interface CustomCocktail {
-  id: string
-  name: string
-  instructions: string
-  imageUrl?: string
-  imageFile?: File
-  ingredients: Array<{
-    name: string
-    measure: string
-  }>
+  id: string;
+  name: string;
+  instructions: string;
+  imageUrl?: string;
+  imageFile?: File;
+  ingredients: Ingredient[];
+  isCustom?: boolean;
+}
+
+export interface CocktailWithIngredients extends Omit<CustomCocktail, 'imageFile'> {
+  ingredients: Ingredient[];
 }
 
 export interface ImageUploadState {

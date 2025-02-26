@@ -1,12 +1,18 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Maximize2, Share2 } from 'lucide-react'
-import { api } from '../lib/api'
-import { storage } from '../lib/storage'
+import { ArrowLeft, Maximize2, Trash2 } from "lucide-react";
+import { api } from "../lib/api";
+import { storage } from "../lib/storage";
+import { useCocktails } from "../hooks/useCocktails";
+import { showToast } from "../lib/toast";
+import { DeleteDialog } from "../components/DeleteDialog";
 
 export function RecipePage() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { deleteCustomCocktail } = useCocktails();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data: apiCocktail, isLoading: isLoadingApi } = useQuery({
     queryKey: ['cocktail', id],
@@ -59,8 +65,13 @@ export function RecipePage() {
     imageUrl: apiCocktail?.strDrinkThumb,
     ingredients: Array.from({ length: 5 }, (_, i) => {
       const ingredient = apiCocktail?.[`strIngredient${i + 1}` as keyof typeof apiCocktail]
-      const measure = apiCocktail?.[`strMeasure${i + 1}` as keyof typeof apiCocktail]
-      return ingredient ? { name: ingredient as string, measure: measure as string || '' } : null
+      const measure = apiCocktail?.[`strMeasure${i + 1}` as keyof typeof apiCocktail] as string || ''
+      const [amount, unitOfMeasure] = (measure || '').split(' ').filter(Boolean)
+      return ingredient ? {
+        name: ingredient as string,
+        amount: amount || '',
+        unitOfMeasure: unitOfMeasure || ''
+      } : null
     }).filter(Boolean)
   }
 
@@ -96,37 +107,30 @@ export function RecipePage() {
               </figure>
 
               <dialog id="imageModal" className="modal">
-                <div className="modal-box max-w-3xl">
-                  <h3 className="font-bold text-lg mb-4">{cocktail.name}</h3>
+                <div className="modal-box max-w-3xl bg-base-100">
                   <img
                     src={cocktail.imageUrl}
                     alt={cocktail.name}
                     className="w-full rounded-lg"
                   />
                 </div>
-                <form method="dialog" className="modal-backdrop">
-                  <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                <form method="dialog" className="modal-backdrop bg-base-100/80">
+                  <button>close</button>
                 </form>
               </dialog>
             </div>
           )}
           <div className="flex-1">
             <div className="card-body">
-              <div>
+              <div className="flex justify-between items-start">
                 <h2 className="card-title text-2xl mb-2">{cocktail.name}</h2>
-                {navigator.share && (
+                {customCocktail && (
                   <button
-                    className="btn btn-ghost btn-sm text-base-content/60 hover:text-base-content transition-colors duration-200"
-                    onClick={() => {
-                      navigator.share({
-                        title: cocktail.name,
-                        text: `Check out this ${cocktail.name} recipe!`,
-                        url: window.location.href,
-                      })
-                    }}
+                    className="btn btn-error btn-sm gap-2"
+                    onClick={() => setShowDeleteDialog(true)}
                   >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share Recipe
+                    <Trash2 className="h-4 w-4" />
+                    Delete
                   </button>
                 )}
               </div>
@@ -138,7 +142,7 @@ export function RecipePage() {
                     <ul className="list-disc list-inside space-y-1 text-base-content/70">
                       {cocktail.ingredients.map((ingredient, index) => (
                         <li key={index}>
-                          {ingredient?.measure ? `${ingredient.measure} ${ingredient.name}` : ingredient?.name}
+                          {`${ingredient?.name}${ingredient?.amount ? ` - ${ingredient.amount} ${ingredient.unitOfMeasure}` : ''}`}
                         </li>
                       ))}
                     </ul>
@@ -154,6 +158,18 @@ export function RecipePage() {
           </div>
         </div>
       </div>
+
+      <DeleteDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={async () => {
+          await deleteCustomCocktail(cocktail.id);
+          showToast("Cocktail deleted successfully", "success");
+          navigate("/");
+        }}
+        title="Delete Cocktail"
+        message="Are you sure you want to delete this cocktail? This action cannot be undone."
+      />
     </div>
-  )
+  );
 }
