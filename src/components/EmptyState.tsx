@@ -2,7 +2,7 @@ import { Wine } from "lucide-react";
 
 interface EmptyStateProps {
   title: string;
-  message: string;
+  message: string | React.ReactNode;
   icon?: React.ReactNode;
 }
 

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { AddCocktailPage } from './pages/AddCocktailPage';
 import { RecipePage } from './pages/RecipePage';
+import { SearchResultsPage } from './pages/SearchResultsPage';
 import { LiveAnnouncer } from './components/LiveAnnouncer';
 import { Navbar } from './components/Navbar'; // Import the Navbar
 
@@ -25,6 +26,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/add" element={<AddCocktailPage />} />
             <Route path="/recipe/:id" element={<RecipePage />} />
+            <Route path="/search" element={<SearchResultsPage />} />
           </Routes>
         </main>
       </div>
