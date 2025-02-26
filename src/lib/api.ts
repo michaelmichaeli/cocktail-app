@@ -81,30 +81,6 @@ export const api = {
     }
   },
 
-  async getAllCocktails(signal?: AbortSignal): Promise<Cocktail[]> {
-    try {
-      const response = await axios.get<CocktailApiResponse>(
-        `${BASE_URL}/search.php?f=a`,
-        { signal }
-      )
-      console.log('API Response:', response.data)
-      return Array.isArray(response.data.drinks) ? response.data.drinks : []
-    } catch (error) {
-      if (isAxiosError(error)) {
-        if (error.code === 'ERR_CANCELED') {
-          throw new Error('Request was cancelled')
-        }
-        console.error('API Error:', error.response?.status, error.message)
-        const apiError = error as AxiosError
-        throw new ApiError(
-          'Failed to fetch cocktails',
-          apiError.response?.status
-        )
-      }
-      throw error
-    }
-  },
-
   async getCategories(signal?: AbortSignal): Promise<string[]> {
     try {
       const response = await axios.get<FilterListResponse>(
@@ -186,6 +162,98 @@ export const api = {
         const apiError = error as AxiosError
         throw new ApiError(
           'Failed to fetch alcoholic types',
+          apiError.response?.status
+        )
+      }
+      throw error
+    }
+  },
+
+  async getNonAlcoholicCocktails(signal?: AbortSignal): Promise<Cocktail[]> {
+    try {
+      const response = await axios.get<CocktailApiResponse>(
+        `${BASE_URL}/filter.php?a=Non_Alcoholic`,
+        { signal }
+      )
+      return Array.isArray(response.data.drinks) ? response.data.drinks : []
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.code === 'ERR_CANCELED') {
+          throw new Error('Request was cancelled')
+        }
+        console.error('API Error:', error.response?.status, error.message)
+        const apiError = error as AxiosError
+        throw new ApiError(
+          'Failed to fetch non-alcoholic cocktails',
+          apiError.response?.status
+        )
+      }
+      throw error
+    }
+  },
+
+  async getCocktailsByIngredient(ingredient: string, signal?: AbortSignal): Promise<Cocktail[]> {
+    try {
+      const response = await axios.get<CocktailApiResponse>(
+        `${BASE_URL}/filter.php?i=${encodeURIComponent(ingredient)}`,
+        { signal }
+      )
+      return Array.isArray(response.data.drinks) ? response.data.drinks : []
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.code === 'ERR_CANCELED') {
+          throw new Error('Request was cancelled')
+        }
+        console.error('API Error:', error.response?.status, error.message)
+        const apiError = error as AxiosError
+        throw new ApiError(
+          'Failed to fetch cocktails by ingredient',
+          apiError.response?.status
+        )
+      }
+      throw error
+    }
+  },
+
+  async getCocktailsByCategory(category: string, signal?: AbortSignal): Promise<Cocktail[]> {
+    try {
+      const response = await axios.get<CocktailApiResponse>(
+        `${BASE_URL}/filter.php?c=${encodeURIComponent(category)}`,
+        { signal }
+      )
+      return Array.isArray(response.data.drinks) ? response.data.drinks : []
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.code === 'ERR_CANCELED') {
+          throw new Error('Request was cancelled')
+        }
+        console.error('API Error:', error.response?.status, error.message)
+        const apiError = error as AxiosError
+        throw new ApiError(
+          'Failed to fetch cocktails by category',
+          apiError.response?.status
+        )
+      }
+      throw error
+    }
+  },
+
+  async getCocktailsByGlass(glass: string, signal?: AbortSignal): Promise<Cocktail[]> {
+    try {
+      const response = await axios.get<CocktailApiResponse>(
+        `${BASE_URL}/filter.php?g=${encodeURIComponent(glass)}`,
+        { signal }
+      )
+      return Array.isArray(response.data.drinks) ? response.data.drinks : []
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.code === 'ERR_CANCELED') {
+          throw new Error('Request was cancelled')
+        }
+        console.error('API Error:', error.response?.status, error.message)
+        const apiError = error as AxiosError
+        throw new ApiError(
+          'Failed to fetch cocktails by glass',
           apiError.response?.status
         )
       }

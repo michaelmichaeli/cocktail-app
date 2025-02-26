@@ -38,9 +38,9 @@ const formatApiCocktail = (c: Cocktail): CocktailWithIngredients => {
     imageUrl: c.strDrinkThumb,
     ingredients,
     tags: c.strTags?.split(',').map(tag => tag.trim()) || [],
-    category: c.strCategory || 'Unknown',
-    glass: c.strGlass || 'Unknown',
-    isAlcoholic: c.strAlcoholic?.toLowerCase().includes('alcoholic') ?? false,
+    category: c.strCategory,
+    glass: c.strGlass,
+    isAlcoholic: c.strAlcoholic?.toLowerCase().includes('alcoholic') ?? undefined,
     dateModified: c.dateModified || new Date().toISOString()
   };
 };
@@ -50,24 +50,103 @@ export function useCocktails(searchQuery: string = "") {
 
   const { data: apiCocktails = [], isLoading: isLoadingApi, error: apiError } = useQuery({
     queryKey: ["cocktails", searchQuery],
-    queryFn: () => api.searchCocktails(searchQuery)
+    queryFn: () => api.searchCocktails(searchQuery),
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const { data: randomCocktails = [], isLoading: isLoadingRandom } = useQuery({
+  const { data: randomCocktails = [], isLoading: isLoadingRandom, error: randomError } = useQuery({
     queryKey: ["randomCocktails"],
     queryFn: async () => {
-      const promises = Array(12).fill(null).map(() => api.getRandomCocktail());
-      const results = await Promise.all(promises);
-      const validResults = results.filter((cocktail): cocktail is Cocktail => cocktail !== null);
-      
-      const uniqueResults = Array.from(
-        new Map(validResults.map(item => [item.idDrink, item])).values()
-      ).slice(0, 8);
-      
-      return uniqueResults;
+      const cocktails = [];
+      for (let i = 0; i < 4; i++) {
+        const result = await api.getRandomCocktail();
+        if (result) cocktails.push(result);
+      }
+      return cocktails;
     },
     enabled: !searchQuery,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 60 * 1000, // 1 hour
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => api.getCategories(),
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  const { data: glasses = [] } = useQuery({
+    queryKey: ["glasses"],
+    queryFn: () => api.getGlasses(),
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  const { data: ingredients = [] } = useQuery({
+    queryKey: ["ingredients"],
+    queryFn: () => api.getIngredients(),
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  const randomCategory = categories[0];
+  const randomGlass = glasses[0];
+  const randomIngredient = ingredients[0];
+
+  const { data: nonAlcoholicCocktails = [], isLoading: isLoadingNonAlcoholic, error: nonAlcoholicError } = useQuery({
+    queryKey: ["nonAlcoholicCocktails"],
+    queryFn: async () => {
+      const result = await api.getNonAlcoholicCocktails();
+      return result;
+    },
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  const { data: categoryCocktails = [], isLoading: isLoadingCategory, error: categoryError } = useQuery({
+    queryKey: ["categoryCocktails", randomCategory],
+    queryFn: async () => {
+      if (!randomCategory) return [];
+      const result = await api.getCocktailsByCategory(randomCategory);
+      return result;
+    },
+    enabled: !!randomCategory,
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  const { data: glassCocktails = [], isLoading: isLoadingGlass, error: glassError } = useQuery({
+    queryKey: ["glassCocktails", randomGlass],
+    queryFn: async () => {
+      if (!randomGlass) return [];
+      const result = await api.getCocktailsByGlass(randomGlass);
+      return result;
+    },
+    enabled: !!randomGlass,
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  const { data: ingredientCocktails = [], isLoading: isLoadingIngredient, error: ingredientError } = useQuery({
+    queryKey: ["ingredientCocktails", randomIngredient],
+    queryFn: async () => {
+      if (!randomIngredient) return [];
+      const result = await api.getCocktailsByIngredient(randomIngredient);
+      return result;
+    },
+    enabled: !!randomIngredient,
+    staleTime: 60 * 60 * 1000,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const { data: customCocktails = [], isLoading: isLoadingCustom } = useQuery({
@@ -102,28 +181,45 @@ export function useCocktails(searchQuery: string = "") {
   );
 
   const formattedApiCocktails = apiCocktails.map(formatApiCocktail);
+  const randomSuggestions = randomCocktails.map(formatApiCocktail);
 
-  const formattedRandomCocktails = randomCocktails.map(formatApiCocktail);
-
-  // Combine and deduplicate cocktails based on ID
-  const cocktails = Array.from(
-    new Map(
-      [...filteredCustomCocktails.map(c => ({ ...c, isCustom: true })), ...formattedApiCocktails]
-        .map(cocktail => [cocktail.id, cocktail])
-    ).values()
-  );
-
-  const randomSuggestions = !searchQuery ? formattedRandomCocktails : [];
+  const cocktails = [
+    ...filteredCustomCocktails.map(c => ({ ...c, isCustom: true })),
+    ...formattedApiCocktails
+  ];
 
   return {
     cocktails,
     randomSuggestions,
     isLoading: isLoadingApi || isLoadingCustom,
     isLoadingRandomSuggestions: isLoadingRandom,
+    randomError,
     error: apiError,
     addCustomCocktail: addCustomCocktailMutation.mutateAsync,
     deleteCustomCocktail: deleteCustomCocktailMutation.mutateAsync,
     isAddingCocktail: addCustomCocktailMutation.isPending,
-    isDeletingCocktail: deleteCustomCocktailMutation.isPending
+    isDeletingCocktail: deleteCustomCocktailMutation.isPending,
+    
+    customCocktails: customCocktails.map(c => ({ ...c, isCustom: true })),
+    isLoadingCustomCocktails: isLoadingCustom,
+
+    nonAlcoholicCocktails: nonAlcoholicCocktails.map(formatApiCocktail),
+    isLoadingNonAlcoholic,
+    nonAlcoholicError,
+
+    ingredientCocktails: ingredientCocktails.map(formatApiCocktail),
+    isLoadingIngredient,
+    ingredientError,
+    selectedIngredient: randomIngredient,
+
+    categoryCocktails: categoryCocktails.map(formatApiCocktail),
+    isLoadingCategory,
+    categoryError,
+    selectedCategory: randomCategory,
+
+    glassCocktails: glassCocktails.map(formatApiCocktail),
+    isLoadingGlass,
+    glassError,
+    selectedGlass: randomGlass,
   };
 }

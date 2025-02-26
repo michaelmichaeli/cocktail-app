@@ -29,10 +29,10 @@ export interface CustomCocktail {
   imageFile?: File;
   ingredients: Ingredient[];
   isCustom?: boolean;
-  tags: string[];
-  category: string;
-  glass: string;
-  isAlcoholic: boolean;
+  tags?: string[];
+  category?: string;
+  glass?: string;
+  isAlcoholic?: boolean;
   dateModified: string;
 }
 
