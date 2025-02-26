@@ -36,7 +36,12 @@ const formatApiCocktail = (c: Cocktail): CocktailWithIngredients => {
     name: c.strDrink,
     instructions: c.strInstructions,
     imageUrl: c.strDrinkThumb,
-    ingredients
+    ingredients,
+    tags: c.strTags?.split(',').map(tag => tag.trim()) || [],
+    category: c.strCategory || 'Unknown',
+    glass: c.strGlass || 'Unknown',
+    isAlcoholic: c.strAlcoholic?.toLowerCase().includes('alcoholic') ?? false,
+    dateModified: c.dateModified || new Date().toISOString()
   };
 };
 

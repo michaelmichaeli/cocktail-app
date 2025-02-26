@@ -10,6 +10,7 @@ import { DeleteDialog } from "../components/DeleteDialog";
 import { showToast } from "../lib/toast";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { SearchInput } from "../components/SearchInput";
+import { FilterBar, FilterOptions } from "../components/FilterBar";
 
 export function SearchResultsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,13 +18,36 @@ export function SearchResultsPage() {
 
   const searchQuery = searchParams.get("s") || "";
 
+  const [activeFilters, setActiveFilters] = useState<FilterOptions>({});
+
   const { 
-    cocktails,
+    cocktails: unfilteredCocktails,
     isLoading,
     error, 
     deleteCustomCocktail,
     isDeletingCocktail
   } = useCocktails(searchQuery);
+
+  const cocktails = unfilteredCocktails.filter(cocktail => {
+    if (activeFilters.isAlcoholic !== null && activeFilters.isAlcoholic !== undefined) {
+      if (cocktail.isAlcoholic !== activeFilters.isAlcoholic) return false;
+    }
+    
+    if (activeFilters.category) {
+      if (cocktail.category !== activeFilters.category) return false;
+    }
+    
+    if (activeFilters.glass) {
+      if (cocktail.glass !== activeFilters.glass) return false;
+    }
+    
+    if (activeFilters.tags && activeFilters.tags.length > 0) {
+      const cocktailTags = cocktail.tags || [];
+      if (!activeFilters.tags.some(tag => cocktailTags.includes(tag))) return false;
+    }
+    
+    return true;
+  });
 
   const renderCocktailCard = useCallback((cocktail: CustomCocktail) => (
     <div 
@@ -51,7 +75,7 @@ export function SearchResultsPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <header className="relative max-w-xl mx-auto z-10 space-y-6">
+      <header className="relative max-w-4xl mx-auto z-10 space-y-6">
         <SearchInput 
           initialValue={searchQuery}
           onSearch={(query) => setSearchParams({ s: query })}
@@ -67,6 +91,8 @@ export function SearchResultsPage() {
             </p>
           )}
         </div>
+
+        <FilterBar onFilterChange={setActiveFilters} />
       </header>
 
       <main className="relative z-0">

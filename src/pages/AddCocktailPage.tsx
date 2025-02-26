@@ -6,6 +6,8 @@ import { showToast } from "../lib/toast";
 import { CustomCocktail } from "../types/cocktail";
 import { ImageUpload } from "../components/ImageUpload";
 import { DeleteDialog } from "../components/DeleteDialog";
+import { TagInput } from "../components/TagInput";
+import DEFAULT_COCKTAIL_IMAGE from "../../public/default-cocktail.png";
 
 export function AddCocktailPage() {
   const navigate = useNavigate();
@@ -16,8 +18,12 @@ export function AddCocktailPage() {
   const [ingredients, setIngredients] = useState<Array<{ name: string; amount: string; unitOfMeasure: string }>>([
     { name: "", amount: "", unitOfMeasure: "" }
   ]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [category, setCategory] = useState("");
+  const [glass, setGlass] = useState("");
+  const [isAlcoholic, setIsAlcoholic] = useState(false);
   const [error, setError] = useState("");
-  const [errorField, setErrorField] = useState<"name" | "ingredients" | "instructions" | null>(null);
+  const [errorField, setErrorField] = useState<"name" | "ingredients" | "instructions" | "category" | "glass" | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -95,6 +101,12 @@ export function AddCocktailPage() {
       instructions: instructions.trim(),
       ingredients: validIngredients,
       imageFile: imageFile || undefined,
+      imageUrl: imageFile ? undefined : DEFAULT_COCKTAIL_IMAGE,
+      tags,
+      category: category || "Other/Unknown",
+      glass: glass || "Other/Unknown",
+      isAlcoholic,
+      dateModified: new Date().toISOString()
     };
 
     try {
@@ -261,6 +273,83 @@ export function AddCocktailPage() {
                     />
                     {errorField === "instructions" && <ErrorMessage message={error} />}
                   </div>
+                </div>
+
+                <div className="form-control">
+                  <label className="label" htmlFor="category">
+                    <span className="label-text">Category</span>
+                  </label>
+                  <div>
+                    <select
+                      id="category"
+                      className={`select select-bordered w-full ${errorField === "category" ? "select-error" : ""}`}
+                      value={category}
+                      onChange={(e) => {
+                        setCategory(e.target.value);
+                        setError("");
+                        setErrorField(null);
+                      }}
+                    >
+                      <option value="">Select a category</option>
+                      <option value="Cocktail">Cocktail</option>
+                      <option value="Shot">Shot</option>
+                      <option value="Punch / Party Drink">Punch / Party Drink</option>
+                      <option value="Coffee / Tea">Coffee / Tea</option>
+                      <option value="Other/Unknown">Other/Unknown</option>
+                    </select>
+                    {errorField === "category" && <ErrorMessage message={error} />}
+                  </div>
+                </div>
+
+                <div className="form-control">
+                  <label className="label" htmlFor="glass">
+                    <span className="label-text">Glass Type</span>
+                  </label>
+                  <div>
+                    <select
+                      id="glass"
+                      className={`select select-bordered w-full ${errorField === "glass" ? "select-error" : ""}`}
+                      value={glass}
+                      onChange={(e) => {
+                        setGlass(e.target.value);
+                        setError("");
+                        setErrorField(null);
+                      }}
+                    >
+                      <option value="">Select a glass type</option>
+                      <option value="Highball glass">Highball glass</option>
+                      <option value="Cocktail glass">Cocktail glass</option>
+                      <option value="Old-fashioned glass">Old-fashioned glass</option>
+                      <option value="Collins glass">Collins glass</option>
+                      <option value="Shot glass">Shot glass</option>
+                      <option value="Margarita glass">Margarita glass</option>
+                      <option value="Other/Unknown">Other/Unknown</option>
+                    </select>
+                    {errorField === "glass" && <ErrorMessage message={error} />}
+                  </div>
+                </div>
+
+                <div className="form-control">
+                  <label className="label cursor-pointer justify-start gap-4">
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-primary"
+                      checked={isAlcoholic}
+                      onChange={(e) => setIsAlcoholic(e.target.checked)}
+                    />
+                    <span className="label-text">Contains Alcohol</span>
+                  </label>
+                </div>
+
+                <div className="form-control">
+                  <label className="label" htmlFor="tags">
+                    <span className="label-text">Tags</span>
+                  </label>
+                  <TagInput
+                    tags={tags}
+                    onChange={setTags}
+                    placeholder="Enter a tag and press Enter or click Add Tag"
+                  />
                 </div>
 
                 <button

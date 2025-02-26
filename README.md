@@ -6,7 +6,20 @@ A modern cocktail recipe application built with React, Vite, and daisyUI.
 
 - Search cocktails from an external API
 - View detailed cocktail recipes with ingredients and instructions
-- Add custom cocktails
+- Add custom cocktails with rich details:
+  - Ingredients with amounts and units
+  - Comprehensive instructions
+  - Image upload
+  - Tags for easy categorization
+  - Alcoholic/Non-alcoholic designation
+  - Category selection
+  - Glass type specification
+  - Last modified timestamp
+- Advanced filtering capabilities:
+  - Filter by alcoholic content
+  - Filter by category
+  - Filter by glass type
+  - Filter by tags
 - Responsive design
 - Toast notifications
 - Unsaved changes warnings

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import type { CustomCocktail } from "../types/cocktail";
+import DEFAULT_COCKTAIL_IMAGE from "../../public/default-cocktail.png";
 
 interface CocktailCardProps {
   cocktail: CustomCocktail;
@@ -15,11 +16,11 @@ export function CocktailCard({
 }: CocktailCardProps) {
 
   const cardContent = (
-    <div className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 ${className}`}>
-      {cocktail.imageUrl && (
+      <div className={`card overflow-hidden bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 ${className}`}>
+      {(
         <figure className="relative">
           <img
-            src={cocktail.imageUrl}
+            src={cocktail.imageUrl || DEFAULT_COCKTAIL_IMAGE}
             alt={`${cocktail.name} cocktail`}
             loading="lazy"
             className="aspect-[4/3] object-cover w-full transition-transform duration-300 group-hover:scale-105"
@@ -29,6 +30,14 @@ export function CocktailCard({
       <div className="card-body p-0">
         <div className="p-6 pb-2">
           <h3 className="card-title">{cocktail.name}</h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            <span className={`badge ${cocktail.isAlcoholic ? 'badge-secondary' : 'badge-primary'} badge-sm`}>
+              {cocktail.isAlcoholic ? 'Alcoholic' : 'Non-Alcoholic'}
+            </span>
+            {cocktail.category && (
+              <span className="badge badge-outline badge-sm">{cocktail.category}</span>
+            )}
+          </div>
         </div>
       </div>
     </div>

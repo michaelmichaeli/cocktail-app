@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query'
 import { Maximize2, Trash2 } from "lucide-react";
+import DEFAULT_COCKTAIL_IMAGE from "../../public/default-cocktail.png";
 import { api } from "../lib/api";
 import { storage } from "../lib/storage";
 import { useCocktails } from "../hooks/useCocktails";
@@ -39,7 +40,7 @@ export function RecipePage() {
   if (!apiCocktail && !customCocktail) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
-        <div className="card w-96 bg-error bg-opacity-10 text-error">
+        <div className="card overflow-hidden w-96 bg-error bg-opacity-10 text-error">
           <div className="card-body text-center">
             <h2 className="card-title justify-center">Not Found</h2>
             <p>Cocktail not found.</p>
@@ -49,7 +50,7 @@ export function RecipePage() {
     )
   }
 
-  const cocktail = customCocktail || {
+const cocktail = customCocktail || {
     id: apiCocktail?.idDrink || '',
     name: apiCocktail?.strDrink || '',
     instructions: apiCocktail?.strInstructions || '',
@@ -63,18 +64,23 @@ export function RecipePage() {
         amount: amount || '',
         unitOfMeasure: unitOfMeasure || ''
       } : null
-    }).filter(Boolean)
+    }).filter(Boolean),
+    tags: apiCocktail?.strTags?.split(',').map(tag => tag.trim()) || [],
+    category: apiCocktail?.strCategory || 'Unknown',
+    glass: apiCocktail?.strGlass || 'Unknown',
+    isAlcoholic: apiCocktail?.strAlcoholic?.toLowerCase().includes('alcoholic') ?? false,
+    dateModified: apiCocktail?.dateModified || new Date().toISOString()
   }
 
   return (
     <div className="container max-w-4xl mx-auto p-6 space-y-4">
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card overflow-hidden bg-base-100 shadow-xl">
         <div className="md:flex">
-          {cocktail.imageUrl && (
+          {(
             <div className="md:w-96 relative group">
               <figure className="relative">
                 <img
-                  src={cocktail.imageUrl}
+                  src={cocktail.imageUrl || DEFAULT_COCKTAIL_IMAGE}
                   alt={cocktail.name}
                   className="h-72 w-full md:h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
                 />
@@ -92,7 +98,7 @@ export function RecipePage() {
               <dialog id="imageModal" className="modal">
                 <div className="modal-box max-w-3xl bg-base-100">
                   <img
-                    src={cocktail.imageUrl}
+                  src={cocktail.imageUrl || DEFAULT_COCKTAIL_IMAGE}
                     alt={cocktail.name}
                     className="w-full rounded-lg"
                   />
@@ -134,6 +140,33 @@ export function RecipePage() {
                   <div>
                     <h3 className="font-semibold mb-2">Instructions</h3>
                     <p className="text-base-content/70 whitespace-pre-line">{cocktail.instructions}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-2">Details</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`badge ${cocktail.isAlcoholic ? 'badge-secondary' : 'badge-primary'}`}>
+                          {cocktail.isAlcoholic ? 'Alcoholic' : 'Non-Alcoholic'}
+                        </span>
+                      </div>
+                      <p className="text-base-content/70">
+                        <span className="font-medium">Category:</span> {cocktail.category}
+                      </p>
+                      <p className="text-base-content/70">
+                        <span className="font-medium">Glass Type:</span> {cocktail.glass}
+                      </p>
+                      {cocktail.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {cocktail.tags.map((tag, index) => (
+                            <span key={index} className="badge badge-outline">{tag}</span>
+                          ))}
+                        </div>
+                      )}
+                      <p className="text-xs text-base-content/50">
+                        Last modified: {new Date(cocktail.dateModified).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

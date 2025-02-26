@@ -9,6 +9,11 @@ export interface Cocktail {
   strDrink: string;
   strInstructions: string;
   strDrinkThumb: string;
+  strTags?: string;
+  strCategory?: string;
+  strGlass?: string;
+  strAlcoholic?: string;
+  dateModified?: string;
   [key: string]: string | undefined;
 }
 
@@ -24,6 +29,11 @@ export interface CustomCocktail {
   imageFile?: File;
   ingredients: Ingredient[];
   isCustom?: boolean;
+  tags: string[];
+  category: string;
+  glass: string;
+  isAlcoholic: boolean;
+  dateModified: string;
 }
 
 export interface CocktailWithIngredients extends Omit<CustomCocktail, 'imageFile'> {
