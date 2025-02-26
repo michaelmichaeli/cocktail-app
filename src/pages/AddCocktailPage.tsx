@@ -134,7 +134,7 @@ export function AddCocktailPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="container max-w-2xl mx-auto px-6 pt-4 pb-6">
+      <div className="container max-w-2xl mx-auto px-3 sm:px-6 pt-4 pb-6">
         <button
           onClick={() => {
             if (isDirty) {
@@ -150,7 +150,7 @@ export function AddCocktailPage() {
         </button>
 
         <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
+          <div className="card-body px-3 sm:px-6">
             <h2 className="card-title text-2xl mb-6">Add New Cocktail</h2>
 
             <div>
@@ -192,9 +192,10 @@ export function AddCocktailPage() {
                     <span className="label-text">Ingredients</span>
                   </label>
                   {errorField === "ingredients" && <ErrorMessage message={error} />}
-                  <div className="space-y-3">
+                  <div>
                     {ingredients.map((ingredient, index) => (
-                      <div key={index} className="flex flex-wrap sm:flex-nowrap gap-3">
+                      <div key={index}>
+                        <div className="flex flex-wrap gap-3">
                         <input
                           type="text"
                           ref={index === 0 ? ingredientInputRef : undefined}
@@ -207,7 +208,6 @@ export function AddCocktailPage() {
                             setErrorField(null);
                           }}
                         />
-                        <div className="flex w-full sm:w-auto gap-3">
                           <input
                             type="text"
                             placeholder="Amount"
@@ -230,7 +230,6 @@ export function AddCocktailPage() {
                               setErrorField(null);
                             }}
                           />
-                        </div>
                         {ingredients.length > 1 && (
                           <button
                             type="button"
@@ -239,6 +238,10 @@ export function AddCocktailPage() {
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
+                        )}
+                        </div>
+                        {index < ingredients.length - 1 && (
+                          <div className="my-3 border-b border-base-300" />
                         )}
                       </div>
                     ))}

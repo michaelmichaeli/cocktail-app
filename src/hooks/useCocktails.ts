@@ -61,7 +61,7 @@ export function useCocktails(searchQuery: string = "") {
       
       return uniqueResults;
     },
-    enabled: apiCocktails.length === 0 && !searchQuery,
+    enabled: !searchQuery,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -105,7 +105,7 @@ export function useCocktails(searchQuery: string = "") {
     ...formattedApiCocktails
   ];
 
-  const randomSuggestions = !searchQuery && apiCocktails.length === 0 ? formattedRandomCocktails : [];
+  const randomSuggestions = !searchQuery ? formattedRandomCocktails : [];
 
   return {
     cocktails,

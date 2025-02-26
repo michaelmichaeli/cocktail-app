@@ -1,3 +1,7 @@
+interface CocktailCardSkeletonGridProps {
+  columns?: number;
+}
+
 export function CocktailCardSkeleton() {
   return (
     <div className="card min-h-[24rem] bg-base-100 shadow-xl animate-pulse">
@@ -13,15 +17,15 @@ export function CocktailCardSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export function CocktailCardSkeletonGrid() {
+export function CocktailCardSkeletonGrid({ columns = 4 }: CocktailCardSkeletonGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {Array.from({ length: 4 }).map((_, index) => (
+      {Array.from({ length: columns }).map((_, index) => (
         <CocktailCardSkeleton key={index} />
       ))}
     </div>
-  )
+  );
 }

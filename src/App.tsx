@@ -1,93 +1,35 @@
-import { createBrowserRouter, RouterProvider, useRouteError, Outlet } from 'react-router-dom'
-import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from '@tanstack/react-query'
-import { Suspense } from 'react'
-import { HomePage } from './pages/HomePage'
-import { RecipePage } from './pages/RecipePage'
-import { AddCocktailPage } from './pages/AddCocktailPage'
-import { ErrorBoundary } from './components/ErrorBoundary'
-import { Navbar } from './components/Navbar'
-import { ScrollToTop } from './components/ScrollToTop'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HomePage } from './pages/HomePage';
+import { AddCocktailPage } from './pages/AddCocktailPage';
+import { RecipePage } from './pages/RecipePage';
+import { LiveAnnouncer } from './components/LiveAnnouncer';
+import { Navbar } from './components/Navbar'; // Import the Navbar
 
-function LoadingFallback() {
+function App() {
   return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <span className="loading loading-spinner loading-lg text-primary"></span>
-    </div>
-  )
+    <Router>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+
+        <a 
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:p-4 focus:bg-base-100 focus:shadow-lg focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+        >
+          Skip to main content
+        </a>
+
+        <LiveAnnouncer />
+
+        <main id="main-content" className="flex-1" tabIndex={-1}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/add" element={<AddCocktailPage />} />
+            <Route path="/recipe/:id" element={<RecipePage />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
 }
 
-function RouteErrorBoundary() {
-  const error = useRouteError() as Error
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
-      <h2 className="text-2xl font-bold mb-4">Page Error</h2>
-      <p className="text-base-content/70 mb-6">{error?.message || 'An unexpected error occurred'}</p>
-      <button 
-        className="btn btn-primary"
-        onClick={() => window.location.reload()}
-      >
-        Reload Page
-      </button>
-    </div>
-  )
-}
-
-function RootLayout() {
-  return (
-    <div className="min-h-screen bg-base-100">
-      <Navbar />
-      <main className="py-6">
-        <Outlet />
-      </main>
-      <div id="toast-container" className="toast toast-top toast-end"></div>
-      <ScrollToTop />
-    </div>
-  )
-}
-
-const router = createBrowserRouter([
-  {
-    element: <RootLayout />,
-    errorElement: <RouteErrorBoundary />,
-    children: [
-      {
-        path: '/',
-        element: <HomePage />
-      },
-      {
-        path: '/recipe/:id',
-        element: <RecipePage />
-      },
-      {
-        path: '/add',
-        element: <AddCocktailPage />
-      }
-    ]
-  }
-])
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      retry: false
-    }
-  }
-})
-
-export default function App() {
-  return (
-    <QueryErrorResetBoundary>
-      {() => (
-        <ErrorBoundary>
-          <QueryClientProvider client={queryClient}>
-            <Suspense fallback={<LoadingFallback />}>
-              <RouterProvider router={router} />
-            </Suspense>
-          </QueryClientProvider>
-        </ErrorBoundary>
-      )}
-    </QueryErrorResetBoundary>
-  )
-}
+export default App;

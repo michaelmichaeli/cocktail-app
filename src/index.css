@@ -2,46 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    @apply border-base-content/20;
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
   
-  body {
-    @apply bg-base-100 text-base-content overflow-x-hidden;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    width: 100%;
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer components {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
-  /* Smooth scrolling and touch behavior */
-  :root {
-    scroll-behavior: smooth;
-    -webkit-tap-highlight-color: transparent;
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  /* Better focus styles */
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary/50;
+  .animate-fade-in {
+    animation: fade-in 200ms ease-out forwards;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    @apply w-2 h-2;
+  .animate-slide-in {
+    animation: slide-in 200ms ease-out forwards;
   }
 
-  ::-webkit-scrollbar-track {
-    @apply bg-base-200/50;
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  ::-webkit-scrollbar-thumb {
+  .animate-slide-up {
+    animation: slide-up 200ms ease-out forwards;
+  }
+
+  /* Focus styles */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100;
+  }
+
+  /* Keyboard navigation styles */
+  .kbd-nav {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100;
+  }
+
+  /* Dialog animations */
+  .dialog-enter {
+    @apply animate-slide-in;
+  }
+
+  .dialog-backdrop-enter {
+    @apply animate-fade-in;
+  }
+
+  /* Toast animations */
+  .toast-enter {
+    @apply animate-slide-up;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-base-200;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-base-content/20 rounded-full hover:bg-base-content/30 transition-colors;
   }
 }
 
-@layer utilities {
-  .animate-in {
-    animation-duration: 150ms;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform, opacity;
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-base-content bg-base-100;
+  }
+
+  /* Make dialogs and modals readable in high contrast mode */
+  @media (forced-colors: active) {
+    .dialog,
+    .modal {
+      border: 2px solid ButtonText;
+    }
   }
 }

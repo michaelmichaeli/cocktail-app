@@ -200,10 +200,13 @@ export function KeyboardShortcuts() {
                 <p className="flex items-center gap-1.5">
                   Open menu with <kbd className="kbd kbd-xs">Alt</kbd>+<kbd className="kbd kbd-xs">K</kbd>
                 </p>
-                <p className="flex items-center gap-1.5">
-                  Navigate with <kbd className="kbd kbd-xs">↑</kbd> <kbd className="kbd kbd-xs">↓</kbd>,
-                  select with <kbd className="kbd kbd-xs">Enter</kbd>
-                </p>
+              <p className="flex items-center gap-1.5">
+                Navigate menu with <kbd className="kbd kbd-xs">↑</kbd> <kbd className="kbd kbd-xs">↓</kbd>,
+                select with <kbd className="kbd kbd-xs">Enter</kbd>
+              </p>
+              <p className="flex items-center gap-1.5">
+                Navigate cards with <kbd className="kbd kbd-xs">←</kbd> <kbd className="kbd kbd-xs">↑</kbd> <kbd className="kbd kbd-xs">↓</kbd> <kbd className="kbd kbd-xs">→</kbd>
+              </p>
                 <p className="flex items-center gap-1.5">
                   Close menu with <kbd className="kbd kbd-xs">Esc</kbd>
                 </p>

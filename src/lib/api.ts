@@ -1,7 +1,7 @@
 import axios, { AxiosError, isAxiosError } from 'axios'
 import { Cocktail, CocktailApiResponse } from '../types/cocktail'
 
-const BASE_URL = 'https://www.thecocktaildb.com/api/json/v1/1'
+const BASE_URL = '/api'
 
 class ApiError extends Error {
   constructor(message: string, public statusCode?: number) {
@@ -23,6 +23,7 @@ export const api = {
         if (error.code === 'ERR_CANCELED') {
           throw new Error('Request was cancelled')
         }
+        console.error('API Error:', error.response?.status, error.message);
         const apiError = error as AxiosError
         throw new ApiError(
           'Failed to search cocktails',
@@ -45,6 +46,7 @@ export const api = {
         if (error.code === 'ERR_CANCELED') {
           throw new Error('Request was cancelled')
         }
+        console.error('API Error:', error.response?.status, error.message);
         const apiError = error as AxiosError
         throw new ApiError(
           'Failed to fetch cocktail',
@@ -67,6 +69,7 @@ export const api = {
         if (error.code === 'ERR_CANCELED') {
           throw new Error('Request was cancelled')
         }
+        console.error('API Error:', error.response?.status, error.message);
         const apiError = error as AxiosError
         throw new ApiError(
           'Failed to fetch random cocktail',
@@ -80,15 +83,17 @@ export const api = {
   async getAllCocktails(signal?: AbortSignal): Promise<Cocktail[]> {
     try {
       const response = await axios.get<CocktailApiResponse>(
-        `${BASE_URL}/search.php?s=`,
+        `${BASE_URL}/search.php?f=a`,
         { signal }
       )
+      console.log('API Response:', response.data);
       return Array.isArray(response.data.drinks) ? response.data.drinks : []
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.code === 'ERR_CANCELED') {
           throw new Error('Request was cancelled')
         }
+        console.error('API Error:', error.response?.status, error.message);
         const apiError = error as AxiosError
         throw new ApiError(
           'Failed to fetch cocktails',

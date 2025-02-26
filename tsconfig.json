@@ -7,9 +7,9 @@
     "skipLibCheck": true,
     "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
+    "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
@@ -20,5 +20,5 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["src", "src/types/global.d.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": []
 }
