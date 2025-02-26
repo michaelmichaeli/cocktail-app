@@ -1,7 +1,19 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query'
-import { Maximize2, Trash2 } from "lucide-react";
+import { 
+  Maximize2, 
+  Trash2, 
+  UtensilsCrossed, 
+  ScrollText, 
+  Info, 
+  Calendar, 
+  Wine, 
+  GlassWater, 
+  CupSoda, 
+  FolderKanban,  
+  Tags
+} from "lucide-react";
 import { api } from "../lib/api";
 import { storage } from "../lib/storage";
 import { useCocktails } from "../hooks/useCocktails";
@@ -127,7 +139,10 @@ const cocktail = customCocktail || {
               <div className="overflow-y-auto max-h-[calc(100vh-20rem)] pr-4">
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold mb-2">Ingredients</h3>
+                    <h3 className="font-semibold mb-2 flex items-center gap-2">
+                      <UtensilsCrossed className="h-5 w-5" />
+                      Ingredients
+                    </h3>
                     <ul className="list-disc list-inside space-y-1 text-base-content/70">
                       {cocktail.ingredients.map((ingredient, index) => (
                         <li key={index}>
@@ -138,32 +153,45 @@ const cocktail = customCocktail || {
                   </div>
 
                   <div>
-                    <h3 className="font-semibold mb-2">Instructions</h3>
+                    <h3 className="font-semibold mb-2 flex items-center gap-2">
+                      <ScrollText className="h-5 w-5" />
+                      Instructions
+                    </h3>
                     <p className="text-base-content/70 whitespace-pre-line">{cocktail.instructions}</p>
                   </div>
 
                   <div>
-                    <h3 className="font-semibold mb-2">Details</h3>
+                    <h3 className="font-semibold mb-2 flex items-center gap-2">
+                      <Info className="h-5 w-5" />
+                      Details
+                    </h3>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className={`badge ${cocktail.isAlcoholic ? 'badge-secondary' : 'badge-primary'}`}>
+                        <span className={`badge ${cocktail.isAlcoholic ? 'badge-secondary' : 'badge-primary'} gap-1`}>
+                          {cocktail.isAlcoholic ? <Wine className="h-3 w-3" /> : <GlassWater className="h-3 w-3" />}
                           {cocktail.isAlcoholic ? 'Alcoholic' : 'Non-Alcoholic'}
                         </span>
                       </div>
-                      <p className="text-base-content/70">
+                      <p className="text-base-content/70 flex items-center gap-2">
+                        <FolderKanban className="h-4 w-4" />
                         <span className="font-medium">Category:</span> {cocktail.category}
                       </p>
-                      <p className="text-base-content/70">
+                      <p className="text-base-content/70 flex items-center gap-2">
+                        <CupSoda className="h-4 w-4" />
                         <span className="font-medium">Glass Type:</span> {cocktail.glass}
                       </p>
                       {cocktail.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                           {cocktail.tags.map((tag, index) => (
-                            <span key={index} className="badge badge-outline">{tag}</span>
+                            <span key={index} className="badge badge-outline gap-1">
+                              <Tags className="h-3 w-3" />
+                              {tag}
+                            </span>
                           ))}
                         </div>
                       )}
-                      <p className="text-xs text-base-content/50">
+                      <p className="text-xs text-base-content/50 flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
                         Last modified: {new Date(cocktail.dateModified).toLocaleDateString()}
                       </p>
                     </div>

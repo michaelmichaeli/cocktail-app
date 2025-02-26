@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Trash2, Wine, GlassWater, Tags, CupSoda, FolderKanban } from "lucide-react";
 import type { CustomCocktail } from "../types/cocktail";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
@@ -31,17 +31,25 @@ export function CocktailCard({
         <div className="p-6 pb-2">
           <h3 className="card-title">{cocktail.name}</h3>
           <div className="flex flex-wrap gap-2 mt-2">
-            <span className={`badge ${cocktail.isAlcoholic ? 'badge-secondary' : 'badge-primary'} badge-sm`}>
+            <span className={`badge ${cocktail.isAlcoholic ? 'badge-secondary' : 'badge-primary'} badge-sm gap-1`}>
+              {cocktail.isAlcoholic ? <Wine className="h-3 w-3" /> : <GlassWater className="h-3 w-3" />}
               {cocktail.isAlcoholic ? 'Alcoholic' : 'Non-Alcoholic'}
             </span>
             {cocktail.category && (
-              <span className="badge badge-accent badge-sm">{cocktail.category}</span>
+              <span className="badge badge-accent badge-sm gap-1">
+                <FolderKanban className="h-3 w-3" />
+                {cocktail.category}
+              </span>
             )}
             {cocktail.glass && (
-              <span className="badge badge-outline badge-sm">{cocktail.glass}</span>
+              <span className="badge badge-outline badge-sm gap-1">
+                <CupSoda className="h-3 w-3" />
+                {cocktail.glass}
+              </span>
             )}
             {cocktail.tags?.map((tag, index) => (
-              <span key={index} className="badge badge-ghost badge-sm">
+              <span key={index} className="badge badge-ghost badge-sm gap-1">
+                <Tags className="h-3 w-3" />
                 {tag}
               </span>
             ))}
