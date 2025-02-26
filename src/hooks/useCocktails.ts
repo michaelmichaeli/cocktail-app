@@ -51,21 +51,18 @@ export function useCocktails(searchQuery: string = "") {
   const { data: randomCocktails = [], isLoading: isLoadingRandom } = useQuery({
     queryKey: ["randomCocktails"],
     queryFn: async () => {
-      // Fetch multiple random cocktails in parallel
-      // Fetch more than needed to account for duplicates
       const promises = Array(12).fill(null).map(() => api.getRandomCocktail());
       const results = await Promise.all(promises);
       const validResults = results.filter((cocktail): cocktail is Cocktail => cocktail !== null);
       
-      // Remove duplicates by ID and take first 8
       const uniqueResults = Array.from(
         new Map(validResults.map(item => [item.idDrink, item])).values()
       ).slice(0, 8);
       
       return uniqueResults;
     },
-    enabled: apiCocktails.length === 0 && !searchQuery, // Only fetch when search is empty
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    enabled: apiCocktails.length === 0 && !searchQuery,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: customCocktails = [], isLoading: isLoadingCustom } = useQuery({
@@ -95,24 +92,19 @@ export function useCocktails(searchQuery: string = "") {
     }
   });
 
-  // Filter custom cocktails based on search query
   const filteredCustomCocktails = customCocktails.filter(c => 
     searchQuery ? c.name.toLowerCase().includes(searchQuery.toLowerCase()) : true
   );
 
-  // Format API cocktails
   const formattedApiCocktails = apiCocktails.map(formatApiCocktail);
 
-  // Format random cocktails
   const formattedRandomCocktails = randomCocktails.map(formatApiCocktail);
 
-  // Combine all results
   const cocktails = [
     ...filteredCustomCocktails.map(c => ({ ...c, isCustom: true })),
     ...formattedApiCocktails
   ];
 
-  // Expose random cocktails separately
   const randomSuggestions = !searchQuery && apiCocktails.length === 0 ? formattedRandomCocktails : [];
 
   return {

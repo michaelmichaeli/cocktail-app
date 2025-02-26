@@ -17,10 +17,8 @@ export function HomePage() {
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts when typing in an input or when modifier keys are pressed
       const isInputElement = 
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||
@@ -68,7 +66,6 @@ export function HomePage() {
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && displayedCocktails.length < cocktails.length) {
         setIsLoadingMore(true);
-        // Only load more if we're at least 85% through the current items
         if (window.innerHeight + window.scrollY > document.documentElement.scrollHeight * 0.85) {
           setTimeout(() => {
             const nextItems = cocktails.slice(
@@ -83,7 +80,7 @@ export function HomePage() {
         }
       }
     }, {
-      threshold: 0.5 // Trigger when element is 50% visible
+      threshold: 0.5
     });
     if (node) observer.current.observe(node);
   }, [cocktails, displayedCocktails.length, isLoading]);
@@ -135,7 +132,7 @@ export function HomePage() {
                 e.currentTarget.blur();
               }
             }}
-            className="input input-bordered w-full pl-10 pr-16 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+            className="input input-bordered w-full pl-10 pr-16 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 [&::-webkit-search-cancel-button]:cursor-pointer"
           />
           <kbd className="absolute right-3 top-3 px-2 py-1 text-xs font-mono bg-base-200 rounded opacity-50">/</kbd>
         </div>
@@ -154,7 +151,6 @@ export function HomePage() {
                   ref={index === displayedCocktails.length - 1 ? lastCocktailElementRef : undefined}
                   className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
                   onClick={(e) => {
-                    // Don't navigate if clicking on the collapse section or delete button
                     if (!(e.target as HTMLElement).closest('.collapse') && 
                         !(e.target as HTMLElement).closest('.delete-btn')) {
                       navigate(`/recipe/${cocktail.id}`);
@@ -248,9 +244,7 @@ export function HomePage() {
                       Here are some cocktails you might like
                     </h2>
                     {isLoadingRandomSuggestions ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        <CocktailCardSkeletonGrid />
-                      </div>
+                      <CocktailCardSkeletonGrid />
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {randomSuggestions.map((cocktail) => (

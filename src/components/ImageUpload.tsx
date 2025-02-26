@@ -42,7 +42,7 @@ export function ImageUpload({ onImageSelect, onImageClear, className = '' }: Ima
       return
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
       setState(prev => ({ ...prev, error: 'Image size should be less than 5MB' }))
       return
     }

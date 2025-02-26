@@ -35,7 +35,7 @@ export function KeyboardShortcuts() {
       if (e.key === "/" || e.key === "n") {
         setActiveKey(e.key);
         setIsOpen(false);
-        setTimeout(() => setActiveKey(null), 750); // Match animation duration
+        setTimeout(() => setActiveKey(null), 750);
       } else if (e.key === "Escape") {
         if (isOpen) {
           setIsOpen(false);
@@ -87,7 +87,6 @@ export function KeyboardShortcuts() {
           (menuItems[menuItems.length - 1] as HTMLElement).focus();
           break;
         case "Tab":
-          // Prevent tab navigation and use arrow keys instead
           e.preventDefault();
           break;
       }
@@ -100,7 +99,7 @@ export function KeyboardShortcuts() {
   const handleMenuItemClick = (shortcut: string) => {
     setIsOpen(false);
     setActiveKey(shortcut);
-    setTimeout(() => setActiveKey(null), 750); // Match animation duration
+    setTimeout(() => setActiveKey(null), 750);
     
     const searchInput = document.querySelector<HTMLInputElement>('input[type="search"]');
     switch (shortcut) {
