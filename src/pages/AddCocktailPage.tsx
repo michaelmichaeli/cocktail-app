@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { useNavigate, useBeforeUnload } from "react-router-dom";
-import { Plus, Trash2, AlertCircle, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, AlertCircle } from "lucide-react";
 import { useCocktails } from "../hooks/useCocktails";
 import { showToast } from "../lib/toast";
 import { CustomCocktail } from "../types/cocktail";
@@ -135,20 +135,6 @@ export function AddCocktailPage() {
   return (
     <div className="min-h-screen">
       <div className="container max-w-2xl mx-auto px-3 sm:px-6 pt-4 pb-6">
-        <button
-          onClick={() => {
-            if (isDirty) {
-              setShowDialog(true);
-            } else {
-              navigate("/");
-            }
-          }}
-          className="btn btn-ghost gap-2 -ml-2 mb-4"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </button>
-
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body px-3 sm:px-6">
             <h2 className="card-title text-2xl mb-6">Add New Cocktail</h2>

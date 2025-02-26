@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Maximize2, Trash2 } from "lucide-react";
+import { Maximize2, Trash2 } from "lucide-react";
 import { api } from "../lib/api";
 import { storage } from "../lib/storage";
 import { useCocktails } from "../hooks/useCocktails";
@@ -42,16 +42,7 @@ export function RecipePage() {
         <div className="card w-96 bg-error bg-opacity-10 text-error">
           <div className="card-body text-center">
             <h2 className="card-title justify-center">Not Found</h2>
-            <p className="mb-4">Cocktail not found.</p>
-            <div className="card-actions justify-center">
-              <button 
-                className="btn btn-outline"
-                onClick={() => navigate('/')}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
-              </button>
-            </div>
+            <p>Cocktail not found.</p>
           </div>
         </div>
       </div>
@@ -77,14 +68,6 @@ export function RecipePage() {
 
   return (
     <div className="container max-w-4xl mx-auto p-6 space-y-4">
-      <button
-        className="btn btn-ghost gap-2 hover:bg-base-200 hover:scale-105 transform transition-all duration-200 group"
-        onClick={() => navigate('/')}
-      >
-        <ArrowLeft className="h-5 w-5 transition-transform duration-200 group-hover:-translate-x-1" />
-        <span>Back to Cocktails</span>
-      </button>
-
       <div className="card bg-base-100 shadow-xl">
         <div className="md:flex">
           {cocktail.imageUrl && (

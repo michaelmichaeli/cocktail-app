@@ -58,28 +58,6 @@ export default {
   plugins: [daisyui],
   daisyui: {
     themes: [
-      {
-        light: {
-          ...daisyuiThemes["light"],
-          primary: "#2563eb",  // blue-600
-          "primary-focus": "#1d4ed8",  // blue-700
-          secondary: "#8b5cf6",  // violet-500
-          "secondary-focus": "#7c3aed",  // violet-600
-          accent: "#f59e0b",  // amber-500
-          "accent-focus": "#d97706",  // amber-600
-          error: "#dc2626",  // red-600
-        },
-        dark: {
-          ...daisyuiThemes["dark"],
-          primary: "#3b82f6",  // blue-500
-          "primary-focus": "#2563eb",  // blue-600
-          secondary: "#a855f7",  // violet-500
-          "secondary-focus": "#9333ea",  // violet-600
-          accent: "#fbbf24",  // amber-400
-          "accent-focus": "#f59e0b",  // amber-500
-          error: "#ef4444",  // red-500
-        },
-      },
       "light",
       "dark",
     ],
