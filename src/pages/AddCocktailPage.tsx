@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { useNavigate, useBeforeUnload } from "react-router-dom";
-import { Plus, Trash2, AlertCircle } from "lucide-react";
+import { Plus, Trash2, AlertCircle, ArrowLeft } from "lucide-react";
 import { useCocktails } from "../hooks/useCocktails";
 import { showToast } from "../lib/toast";
 import { CustomCocktail } from "../types/cocktail";
@@ -133,13 +133,27 @@ export function AddCocktailPage() {
   );
 
   return (
-    <>
-      <div className="container max-w-2xl mx-auto p-6">
+    <div className="min-h-screen">
+      <div className="container max-w-2xl mx-auto px-6 pt-4 pb-6">
+        <button
+          onClick={() => {
+            if (isDirty) {
+              setShowDialog(true);
+            } else {
+              navigate("/");
+            }
+          }}
+          className="btn btn-ghost gap-2 -ml-2 mb-4"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </button>
+
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title text-2xl mb-6">Add New Cocktail</h2>
 
-            <div className="overflow-y-auto max-h-[calc(100vh-16rem)]">
+            <div>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="form-control">
                   <label className="label">
@@ -245,7 +259,7 @@ export function AddCocktailPage() {
                     <textarea
                       ref={instructionsInputRef}
                       id="instructions"
-                      className={`textarea textarea-bordered h-24 ${errorField === "instructions" ? "textarea-error" : ""}`}
+                      className={`textarea textarea-bordered h-36 w-full ${errorField === "instructions" ? "textarea-error" : ""}`}
                       value={instructions}
                       onChange={(e) => {
                         setInstructions(e.target.value);
@@ -283,6 +297,6 @@ export function AddCocktailPage() {
         title="Unsaved Changes"
         message="You have unsaved changes. Are you sure you want to leave?"
       />
-    </>
+    </div>
   );
 }

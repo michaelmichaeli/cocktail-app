@@ -6,6 +6,7 @@ import { RecipePage } from './pages/RecipePage'
 import { AddCocktailPage } from './pages/AddCocktailPage'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { Navbar } from './components/Navbar'
+import { ScrollToTop } from './components/ScrollToTop'
 
 function LoadingFallback() {
   return (
@@ -40,6 +41,7 @@ function RootLayout() {
         <Outlet />
       </main>
       <div id="toast-container" className="toast toast-top toast-end"></div>
+      <ScrollToTop />
     </div>
   )
 }

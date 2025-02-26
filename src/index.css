@@ -8,8 +8,9 @@
   }
   
   body {
-    @apply bg-base-100 text-base-content;
+    @apply bg-base-100 text-base-content overflow-x-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
+    width: 100%;
   }
 
   /* Smooth scrolling and touch behavior */

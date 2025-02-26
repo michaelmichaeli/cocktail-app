@@ -8,6 +8,7 @@ import { CustomCocktail } from "../types/cocktail";
 import { DeleteDialog } from "../components/DeleteDialog";
 import { showToast } from "../lib/toast";
 import { KeyboardShortcuts } from "../components/KeyboardShortcuts";
+import { ScrollToTop } from "../components/ScrollToTop";
 
 export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,8 +48,10 @@ export function HomePage() {
   }, [navigate]);
   
   const { 
-    cocktails, 
-    isLoading, 
+    cocktails,
+    randomSuggestions,
+    isLoading,
+    isLoadingRandomSuggestions,
     error, 
     deleteCustomCocktail,
     isDeletingCocktail
@@ -65,17 +68,22 @@ export function HomePage() {
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && displayedCocktails.length < cocktails.length) {
         setIsLoadingMore(true);
-        setTimeout(() => {
-          const nextItems = cocktails.slice(
-            displayedCocktails.length,
-            displayedCocktails.length + 5
-          );
-          if (nextItems.length > 0) {
-            setDisplayedCocktails(prev => [...prev, ...nextItems]);
-          }
-          setIsLoadingMore(false);
-        }, 500);
+        // Only load more if we're at least 85% through the current items
+        if (window.innerHeight + window.scrollY > document.documentElement.scrollHeight * 0.85) {
+          setTimeout(() => {
+            const nextItems = cocktails.slice(
+              displayedCocktails.length,
+              displayedCocktails.length + 5
+            );
+            if (nextItems.length > 0) {
+              setDisplayedCocktails(prev => [...prev, ...nextItems]);
+            }
+            setIsLoadingMore(false);
+          }, 500);
+        }
       }
+    }, {
+      threshold: 0.5 // Trigger when element is 50% visible
     });
     if (node) observer.current.observe(node);
   }, [cocktails, displayedCocktails.length, isLoading]);
@@ -127,7 +135,7 @@ export function HomePage() {
                 e.currentTarget.blur();
               }
             }}
-            className="input input-bordered w-full pl-10 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+            className="input input-bordered w-full pl-10 pr-16 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
           />
           <kbd className="absolute right-3 top-3 px-2 py-1 text-xs font-mono bg-base-200 rounded opacity-50">/</kbd>
         </div>
@@ -216,18 +224,73 @@ export function HomePage() {
         )}
 
         {!isLoading && cocktails.length === 0 && (
-          searchQuery ? (
-            <EmptyState
-              icon={<SearchX className="h-12 w-12 text-base-content/20" />}
-              title="No Results Found"
-              message="Try adjusting your search term or add your own custom cocktail."
-            />
-          ) : (
-            <EmptyState
-              title="No Cocktails Yet"
-              message="Get started by searching for cocktails or adding your own custom recipe."
-            />
-          )
+          <>
+            {searchQuery ? (
+              <EmptyState
+                icon={<SearchX className="h-12 w-12 text-base-content/20" />}
+                title="No Results Found"
+                message="Try adjusting your search term or add your own custom cocktail."
+              />
+            ) : (
+              <>
+                <EmptyState
+                  title="No Cocktails Yet"
+                  message="Get started by searching for cocktails or adding your own custom recipe."
+                />
+                {!searchQuery && cocktails.length === 0 && (
+                  <div className="mt-12">
+                    <h2 className="text-xl font-semibold mb-6 text-center text-base-content/70">
+                      Here are some cocktails you might like
+                    </h2>
+                    {isLoadingRandomSuggestions ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {[...Array(8)].map((_, index) => (
+                          <div key={index} className="animate-pulse">
+                            <CocktailCardSkeletonGrid />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {randomSuggestions.map((cocktail) => (
+                          <div key={cocktail.id} className="relative group">
+                            <div 
+                              className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                              onClick={() => navigate(`/recipe/${cocktail.id}`)}
+                            >
+                              {cocktail.imageUrl && (
+                                <figure className="relative">
+                                  <img
+                                    src={cocktail.imageUrl}
+                                    alt={cocktail.name}
+                                    loading="lazy"
+                                    className="aspect-[4/3] object-cover w-full transition-transform duration-300 group-hover:scale-105"
+                                  />
+                                  <div className="absolute top-0 right-0 flex gap-2 m-2">
+                                    <div 
+                                      className="tooltip tooltip-left" 
+                                      data-tip={`${cocktail.ingredients.length} ingredients`}
+                                    >
+                                      <div className="badge badge-primary">
+                                        {cocktail.ingredients.length}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </figure>
+                              )}
+                              <div className="card-body">
+                                <h2 className="card-title">{cocktail.name}</h2>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </>
         )}
       </div>
 
@@ -246,6 +309,7 @@ export function HomePage() {
       />
 
       <KeyboardShortcuts />
+      <ScrollToTop />
     </div>
   );
 }

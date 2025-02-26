@@ -9,14 +9,6 @@ export function Navbar() {
     <div className="navbar bg-base-100 border-b shadow-sm">
       <div className="container mx-auto flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          {isAddPage && (
-            <Link 
-              to="/"
-              className="btn btn-ghost btn-sm gap-2"
-            >
-              ← Back
-            </Link>
-          )}
           <Link 
             to="/" 
             className="flex items-center space-x-2 transition-transform duration-200 hover:scale-105 group"
