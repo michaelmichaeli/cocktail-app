@@ -181,10 +181,12 @@ export function HomePage() {
                       </div>
                     </figure>
                   )}
-                  <div className="card-body">
-                    <h2 className="card-title">{cocktail.name}</h2>
+                  <div className="card-body p-0">
+                    <div className="p-6 pb-2">
+                      <h2 className="card-title">{cocktail.name}</h2>
+                    </div>
                     <div 
-                      className="collapse collapse-arrow hover:bg-base-100/50 transition-colors duration-200 rounded-lg"
+                      className="collapse collapse-arrow hover:bg-base-100/50 transition-colors duration-200 rounded-lg px-6"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <input type="checkbox" /> 
@@ -218,8 +220,11 @@ export function HomePage() {
         )}
         
         {isLoadingMore && displayedCocktails.length < cocktails.length && (
-          <div className="flex justify-center py-8">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
+          <div className="mt-6">
+            <CocktailCardSkeletonGrid />
+            <div className="flex justify-center mt-8">
+              <span className="loading loading-spinner loading-lg text-primary"></span>
+            </div>
           </div>
         )}
 
@@ -244,11 +249,7 @@ export function HomePage() {
                     </h2>
                     {isLoadingRandomSuggestions ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[...Array(8)].map((_, index) => (
-                          <div key={index} className="animate-pulse">
-                            <CocktailCardSkeletonGrid />
-                          </div>
-                        ))}
+                        <CocktailCardSkeletonGrid />
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

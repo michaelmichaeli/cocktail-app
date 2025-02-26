@@ -194,12 +194,12 @@ export function AddCocktailPage() {
                   {errorField === "ingredients" && <ErrorMessage message={error} />}
                   <div className="space-y-3">
                     {ingredients.map((ingredient, index) => (
-                      <div key={index} className="flex gap-3">
+                      <div key={index} className="flex flex-wrap sm:flex-nowrap gap-3">
                         <input
                           type="text"
                           ref={index === 0 ? ingredientInputRef : undefined}
                           placeholder="Ingredient"
-                          className={`input input-bordered flex-1 ${errorField === "ingredients" ? "input-error" : ""}`}
+                          className={`input input-bordered w-full sm:w-auto sm:flex-1 ${errorField === "ingredients" ? "input-error" : ""}`}
                           value={ingredient.name}
                           onChange={(e) => {
                             handleIngredientChange(index, "name", e.target.value);
@@ -207,28 +207,30 @@ export function AddCocktailPage() {
                             setErrorField(null);
                           }}
                         />
-                        <input
-                          type="text"
-                          placeholder="Amount"
-                          className={`input input-bordered w-24 ${errorField === "ingredients" ? "input-error" : ""}`}
-                          value={ingredient.amount}
-                          onChange={(e) => {
-                            handleIngredientChange(index, "amount", e.target.value);
-                            setError("");
-                            setErrorField(null);
-                          }}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Unit"
-                          className={`input input-bordered w-24 ${errorField === "ingredients" ? "input-error" : ""}`}
-                          value={ingredient.unitOfMeasure}
-                          onChange={(e) => {
-                            handleIngredientChange(index, "unitOfMeasure", e.target.value);
-                            setError("");
-                            setErrorField(null);
-                          }}
-                        />
+                        <div className="flex w-full sm:w-auto gap-3">
+                          <input
+                            type="text"
+                            placeholder="Amount"
+                            className={`input input-bordered flex-1 sm:w-28 ${errorField === "ingredients" ? "input-error" : ""}`}
+                            value={ingredient.amount}
+                            onChange={(e) => {
+                              handleIngredientChange(index, "amount", e.target.value);
+                              setError("");
+                              setErrorField(null);
+                            }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Unit"
+                            className={`input input-bordered flex-1 sm:w-28 ${errorField === "ingredients" ? "input-error" : ""}`}
+                            value={ingredient.unitOfMeasure}
+                            onChange={(e) => {
+                              handleIngredientChange(index, "unitOfMeasure", e.target.value);
+                              setError("");
+                              setErrorField(null);
+                            }}
+                          />
+                        </div>
                         {ingredients.length > 1 && (
                           <button
                             type="button"
