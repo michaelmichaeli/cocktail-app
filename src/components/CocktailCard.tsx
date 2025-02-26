@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import type { CustomCocktail } from "../types/cocktail";
-import DEFAULT_COCKTAIL_IMAGE from "../../public/default-cocktail.png";
+import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 interface CocktailCardProps {
   cocktail: CustomCocktail;

@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query'
 import { Maximize2, Trash2 } from "lucide-react";
-import DEFAULT_COCKTAIL_IMAGE from "../../public/default-cocktail.png";
 import { api } from "../lib/api";
 import { storage } from "../lib/storage";
 import { useCocktails } from "../hooks/useCocktails";
 import { showToast } from "../lib/toast";
 import { DeleteDialog } from "../components/DeleteDialog";
+import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 export function RecipePage() {
   const { id } = useParams()

@@ -7,7 +7,7 @@ import { CustomCocktail } from "../types/cocktail";
 import { ImageUpload } from "../components/ImageUpload";
 import { DeleteDialog } from "../components/DeleteDialog";
 import { TagInput } from "../components/TagInput";
-import DEFAULT_COCKTAIL_IMAGE from "../../public/default-cocktail.png";
+import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 export function AddCocktailPage() {
   const navigate = useNavigate();
