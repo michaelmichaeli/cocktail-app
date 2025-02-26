@@ -35,8 +35,16 @@ export function CocktailCard({
               {cocktail.isAlcoholic ? 'Alcoholic' : 'Non-Alcoholic'}
             </span>
             {cocktail.category && (
-              <span className="badge badge-outline badge-sm">{cocktail.category}</span>
+              <span className="badge badge-accent badge-sm">{cocktail.category}</span>
             )}
+            {cocktail.glass && (
+              <span className="badge badge-outline badge-sm">{cocktail.glass}</span>
+            )}
+            {cocktail.tags?.map((tag, index) => (
+              <span key={index} className="badge badge-ghost badge-sm">
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
       </div>

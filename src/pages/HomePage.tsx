@@ -1,7 +1,8 @@
-import { AlertCircle, ExternalLink } from "lucide-react";
+import { useEffect } from "react";
+import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { useCocktails } from "../hooks/useCocktails";
+import { useFiltersStore } from "../store/useFiltersStore";
 import { CocktailCard } from "../components/CocktailCard";
-import { CocktailCardSkeleton } from "../components/CocktailCardSkeleton";
 import { EmptyState } from "../components/EmptyState";
 import { SearchInput } from "../components/SearchInput";
 
@@ -9,8 +10,21 @@ export function HomePage() {
   const { 
     randomSuggestions,
     isLoadingRandomSuggestions,
-    error 
+    error: cocktailsError 
   } = useCocktails("");
+
+  const {
+    error: filtersError,
+    isLoading: isLoadingFilters,
+    fetchFilters
+  } = useFiltersStore();
+
+  useEffect(() => {
+    fetchFilters();
+  }, [fetchFilters]);
+
+  const error = cocktailsError || filtersError;
+  const isLoading = isLoadingRandomSuggestions || isLoadingFilters;
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -36,13 +50,18 @@ export function HomePage() {
       </header>
 
       <main className="relative z-0">
-        {error ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center min-h-[300px] gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-base-content/70">Loading cocktails and filters...</p>
+          </div>
+        ) : error ? (
           <EmptyState
             icon={<AlertCircle className="h-12 w-12 text-error" />}
             title="Something went wrong"
             message="Failed to load cocktails. Please try again later."
           />
-        ) : !isLoadingRandomSuggestions && randomSuggestions.length > 0 ? (
+        ) : randomSuggestions.length > 0 ? (
           <div>
             <h2 className="text-2xl font-bold mb-6">Random Cocktail Suggestions</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -51,13 +70,7 @@ export function HomePage() {
               ))}
             </div>
           </div>
-        ) : isLoadingRandomSuggestions && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <CocktailCardSkeleton key={index} />
-            ))}
-          </div>
-        )}
+        ) : null}
       </main>
     </div>
   );

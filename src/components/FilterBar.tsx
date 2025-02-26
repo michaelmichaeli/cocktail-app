@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Filter, XCircle } from "lucide-react";
+import { useState, useEffect } from "react"
+import { Filter, XCircle, Loader2 } from "lucide-react"
+import { useFiltersStore } from "../store/useFiltersStore"
 
 interface FilterBarProps {
   onFilterChange: (filters: FilterOptions) => void;
@@ -14,6 +15,20 @@ export interface FilterOptions {
 
 export function FilterBar({ onFilterChange }: FilterBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const {
+    categories,
+    glasses,
+    ingredients,
+    alcoholicTypes,
+    isLoading,
+    error,
+    fetchFilters
+  } = useFiltersStore()
+
+  useEffect(() => {
+    fetchFilters()
+  }, [fetchFilters])
+
   const [filters, setFilters] = useState<FilterOptions>({
     isAlcoholic: null,
     category: undefined,
@@ -28,11 +43,6 @@ export function FilterBar({ onFilterChange }: FilterBarProps) {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     onFilterChange(newFilters);
-  };
-
-  const handleTagInput = (value: string) => {
-    const tagArray = value.split(",").map(tag => tag.trim()).filter(Boolean);
-    handleFilterChange("tags", tagArray);
   };
 
   const clearFilters = () => {
@@ -85,82 +95,128 @@ export function FilterBar({ onFilterChange }: FilterBarProps) {
               <label className="label">
                 <span className="label-text">Alcohol Content</span>
               </label>
-              <select
-                className="select select-bordered w-full"
-                value={filters.isAlcoholic === null ? "" : String(filters.isAlcoholic)}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  handleFilterChange(
-                    "isAlcoholic",
-                    value === "" ? null : value === "true"
-                  );
-                }}
-              >
-                <option value="">All</option>
-                <option value="true">Alcoholic</option>
-                <option value="false">Non-Alcoholic</option>
-              </select>
+              {isLoading ? (
+                <div className="flex items-center justify-center h-10">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                </div>
+              ) : error ? (
+                <div className="text-error text-sm">Failed to load alcohol types</div>
+              ) : (
+                <select
+                  className="select select-bordered w-full"
+                  value={filters.isAlcoholic === null ? "" : String(filters.isAlcoholic)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    handleFilterChange(
+                      "isAlcoholic",
+                      value === "" ? null : value === "true"
+                    );
+                  }}
+                >
+                  <option value="">All</option>
+                  {alcoholicTypes.map((type) => (
+                    <option 
+                      key={type} 
+                      value={type === 'Alcoholic' ? 'true' : 'false'}
+                    >
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Category</span>
               </label>
-              <select
-                className="select select-bordered w-full"
-                value={filters.category || ""}
-                onChange={(e) =>
-                  handleFilterChange<string | undefined>(
-                    "category",
-                    e.target.value || undefined
-                  )
-                }
-              >
-                <option value="">All Categories</option>
-                <option value="Cocktail">Cocktail</option>
-                <option value="Shot">Shot</option>
-                <option value="Punch / Party Drink">Punch / Party Drink</option>
-                <option value="Coffee / Tea">Coffee / Tea</option>
-                <option value="Other/Unknown">Other/Unknown</option>
-              </select>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-10">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            </div>
+          ) : error ? (
+            <div className="text-error text-sm">Failed to load categories</div>
+          ) : (
+            <select
+              className="select select-bordered w-full"
+              value={filters.category || ""}
+              onChange={(e) =>
+                handleFilterChange<string | undefined>(
+                  "category",
+                  e.target.value || undefined
+                )
+              }
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          )}
             </div>
 
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Glass Type</span>
               </label>
-              <select
-                className="select select-bordered w-full"
-                value={filters.glass || ""}
-                onChange={(e) =>
-                  handleFilterChange<string | undefined>(
-                    "glass",
-                    e.target.value || undefined
-                  )
-                }
-              >
-                <option value="">All Glass Types</option>
-                <option value="Highball glass">Highball glass</option>
-                <option value="Cocktail glass">Cocktail glass</option>
-                <option value="Old-fashioned glass">Old-fashioned glass</option>
-                <option value="Collins glass">Collins glass</option>
-                <option value="Shot glass">Shot glass</option>
-                <option value="Margarita glass">Margarita glass</option>
-                <option value="Other/Unknown">Other/Unknown</option>
-              </select>
+          {isLoading ? (
+            <div className="flex items-center justify-center h-10">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            </div>
+          ) : error ? (
+            <div className="text-error text-sm">Failed to load glass types</div>
+          ) : (
+            <select
+              className="select select-bordered w-full"
+              value={filters.glass || ""}
+              onChange={(e) =>
+                handleFilterChange<string | undefined>(
+                  "glass",
+                  e.target.value || undefined
+                )
+              }
+            >
+              <option value="">All Glass Types</option>
+              {glasses.map((glass) => (
+                <option key={glass} value={glass}>
+                  {glass}
+                </option>
+              ))}
+            </select>
+          )}
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Tags</span>
+                <span className="label-text">Ingredients</span>
               </label>
-              <input
-                type="text"
-                placeholder="e.g., sweet, fruity, summer"
-                className="input input-bordered w-full"
-                value={filters.tags?.join(", ") || ""}
-                onChange={(e) => handleTagInput(e.target.value)}
-              />
+            {isLoading ? (
+              <div className="flex items-center justify-center h-10">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              </div>
+            ) : error ? (
+              <div className="text-error text-sm">Failed to load ingredients</div>
+            ) : (
+              <select
+                className="select select-bordered w-full"
+                value={filters.tags?.[0] || ""}
+                onChange={(e) =>
+                  handleFilterChange<string[]>(
+                    "tags",
+                    e.target.value ? [e.target.value] : []
+                  )
+                }
+              >
+                <option value="">All Ingredients</option>
+                {ingredients.map((ingredient) => (
+                  <option key={ingredient} value={ingredient}>
+                    {ingredient}
+                  </option>
+                ))}
+              </select>
+            )}
             </div>
           </div>
         </div>
