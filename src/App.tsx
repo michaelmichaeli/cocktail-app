@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
-import { useFiltersStore } from "./store/useFiltersStore";
+import { useFiltersStore } from "./store/filters";
 import { HomePage } from "./pages/HomePage";
 import { AddCocktailPage } from "./pages/AddCocktailPage";
 import { RecipePage } from "./pages/RecipePage";
@@ -20,6 +20,7 @@ function App() {
 
   return (
     <Router>
+      <div id="toast-container" className="fixed top-4 right-4 z-50 flex flex-col gap-2" />
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1 pb-6">

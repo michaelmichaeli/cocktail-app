@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Loader2, XCircle } from "lucide-react";
-import { useFiltersStore } from "../store/useFiltersStore";
+import { useFiltersStore } from "../store/filters";
 
 interface FilterBarProps {
   initialFilters?: FilterOptions;

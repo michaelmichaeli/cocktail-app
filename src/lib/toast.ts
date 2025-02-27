@@ -8,7 +8,13 @@ export function showToast(message: string, type: 'success' | 'error' | 'info' = 
     toastContainer.appendChild(toast);
     setTimeout(() => {
       toast.classList.add('fade-out', 'slide-out-to-top-full');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+      setTimeout(() => toast.remove(), 6000);
+    }, 6000);
   }
+}
+
+export const toast = {
+  success: (message: string) => showToast(message, 'success'),
+  error: (message: string) => showToast(message, 'error'),
+  info: (message: string) => showToast(message, 'info'),
 }

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
-import { useFiltersStore } from "../store/useFiltersStore";
+import { useFiltersStore } from "../store/filters";
 import { useCustomCocktails } from "./useCustomCocktails";
 import { formatApiCocktail, getRandomItem, getRandomItems } from "../lib/utils";
 import { useState, useEffect } from "react";

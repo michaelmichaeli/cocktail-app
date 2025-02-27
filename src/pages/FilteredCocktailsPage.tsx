@@ -1,14 +1,12 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { api } from "../lib/api";
 import { CocktailGrid } from "../components/CocktailGrid";
 import { CupSoda, FolderKanban, UtensilsCrossed } from "lucide-react";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
-import type { Cocktail, CocktailWithIngredients } from "../types/cocktail";
 import type { ReactNode } from "react";
-
-type FilterType = 'ingredient' | 'glass' | 'category';
+import { useFilteredCocktails, FilterType } from "../hooks/useFilteredCocktails";
+import { api } from "../lib/api";
+import type { Cocktail } from "../types/cocktail";
 
 interface FilterDetails {
   title: string;
@@ -50,30 +48,7 @@ export function FilteredCocktailsPage({ type }: { type: FilterType }) {
     };
   }, [filterValue]);
 
-  const { data: cocktails = [], isLoading, error: queryError } = useQuery({
-    queryKey: [type, filterValue],
-    queryFn: async () => {
-      if (!filterValue) return [];
-      const apiCocktails = await config.fetch(filterValue);
-      return apiCocktails.map(c => ({
-        id: c.idDrink,
-        name: c.strDrink,
-        instructions: c.strInstructions || '',
-        imageUrl: c.strDrinkThumb,
-        ingredients: [],
-        isAlcoholic: c.strAlcoholic?.toLowerCase().includes('alcoholic') ?? undefined,
-        category: c.strCategory,
-        glass: c.strGlass,
-        tags: c.strTags?.split(',').map(tag => tag.trim()) || [],
-        dateModified: c.dateModified || new Date().toISOString()
-      })) as CocktailWithIngredients[];
-    },
-    enabled: !!filterValue,
-  });
-
-  const error = queryError instanceof Error ? queryError : queryError 
-    ? new Error('Failed to load cocktails') 
-    : null;
+  const { cocktails, isLoading, error } = useFilteredCocktails(type, filterValue);
 
   const SkeletonHeader = () => (
     <div className="flex items-start gap-4 mb-6 animate-pulse">
@@ -113,7 +88,7 @@ export function FilteredCocktailsPage({ type }: { type: FilterType }) {
     );
   }
 
-  return queryError && !isLoading ? (
+  return error && !isLoading ? (
     <div className="flex items-center justify-center h-[50vh]">
       <div className="card overflow-hidden w-96 bg-error bg-opacity-10 text-error">
         <div className="card-body text-center">

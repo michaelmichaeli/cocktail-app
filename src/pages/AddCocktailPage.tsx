@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { useNavigate, useBeforeUnload } from "react-router-dom";
 import { Plus, Trash2, AlertCircle, Image as ImageIcon, Type, Utensils, FileText, List, Wine, Beer, Tags as TagsIcon, Save, ChevronDown } from "lucide-react";
 import { useAddCocktail } from "../hooks/useAddCocktail";
-import { useFiltersStore } from "../store/useFiltersStore";
+import { useFiltersStore } from "../store/filters";
 import { showToast } from "../lib/toast";
 import { CustomCocktail } from "../types/cocktail";
 import { ImageUpload } from "../components/ImageUpload";
