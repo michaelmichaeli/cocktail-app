@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SearchX, AlertCircle } from "lucide-react";
-import { useCocktails } from "../hooks/useCocktails";
+import { useSearchCocktails } from "../hooks/useSearchCocktails";
 import { CocktailCard } from "../components/CocktailCard";
 import { CocktailCardSkeleton } from "../components/CocktailCardSkeleton";
 import { EmptyState } from "../components/EmptyState";
@@ -116,9 +116,9 @@ export function SearchResultsPage() {
     error, 
     deleteCustomCocktail,
     isDeletingCocktail
-  } = useCocktails(searchQuery);
+  } = useSearchCocktails(searchQuery);
 
-  const cocktails = useMemo(() => unfilteredCocktails.filter(cocktail => {
+  const cocktails = useMemo(() => unfilteredCocktails.filter((cocktail: CustomCocktail) => {
     if (currentFilters.isAlcoholic !== null && currentFilters.isAlcoholic !== undefined) {
       if (cocktail.isAlcoholic !== currentFilters.isAlcoholic) return false;
     }

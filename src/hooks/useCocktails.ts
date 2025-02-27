@@ -1,3 +1,11 @@
+/**
+ * @deprecated This hook has been split into more focused hooks:
+ * - useSearchCocktails: for search functionality
+ * - useHomePageCocktails: for homepage data
+ * - useCustomCocktails: for custom cocktails
+ * - useFiltersData: for filter-related data
+ * Please use these hooks instead.
+ */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
