@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useQuery } from '@tanstack/react-query'
 import { 
   Maximize2, 
   Trash2, 
@@ -13,43 +12,33 @@ import {
   FolderKanban,  
   Tags
 } from "lucide-react";
-import { api } from "../lib/api";
-import { storage } from "../lib/storage";
-import { useCocktails } from "../hooks/useCocktails";
+import { useRecipePage } from "../hooks/useRecipePage";
 import { showToast } from "../lib/toast";
 import { DeleteDialog } from "../components/DeleteDialog";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
-import type { Ingredient } from "../types/cocktail";
 
 export function RecipePage() {
-  const { id } = useParams()
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { deleteCustomCocktail } = useCocktails();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const { data: apiCocktail, isLoading: isLoadingApi } = useQuery({
-    queryKey: ['cocktail', id],
-    queryFn: () => api.getCocktailById(id || ''),
-    enabled: !!id
-  })
-
-  const { data: customCocktails = [] } = useQuery({
-    queryKey: ['customCocktails'],
-    queryFn: storage.getCustomCocktails
-  })
-
-  const customCocktail = customCocktails.find(c => c.id === id)
-  const isLoading = isLoadingApi && !customCocktail
+  const { 
+    cocktail,
+    isLoading,
+    isCustom,
+    deleteCustomCocktail,
+    isDeletingCocktail
+  } = useRecipePage(id);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
         <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
-    )
+    );
   }
 
-  if (!apiCocktail && !customCocktail) {
+  if (!cocktail) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
         <div className="card overflow-hidden w-96 bg-error bg-opacity-10 text-error">
@@ -59,29 +48,7 @@ export function RecipePage() {
           </div>
         </div>
       </div>
-    )
-  }
-
-const cocktail = customCocktail || {
-    id: apiCocktail?.idDrink || '',
-    name: apiCocktail?.strDrink || '',
-    instructions: apiCocktail?.strInstructions || '',
-    imageUrl: apiCocktail?.strDrinkThumb,
-    ingredients: Array.from({ length: 15 }, (_, i) => {
-      const ingredient = apiCocktail?.[`strIngredient${i + 1}` as keyof typeof apiCocktail]
-      const measure = apiCocktail?.[`strMeasure${i + 1}` as keyof typeof apiCocktail] as string || ''
-      const [amount, unitOfMeasure] = (measure || '').split(' ').filter(Boolean)
-      return ingredient ? {
-        name: ingredient as string,
-        amount: amount || '',
-        unitOfMeasure: unitOfMeasure || ''
-      } : undefined
-    }).filter((ing): ing is Ingredient => ing !== undefined),
-    tags: apiCocktail?.strTags?.split(',').map(tag => tag.trim()) || [],
-    category: apiCocktail?.strCategory || 'Unknown',
-    glass: apiCocktail?.strGlass || 'Unknown',
-    isAlcoholic: apiCocktail?.strAlcoholic?.toLowerCase().includes('alcoholic') ?? false,
-    dateModified: apiCocktail?.dateModified || new Date().toISOString()
+    );
   }
 
   return (
@@ -136,7 +103,7 @@ const cocktail = customCocktail || {
             <header className="border-b pb-6 mb-8">
               <div className="flex justify-between items-start">
                 <h1 className="text-4xl font-bold">{cocktail.name}</h1>
-                {customCocktail && (
+                {isCustom && (
                   <button
                     className="btn btn-error btn-sm gap-2"
                     onClick={() => setShowDeleteDialog(true)}
@@ -184,7 +151,7 @@ const cocktail = customCocktail || {
                       <img
                         src={`https://www.thecocktaildb.com/images/ingredients/${encodeURIComponent(ingredient.name)}-Small.png`}
                         alt={ingredient.name}
-                      className="w-12 h-12 object-cover rounded-lg shadow-md"
+                        className="w-12 h-12 object-cover rounded-lg shadow-md"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}
@@ -240,9 +207,11 @@ const cocktail = customCocktail || {
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={async () => {
-          await deleteCustomCocktail(cocktail.id);
-          showToast("Cocktail deleted successfully", "success");
-          navigate("/");
+          if (!isDeletingCocktail) {
+            await deleteCustomCocktail(cocktail.id);
+            showToast("Cocktail deleted successfully", "success");
+            navigate("/");
+          }
         }}
         title="Delete Cocktail"
         message="Are you sure you want to delete this cocktail? This action cannot be undone."

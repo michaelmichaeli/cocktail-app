@@ -1,21 +1,23 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { CocktailGrid } from "../components/CocktailGrid";
 import { useHomePageCocktails } from "../hooks/useHomePageCocktails";
-import { useCustomCocktails } from "../hooks/useCustomCocktails";
 
 export function HomePage() {
   const {
     randomCocktails,
     nonAlcoholicCocktails,
-    isLoading: isLoadingHomePage,
+    customCocktails,
+    categoryCocktails,
+    glassCocktails,
+    ingredientCocktails,
+    selectedCategory,
+    selectedGlass,
+    selectedIngredient,
+    isLoading,
     error
   } = useHomePageCocktails();
-
-  const {
-    cocktails: customCocktails,
-    isLoading: isLoadingCustom
-  } = useCustomCocktails();
 
   return (
     <div className="container mx-auto p-6 space-y-12">
@@ -43,26 +45,89 @@ export function HomePage() {
       <main className="relative z-0 space-y-16">
         <CocktailGrid
           title="My Custom Cocktails"
-          cocktails={customCocktails.slice(0, 4)}
-          isLoading={isLoadingCustom}
+          cocktails={customCocktails}
+          isLoading={isLoading}
           error={null}
           emptyMessage="You haven't created any custom cocktails yet"
         />
 
         <CocktailGrid
           title="Non-Alcoholic Cocktails"
-          cocktails={nonAlcoholicCocktails.slice(0, 4)}
-          isLoading={isLoadingHomePage}
+          cocktails={nonAlcoholicCocktails}
+          isLoading={isLoading}
           error={error}
           emptyMessage="No non-alcoholic cocktails found"
         />
+
+        {selectedCategory && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">{`Cocktails in ${selectedCategory} Category`}</h2>
+              <Link 
+                to={`/by-category?c=${encodeURIComponent(selectedCategory)}`}
+                className="link link-primary inline-flex items-center gap-1 hover:gap-2 transition-all"
+              >
+                View All <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <CocktailGrid
+              title=""
+              cocktails={categoryCocktails}
+              isLoading={isLoading}
+              error={error}
+              emptyMessage={`No cocktails found in ${selectedCategory}`}
+            />
+          </div>
+        )}
+
+        {selectedGlass && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">{`Cocktails in ${selectedGlass}`}</h2>
+              <Link 
+                to={`/by-glass?g=${encodeURIComponent(selectedGlass)}`}
+                className="link link-primary inline-flex items-center gap-1 hover:gap-2 transition-all"
+              >
+                View All <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <CocktailGrid
+              title=""
+              cocktails={glassCocktails}
+              isLoading={isLoading}
+              error={error}
+              emptyMessage={`No cocktails found in ${selectedGlass}`}
+            />
+          </div>
+        )}
+
+        {selectedIngredient && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">{`Cocktails with ${selectedIngredient}`}</h2>
+              <Link 
+                to={`/by-ingredient?i=${encodeURIComponent(selectedIngredient)}`}
+                className="link link-primary inline-flex items-center gap-1 hover:gap-2 transition-all"
+              >
+                View All <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <CocktailGrid
+              title=""
+              cocktails={ingredientCocktails}
+              isLoading={isLoading}
+              error={error}
+              emptyMessage={`No cocktails found with ${selectedIngredient}`}
+            />
+          </div>
+        )}
 
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Random Cocktails</h2>
           <CocktailGrid
             title=""
-            cocktails={randomCocktails.slice(0, 4)}
-            isLoading={isLoadingHomePage}
+            cocktails={randomCocktails}
+            isLoading={isLoading}
             error={error}
             emptyMessage="No random cocktails found"
           />

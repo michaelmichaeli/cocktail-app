@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { useFiltersStore } from "./store/useFiltersStore";
 import { HomePage } from "./pages/HomePage";
 import { AddCocktailPage } from "./pages/AddCocktailPage";
 import { RecipePage } from "./pages/RecipePage";
@@ -10,6 +12,12 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 
 function App() {
+  const { fetchFilters } = useFiltersStore();
+
+  useEffect(() => {
+    fetchFilters();
+  }, [fetchFilters]);
+
   return (
     <Router>
       <div className="min-h-screen flex flex-col">

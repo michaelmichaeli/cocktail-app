@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { useNavigate, useBeforeUnload } from "react-router-dom";
 import { Plus, Trash2, AlertCircle, Image as ImageIcon, Type, Utensils, FileText, List, Wine, Beer, Tags as TagsIcon, Save, ChevronDown } from "lucide-react";
-import { useCocktails } from "../hooks/useCocktails";
+import { useAddCocktail } from "../hooks/useAddCocktail";
 import { useFiltersStore } from "../store/useFiltersStore";
 import { showToast } from "../lib/toast";
 import { CustomCocktail } from "../types/cocktail";
@@ -12,7 +12,7 @@ import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 export function AddCocktailPage() {
   const navigate = useNavigate();
-  const { addCustomCocktail, isAddingCocktail } = useCocktails();
+  const { addCustomCocktail, isAddingCocktail } = useAddCocktail();
   const { categories, glasses, ingredients: availableIngredients, alcoholicTypes, fetchFilters, isLoading: isLoadingFilters, error: filtersError } = useFiltersStore();
 
   const [name, setName] = useState("");

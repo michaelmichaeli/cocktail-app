@@ -1,145 +1,32 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SearchX, AlertCircle } from "lucide-react";
 import { useSearchCocktails } from "../hooks/useSearchCocktails";
 import { CocktailCard } from "../components/CocktailCard";
 import { CocktailCardSkeleton } from "../components/CocktailCardSkeleton";
 import { EmptyState } from "../components/EmptyState";
-import { CustomCocktail } from "../types/cocktail";
 import { DeleteDialog } from "../components/DeleteDialog";
 import { showToast } from "../lib/toast";
 import { ScrollToTop } from "../components/ScrollToTop";
-import { FilterBar, FilterOptions } from "../components/FilterBar";
-
-const FILTER_STORAGE_KEY = 'cocktail-filters';
+import { FilterBar } from "../components/FilterBar";
+import type { CocktailWithIngredients } from "../types/cocktail";
 
 export function SearchResultsPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [cocktailToDelete, setCocktailToDelete] = useState<string | null>(null);
   const searchQuery = searchParams.get("search") || "";
 
-  useEffect(() => {
-    const hasUrlParams = 
-      searchParams.has("alcoholic") ||
-      searchParams.has("category") ||
-      searchParams.has("glass") ||
-      searchParams.has("ingredients");
-
-    if (!hasUrlParams) {
-      const stored = sessionStorage.getItem(FILTER_STORAGE_KEY);
-      if (!stored) return;
-
-      try {
-        const savedFilters = JSON.parse(stored);
-        const hasFilters = (
-          savedFilters.isAlcoholic !== null ||
-          savedFilters.category !== undefined ||
-          savedFilters.glass !== undefined ||
-          (savedFilters.tags?.length || 0) > 0
-        );
-
-        if (hasFilters) {
-          setSearchParams(current => {
-            const newParams = new URLSearchParams(current);
-            if (savedFilters.isAlcoholic !== null) {
-              newParams.set("alcoholic", String(savedFilters.isAlcoholic));
-            }
-            if (savedFilters.category) {
-              newParams.set("category", encodeURIComponent(savedFilters.category));
-            }
-            if (savedFilters.glass) {
-              newParams.set("glass", encodeURIComponent(savedFilters.glass));
-            }
-            if (savedFilters.tags?.length) {
-              newParams.set("ingredients", encodeURIComponent(savedFilters.tags.join(",")));
-            }
-            return newParams;
-          }, { replace: true });
-        }
-      } catch {
-        sessionStorage.removeItem(FILTER_STORAGE_KEY);
-      }
-    }
-  }, [searchParams, setSearchParams]);
-  
-  const getFiltersFromParams = useCallback((): FilterOptions => {
-    const isAlcoholic = searchParams.get("alcoholic");
-    const category = searchParams.get("category");
-    const glass = searchParams.get("glass");
-    const ingredients = searchParams.get("ingredients");
-
-    return {
-      isAlcoholic: isAlcoholic === null ? null : isAlcoholic === "true",
-      category: category ? decodeURIComponent(category) : undefined,
-      glass: glass ? decodeURIComponent(glass) : undefined,
-      tags: ingredients ? decodeURIComponent(ingredients).split(",").filter(Boolean) : [],
-    };
-  }, [searchParams]);
-
-  const updateUrlParams = useCallback((filters: FilterOptions) => {
-    sessionStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
-
-    setSearchParams(params => {
-      const newParams = new URLSearchParams(params);
-
-      newParams.delete("alcoholic");
-      newParams.delete("category");
-      newParams.delete("glass");
-      newParams.delete("ingredients");
-
-      if (filters.isAlcoholic !== null && filters.isAlcoholic !== undefined) {
-        newParams.set("alcoholic", String(filters.isAlcoholic));
-      }
-      if (filters.category) {
-        newParams.set("category", encodeURIComponent(filters.category));
-      }
-      if (filters.glass) {
-        newParams.set("glass", encodeURIComponent(filters.glass));
-      }
-      if (filters.tags?.length) {
-        newParams.set("ingredients", encodeURIComponent(filters.tags.join(",")));
-      }
-
-      return newParams;
-    }, { replace: true });
-  }, [setSearchParams]);
-
-  const handleFilterChange = useCallback((filters: FilterOptions) => {
-    updateUrlParams(filters);
-  }, [updateUrlParams]);
-
-  const currentFilters = useMemo(() => getFiltersFromParams(), [getFiltersFromParams]);
-
   const { 
-    cocktails: unfilteredCocktails,
+    cocktails,
     isLoading,
     error, 
     deleteCustomCocktail,
-    isDeletingCocktail
+    isDeletingCocktail,
+    currentFilters,
+    updateFilters
   } = useSearchCocktails(searchQuery);
 
-  const cocktails = useMemo(() => unfilteredCocktails.filter((cocktail: CustomCocktail) => {
-    if (currentFilters.isAlcoholic !== null && currentFilters.isAlcoholic !== undefined) {
-      if (cocktail.isAlcoholic !== currentFilters.isAlcoholic) return false;
-    }
-    
-    if (currentFilters.category) {
-      if (cocktail.category !== currentFilters.category) return false;
-    }
-    
-    if (currentFilters.glass) {
-      if (cocktail.glass !== currentFilters.glass) return false;
-    }
-    
-    if (currentFilters.tags && currentFilters.tags.length > 0) {
-      const cocktailTags = cocktail.tags || [];
-      if (!currentFilters.tags.some(tag => cocktailTags.includes(tag))) return false;
-    }
-    
-    return true;
-  }), [currentFilters, unfilteredCocktails]);
-
-  const renderCocktailCard = useCallback((cocktail: CustomCocktail) => (
+  const renderCocktailCard = useCallback((cocktail: CocktailWithIngredients) => (
     <div 
       key={cocktail.id}
       className="transition-opacity duration-300 ease-in-out opacity-100"
@@ -179,7 +66,7 @@ export function SearchResultsPage() {
 
         <FilterBar 
           initialFilters={currentFilters}
-          onFilterChange={handleFilterChange}
+          onFilterChange={updateFilters}
         />
       </header>
 
