@@ -42,24 +42,50 @@ export function HomePage() {
         <SearchInput />
       </header>
 
-      <main className="relative z-0 space-y-16">
-        <CocktailGrid
-          title="My Custom Cocktails"
-          cocktails={customCocktails}
-          isLoading={isLoading}
-          error={null}
-          emptyMessage="You haven't created any custom cocktails yet"
-        />
+      <main className="relative max-w-4xl mx-auto z-0 space-y-16">
+        {isLoading ? (
+          <div className="space-y-16">
+            <CocktailGrid
+              title="Loading..."
+              cocktails={[]}
+              isLoading={true}
+              error={null}
+              emptyMessage=""
+            />
+            <CocktailGrid
+              title="Loading..."
+              cocktails={[]}
+              isLoading={true}
+              error={null}
+              emptyMessage=""
+            />
+            <CocktailGrid
+              title="Loading..."
+              cocktails={[]}
+              isLoading={true}
+              error={null}
+              emptyMessage=""
+            />
+          </div>
+        ) : (
+          <>
+            <CocktailGrid
+              title="My Custom Cocktails"
+              cocktails={customCocktails}
+              isLoading={false}
+              error={null}
+              emptyMessage="You haven't created any custom cocktails yet"
+            />
 
-        <CocktailGrid
-          title="Non-Alcoholic Cocktails"
-          cocktails={nonAlcoholicCocktails}
-          isLoading={isLoading}
-          error={error}
-          emptyMessage="No non-alcoholic cocktails found"
-        />
+            <CocktailGrid
+              title="Non-Alcoholic Cocktails"
+              cocktails={nonAlcoholicCocktails}
+              isLoading={false}
+              error={error}
+              emptyMessage="No non-alcoholic cocktails found"
+            />
 
-        {selectedCategory && (
+            {selectedCategory && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">{`Cocktails in ${selectedCategory} Category`}</h2>
@@ -122,16 +148,18 @@ export function HomePage() {
           </div>
         )}
 
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Random Cocktails</h2>
-          <CocktailGrid
-            title=""
-            cocktails={randomCocktails}
-            isLoading={isLoading}
-            error={error}
-            emptyMessage="No random cocktails found"
-          />
-        </div>
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Random Cocktails</h2>
+              <CocktailGrid
+                title=""
+                cocktails={randomCocktails}
+                isLoading={false}
+                error={error}
+                emptyMessage="No random cocktails found"
+              />
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

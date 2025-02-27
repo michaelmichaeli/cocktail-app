@@ -70,7 +70,7 @@ export function SearchResultsPage() {
         />
       </header>
 
-      <main className="relative z-0">
+      <main className="relative max-w-4xl mx-auto z-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, index) => (
