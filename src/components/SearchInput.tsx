@@ -6,9 +6,10 @@ interface SearchInputProps {
   initialValue?: string;
   onSearch?: (query: string) => void;
   className?: string;
+  variant?: 'default' | 'navbar';
 }
 
-export function SearchInput({ initialValue = "", onSearch, className = "" }: SearchInputProps) {
+export function SearchInput({ initialValue = "", onSearch, className = "", variant = 'default' }: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(initialValue);
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export function SearchInput({ initialValue = "", onSearch, className = "" }: Sea
       if (onSearch) {
         onSearch(searchQuery);
       } else {
-        navigate(`/search?s=${encodeURIComponent(searchQuery)}`);
+        navigate(`/search?search=${encodeURIComponent(searchQuery)}`);
       }
     }
   };
@@ -30,18 +31,29 @@ export function SearchInput({ initialValue = "", onSearch, className = "" }: Sea
   return (
     <form 
       onSubmit={handleSubmit} 
-      className={`relative flex items-center ${className}`}
+      className={`flex items-center ${className}`}
     >
-      <Search className="absolute left-3 top-3.5 h-5 w-5 text-base-content/50" />
-      <input
-        ref={inputRef}
-        type="search"
-        name="search"
-        placeholder="Search cocktails..."
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        className="input input-bordered w-full pl-10 pr-10 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
-      />
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50" />
+        <input
+          ref={inputRef}
+          type="search"
+          name="search"
+          placeholder="Search cocktails..."
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          className={`input input-bordered w-full pl-9 pr-3 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 ${
+            variant === 'navbar' ? 'input-sm h-9' : ''
+          }`}
+        />
+      </div>
+      <button 
+        type="submit"
+        className={`btn btn-primary ml-2 ${variant === 'navbar' ? 'h-9 min-h-0 px-3' : ''}`}
+      >
+        <Search className="h-4 w-4" />
+        <span className="sr-only">Search</span>
+      </button>
     </form>
   );
 }
