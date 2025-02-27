@@ -1,4 +1,5 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useCocktails } from "../hooks/useCocktails";
 import { CocktailGrid } from "../components/CocktailGrid";
 import { SearchInput } from "../components/SearchInput";
@@ -27,8 +28,8 @@ export function HomePage() {
 		selectedGlass,
 	} = useCocktails("");
 
-	return (
-		<div className="container mx-auto p-6 space-y-12">
+  return (
+    <div className="container mx-auto p-6 space-y-12">
 			<header className="relative max-w-xl mx-auto z-10 space-y-6">
 				<div className="text-center">
 					<h1 className="text-3xl font-bold mb-3">Welcome to Cocktail App</h1>
@@ -67,37 +68,79 @@ export function HomePage() {
 					emptyMessage="No non-alcoholic cocktails found"
 				/>
 
-				<CocktailGrid
-					title={`Cocktails in ${selectedCategory} Category`}
-					cocktails={categoryCocktails.slice(0, 4)}
-					isLoading={isLoadingCategory}
-					error={categoryError}
-					emptyMessage={`No cocktails found in ${selectedCategory}`}
-				/>
+          {selectedCategory && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">{`Cocktails in ${selectedCategory} Category`}</h2>
+                <Link 
+                  to={`/by-category?c=${encodeURIComponent(selectedCategory)}`}
+                  className="link link-primary inline-flex items-center gap-1 hover:gap-2 transition-all"
+                >
+                  View All <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <CocktailGrid
+                title=""
+                cocktails={categoryCocktails.slice(0, 4)}
+                isLoading={isLoadingCategory}
+                error={categoryError}
+                emptyMessage={`No cocktails found in ${selectedCategory}`}
+              />
+            </div>
+          )}
 
-				<CocktailGrid
-					title={`Cocktails in ${selectedGlass}`}
-					cocktails={glassCocktails.slice(0, 4)}
-					isLoading={isLoadingGlass}
-					error={glassError}
-					emptyMessage={`No cocktails found in ${selectedGlass}`}
-				/>
+          {selectedGlass && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">{`Cocktails in ${selectedGlass}`}</h2>
+                <Link 
+                  to={`/by-glass?g=${encodeURIComponent(selectedGlass)}`}
+                  className="link link-primary inline-flex items-center gap-1 hover:gap-2 transition-all"
+                >
+                  View All <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <CocktailGrid
+                title=""
+                cocktails={glassCocktails.slice(0, 4)}
+                isLoading={isLoadingGlass}
+                error={glassError}
+                emptyMessage={`No cocktails found in ${selectedGlass}`}
+              />
+            </div>
+          )}
 
-				<CocktailGrid
-					title={`Cocktails with ${selectedIngredient} Ingredient`}
-					cocktails={ingredientCocktails.slice(0, 4)}
-					isLoading={isLoadingIngredient}
-					error={ingredientError}
-					emptyMessage={`No cocktails found with ${selectedIngredient}`}
-				/>
+          {selectedIngredient && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">{`Cocktails with ${selectedIngredient}`}</h2>
+                <Link 
+                  to={`/by-ingredient?i=${encodeURIComponent(selectedIngredient)}`}
+                  className="link link-primary inline-flex items-center gap-1 hover:gap-2 transition-all"
+                >
+                  View All <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <CocktailGrid
+                title=""
+                cocktails={ingredientCocktails.slice(0, 4)}
+                isLoading={isLoadingIngredient}
+                error={ingredientError}
+                emptyMessage={`No cocktails found with ${selectedIngredient}`}
+              />
+            </div>
+          )}
 
-				<CocktailGrid
-					title={"Random Cocktails"}
-					cocktails={randomSuggestions.slice(0, 4)}
-					isLoading={isLoadingRandomSuggestions}
-					error={randomError}
-					emptyMessage={`No cocktails found with ${selectedIngredient}`}
-				/>
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Random Cocktails</h2>
+            <CocktailGrid
+              title=""
+              cocktails={randomSuggestions.slice(0, 4)}
+              isLoading={isLoadingRandomSuggestions}
+              error={randomError}
+              emptyMessage="No random cocktails found"
+            />
+          </div>
 			</main>
 		</div>
 	);

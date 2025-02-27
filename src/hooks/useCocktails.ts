@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { storage } from "../lib/storage";
 import { showToast } from "../lib/toast";
@@ -47,8 +48,13 @@ const formatApiCocktail = (c: Cocktail): CocktailWithIngredients => {
   };
 };
 
-export function useCocktails(searchQuery: string = "") {
+export function useCocktails(initialSearchQuery: string = "") {
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || initialSearchQuery;
+  const categoryParam = searchParams.get('c');
+  const glassParam = searchParams.get('g');
+  const ingredientParam = searchParams.get('i');
 
   const { data: apiCocktails = [], isLoading: isLoadingApi, error: apiError } = useQuery({
     queryKey: ["cocktails", searchQuery],
@@ -97,21 +103,40 @@ export function useCocktails(searchQuery: string = "") {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const [selectedCategory, setSelectedCategory] = useState<string>();
-  const [selectedGlass, setSelectedGlass] = useState<string>();
-  const [selectedIngredient, setSelectedIngredient] = useState<string>();
+
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(categoryParam || undefined);
+  const [selectedGlass, setSelectedGlass] = useState<string | undefined>(glassParam || undefined);
+  const [selectedIngredient, setSelectedIngredient] = useState<string | undefined>(ingredientParam || undefined);
 
   useEffect(() => {
-    if (categories.length && !selectedCategory) {
-      setSelectedCategory(getRandomItem(categories));
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (selectedCategory) params.set('c', selectedCategory);
+    if (selectedGlass) params.set('g', selectedGlass);
+    if (selectedIngredient) params.set('i', selectedIngredient);
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, selectedCategory, selectedGlass, selectedIngredient]);
+
+  useEffect(() => {
+    if (categoryParam) setSelectedCategory(categoryParam);
+    if (glassParam) setSelectedGlass(glassParam);
+    if (ingredientParam) setSelectedIngredient(ingredientParam);
+  }, [categoryParam, glassParam, ingredientParam]);
+
+  useEffect(() => {
+    const hasNoFilters = !categoryParam && !glassParam && !ingredientParam && !searchQuery;
+    if (hasNoFilters) {
+      if (categories.length && !selectedCategory) {
+        setSelectedCategory(getRandomItem(categories));
+      }
+      if (glasses.length && !selectedGlass) {
+        setSelectedGlass(getRandomItem(glasses));
+      }
+      if (ingredients.length && !selectedIngredient) {
+        setSelectedIngredient(getRandomItem(ingredients));
+      }
     }
-    if (glasses.length && !selectedGlass) {
-      setSelectedGlass(getRandomItem(glasses));
-    }
-    if (ingredients.length && !selectedIngredient) {
-      setSelectedIngredient(getRandomItem(ingredients));
-    }
-  }, [categories, glasses, ingredients, selectedCategory, selectedGlass, selectedIngredient]);
+  }, [categories, glasses, ingredients, categoryParam, glassParam, ingredientParam, searchQuery]);
 
   const { data: nonAlcoholicCocktails = [], isLoading: isLoadingNonAlcoholic, error: nonAlcoholicError } = useQuery({
     queryKey: ["nonAlcoholicCocktails"],
@@ -129,7 +154,8 @@ export function useCocktails(searchQuery: string = "") {
     queryFn: async () => {
       if (!selectedCategory) return [];
       const result = await api.getCocktailsByCategory(selectedCategory);
-      return result.length ? getRandomItems(result, 4) : [];
+      // Only limit results on homepage
+      return categoryParam ? result : getRandomItems(result, 4);
     },
     enabled: !!selectedCategory,
     staleTime: 60 * 60 * 1000,
@@ -142,7 +168,7 @@ export function useCocktails(searchQuery: string = "") {
     queryFn: async () => {
       if (!selectedGlass) return [];
       const result = await api.getCocktailsByGlass(selectedGlass);
-      return result.length ? getRandomItems(result, 4) : [];
+      return glassParam ? result : getRandomItems(result, 4);
     },
     enabled: !!selectedGlass,
     staleTime: 60 * 60 * 1000,
@@ -155,7 +181,7 @@ export function useCocktails(searchQuery: string = "") {
     queryFn: async () => {
       if (!selectedIngredient) return [];
       const result = await api.getCocktailsByIngredient(selectedIngredient);
-      return result.length ? getRandomItems(result, 4) : [];
+      return ingredientParam ? result : getRandomItems(result, 4);
     },
     enabled: !!selectedIngredient,
     staleTime: 60 * 60 * 1000,

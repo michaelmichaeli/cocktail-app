@@ -13,8 +13,8 @@ export function Navbar() {
             to="/" 
             className="flex items-center space-x-2 transition-transform duration-200 hover:scale-105 group"
           >
-            <Wine className="h-6 w-6 text-primary" />
-            <span className="font-semibold text-lg text-primary">
+            <Wine className="h-6 w-6 text-accent" />
+            <span className="font-semibold text-lg text-accent">
               Cocktail App
             </span>
           </Link>
@@ -23,7 +23,7 @@ export function Navbar() {
         {!isAddPage && (
           <Link 
             to="/add"
-            className="btn btn-primary gap-2"
+            className="btn btn-secondary gap-2"
           >
             <PlusCircle className="h-4 w-4" />
             Add Cocktail
