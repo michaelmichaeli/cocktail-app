@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/api";
+import { cocktailsApi } from "../api/cocktails";
 import { storage } from "../lib/storage";
 import { showToast } from "../lib/toast";
 import type { Ingredient } from "../types/cocktail";
@@ -9,7 +9,7 @@ export function useRecipePage(id: string | undefined) {
 
   const { data: apiCocktail, isLoading: isLoadingApi } = useQuery({
     queryKey: ['cocktail', id],
-    queryFn: () => api.getCocktailById(id || ''),
+    queryFn: () => cocktailsApi.getCocktailById(id || ''),
     enabled: !!id
   });
 

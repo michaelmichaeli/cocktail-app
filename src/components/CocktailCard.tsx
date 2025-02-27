@@ -1,18 +1,18 @@
 import { Link } from "react-router-dom";
 import {
-  Trash2,
-  Wine,
-  GlassWater,
-  Tags,
-  CupSoda,
-  FolderKanban,
-  Star,
+	Trash2,
+	Wine,
+	GlassWater,
+	Tags,
+	CupSoda,
+	FolderKanban,
+	Star,
 } from "lucide-react";
 import type { CocktailWithIngredients } from "../types/cocktail";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 interface CocktailCardProps {
-  cocktail: CocktailWithIngredients;
+	cocktail: CocktailWithIngredients;
 	onDelete?: (id: string) => void;
 	className?: string;
 }
@@ -39,13 +39,13 @@ export function CocktailCard({
 			<div className="card-body p-0">
 				<div className="p-6 pb-2">
 					<h3 className="card-title">{cocktail.name}</h3>
-<div className="flex flex-wrap gap-2 mt-2">
-{cocktail.isCustom && (
-  <span className="badge badge-warning badge-sm gap-1">
-    <Star className="h-3 w-3" />
-    Custom
-  </span>
-)}
+					<div className="flex flex-wrap gap-2 mt-2">
+						{cocktail.isCustom && (
+							<span className="badge badge-warning badge-sm gap-1">
+								<Star className="h-3 w-3" />
+								Custom
+							</span>
+						)}
 						{cocktail.isAlcoholic !== undefined && (
 							<span
 								className={`badge ${

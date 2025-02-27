@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { SearchX, AlertCircle } from "lucide-react";
+import { SearchX } from "lucide-react";
 import { useSearchCocktails } from "../hooks/useSearchCocktails";
 import { CocktailCard } from "../components/CocktailCard";
 import { CocktailCardSkeleton } from "../components/CocktailCardSkeleton";
@@ -9,6 +9,7 @@ import { DeleteDialog } from "../components/DeleteDialog";
 import { showToast } from "../lib/toast";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { FilterBar } from "../components/FilterBar";
+import { ErrorState } from "../components/ErrorState";
 import type { CocktailWithIngredients } from "../types/cocktail";
 
 export function SearchResultsPage() {
@@ -40,13 +41,10 @@ export function SearchResultsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-6">
-        <EmptyState
-          icon={<AlertCircle className="h-12 w-12 text-error" />}
-          title="Something went wrong"
-          message="Failed to load cocktails. Please try again later."
-        />
-      </div>
+      <ErrorState
+        title="Something went wrong"
+        message="Failed to load cocktails. Please try again later."
+      />
     );
   }
 
@@ -71,15 +69,17 @@ export function SearchResultsPage() {
       </header>
 
       <main className="relative max-w-4xl mx-auto z-0">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {isLoading ? (
-            Array.from({ length: 8 }).map((_, index) => (
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, index) => (
               <CocktailCardSkeleton key={index} />
-            ))
-          ) : cocktails.map(cocktail => renderCocktailCard(cocktail))}
-        </div>
-
-        {!isLoading && cocktails.length === 0 && (
+            ))}
+          </div>
+        ) : cocktails.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {cocktails.map(cocktail => renderCocktailCard(cocktail))}
+          </div>
+        ) : (
           <EmptyState
             icon={<SearchX className="h-12 w-12 text-base-content/20" />}
             title="No Results Found"

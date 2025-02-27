@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "../lib/api";
+import { cocktailsApi } from "../api/cocktails";
 import { useFiltersStore } from "../store/filters";
 import { useCustomCocktails } from "./useCustomCocktails";
 import { formatApiCocktail, getRandomItem, getRandomItems } from "../lib/utils";
@@ -29,7 +29,7 @@ export function useHomePageCocktails() {
     queryFn: async () => {
       const cocktails = [];
       for (let i = 0; i < 4; i++) {
-        const result = await api.getRandomCocktail();
+        const result = await cocktailsApi.getRandomCocktail();
         if (result) cocktails.push(formatApiCocktail(result));
       }
       return cocktails;
@@ -42,7 +42,7 @@ export function useHomePageCocktails() {
   const { data: nonAlcoholicCocktails = [], isLoading: isLoadingNonAlcoholic } = useQuery({
     queryKey: ["nonAlcoholicCocktails"],
     queryFn: async () => {
-      const result = await api.getNonAlcoholicCocktails();
+      const result = await cocktailsApi.getNonAlcoholicCocktails();
       return getRandomItems(result, 4).map(formatApiCocktail);
     },
     staleTime: 60 * 60 * 1000,
@@ -52,7 +52,7 @@ export function useHomePageCocktails() {
     queryKey: ["categoryCocktails", selectedCategory],
     queryFn: async () => {
       if (!selectedCategory) return [];
-      const result = await api.getCocktailsByCategory(selectedCategory);
+      const result = await cocktailsApi.getCocktailsByCategory(selectedCategory);
       return getRandomItems(result, 4).map(formatApiCocktail);
     },
     enabled: !!selectedCategory,
@@ -63,7 +63,7 @@ export function useHomePageCocktails() {
     queryKey: ["glassCocktails", selectedGlass],
     queryFn: async () => {
       if (!selectedGlass) return [];
-      const result = await api.getCocktailsByGlass(selectedGlass);
+      const result = await cocktailsApi.getCocktailsByGlass(selectedGlass);
       return getRandomItems(result, 4).map(formatApiCocktail);
     },
     enabled: !!selectedGlass,
@@ -74,7 +74,7 @@ export function useHomePageCocktails() {
     queryKey: ["ingredientCocktails", selectedIngredient],
     queryFn: async () => {
       if (!selectedIngredient) return [];
-      const result = await api.getCocktailsByIngredient(selectedIngredient);
+      const result = await cocktailsApi.getCocktailsByIngredient(selectedIngredient);
       return getRandomItems(result, 4).map(formatApiCocktail);
     },
     enabled: !!selectedIngredient,

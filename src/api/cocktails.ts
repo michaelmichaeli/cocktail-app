@@ -11,7 +11,7 @@ class ApiError extends Error {
   }
 }
 
-export const api = {
+export const cocktailsApi = {
   async searchCocktails(query: string, signal?: AbortSignal): Promise<Cocktail[]> {
     try {
       const response = await axios.get<CocktailApiResponse>(

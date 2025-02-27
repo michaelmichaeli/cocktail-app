@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "../lib/api";
+import { cocktailsApi } from "../api/cocktails";
 import { useCustomCocktails } from "./useCustomCocktails";
 import { Cocktail, CocktailWithIngredients } from "../types/cocktail";
 
@@ -12,19 +12,19 @@ interface FilterConfig {
 
 const filterConfigs: Record<FilterType, FilterConfig> = {
   ingredient: {
-    fetch: api.getCocktailsByIngredient,
+    fetch: cocktailsApi.getCocktailsByIngredient,
     matchCustom: (cocktail, value) => 
       cocktail.ingredients.some(ing => 
         ing.name.toLowerCase().includes(value.toLowerCase())
       )
   },
   glass: {
-    fetch: api.getCocktailsByGlass,
+    fetch: cocktailsApi.getCocktailsByGlass,
     matchCustom: (cocktail, value) => 
       (cocktail.glass?.toLowerCase() || '') === value.toLowerCase()
   },
   category: {
-    fetch: api.getCocktailsByCategory,
+    fetch: cocktailsApi.getCocktailsByCategory,
     matchCustom: (cocktail, value) => 
       (cocktail.category?.toLowerCase() || '') === value.toLowerCase()
   }
@@ -32,7 +32,6 @@ const filterConfigs: Record<FilterType, FilterConfig> = {
 
 const mapApiCocktailToCommon = (c: Cocktail): CocktailWithIngredients => {
   const ingredients = [];
-  // API provides up to 15 ingredients
   for (let i = 1; i <= 15; i++) {
     const name = c[`strIngredient${i}`];
     const amount = c[`strMeasure${i}`];
@@ -40,7 +39,7 @@ const mapApiCocktailToCommon = (c: Cocktail): CocktailWithIngredients => {
       ingredients.push({
         name,
         amount: amount || '',
-        unitOfMeasure: ''  // API doesn't separate unit from amount
+        unitOfMeasure: ''
       });
     }
   }
@@ -78,7 +77,6 @@ export function useFilteredCocktails(type: FilterType, filterValue: string) {
       )
     : [];
 
-  // Always show custom cocktails first
   const mergedCocktails = [...filteredCustomCocktails, ...apiCocktails];
 
   return {

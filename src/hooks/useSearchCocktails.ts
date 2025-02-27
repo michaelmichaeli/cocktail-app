@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { api } from "../lib/api";
+import { cocktailsApi } from "../api/cocktails";
 import { storage } from "../lib/storage";
 import { formatApiCocktail } from "../lib/utils";
 import { showToast } from "../lib/toast";
@@ -14,7 +14,7 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
   const searchQuery = searchParams.get('search') || initialSearchQuery;
   const { data: apiCocktails = [], isLoading: isLoadingApi, error: apiError } = useQuery({
     queryKey: ["cocktails", searchQuery],
-    queryFn: () => api.searchCocktails(searchQuery),
+    queryFn: () => cocktailsApi.searchCocktails(searchQuery),
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
@@ -47,7 +47,6 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
     }
   });
 
-  // Filter handling
   const getFiltersFromParams = useCallback((): FilterOptions => {
     const isAlcoholic = searchParams.get("alcoholic");
     const category = searchParams.get("category");
@@ -64,7 +63,6 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
 
   const currentFilters = useMemo(() => getFiltersFromParams(), [getFiltersFromParams]);
 
-  // Load saved filters
   useEffect(() => {
     const hasUrlParams = 
       searchParams.has("alcoholic") ||
@@ -137,7 +135,6 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
     }, { replace: true });
   }, [setSearchParams]);
 
-  // Filter cocktails based on current filters
   const filteredCocktails = useMemo(() => cocktails.filter(cocktail => {
     if (currentFilters.isAlcoholic !== null && currentFilters.isAlcoholic !== undefined) {
       if (cocktail.isAlcoholic !== currentFilters.isAlcoholic) return false;

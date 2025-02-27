@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { type StateCreator } from 'zustand'
-import { api } from '../lib/api'
+import { cocktailsApi } from '../api/cocktails'
 import type { Filters } from '../types/filters'
 
 type State = Filters & {
@@ -19,10 +19,10 @@ const createStore: StateCreator<State> = (set) => ({
     set({ isLoading: true, error: null })
     try {
       const [categories, glasses, ingredients, alcoholicTypes] = await Promise.all([
-        api.getCategories(),
-        api.getGlasses(),
-        api.getIngredients(),
-        api.getAlcoholicTypes()
+        cocktailsApi.getCategories(),
+        cocktailsApi.getGlasses(),
+        cocktailsApi.getIngredients(),
+        cocktailsApi.getAlcoholicTypes()
       ])
 
       set({
