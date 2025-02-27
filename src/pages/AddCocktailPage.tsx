@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useBeforeUnload } from "react-router-dom";
 import { Plus, Trash2, AlertCircle, Image as ImageIcon, Type, Utensils, FileText, List, Wine, Beer, Tags as TagsIcon, Save, ChevronDown } from "lucide-react";
 import { useAddCocktail } from "../hooks/useAddCocktail";
 import { useFiltersStore } from "../store/filters";
 import { showToast } from "../lib/toast";
 import { CustomCocktail } from "../types/cocktail";
+import { CocktailFormData, cocktailFormSchema } from "../lib/schemas";
 import { ImageUpload } from "../components/ImageUpload";
 import { DeleteDialog } from "../components/DeleteDialog";
 import { TagInput } from "../components/TagInput";
@@ -15,42 +18,49 @@ export function AddCocktailPage() {
   const { addCustomCocktail, isAddingCocktail } = useAddCocktail();
   const { categories, glasses, ingredients: availableIngredients, alcoholicTypes, fetchFilters, isLoading: isLoadingFilters, error: filtersError } = useFiltersStore();
 
-  const [name, setName] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [ingredients, setIngredients] = useState<Array<{ name: string; amount: string; unitOfMeasure: string }>>([
-    { name: "", amount: "", unitOfMeasure: "" }
-  ]);
-  const [tags, setTags] = useState<string[]>([]);
-  const [category, setCategory] = useState("");
-  const [glass, setGlass] = useState("");
-  const [isAlcoholic, setIsAlcoholic] = useState("");
-  const [error, setError] = useState("");
-  const [errorField, setErrorField] = useState<"name" | "ingredients" | "instructions" | "category" | "glass" | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const {
+    getValues,
+    register,
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isDirty },
+    setValue,
+    setError: setFormError,
+  } = useForm<CocktailFormData>({
+    resolver: zodResolver(cocktailFormSchema),
+    defaultValues: {
+      ingredients: [{ name: "", amount: "", unitOfMeasure: "" }],
+      tags: [],
+      imageFile: null
+    }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "ingredients"
+  });
 
   useEffect(() => {
     fetchFilters();
   }, [fetchFilters]);
 
-  const hasUnsavedChanges = useCallback(() => {
-    return (
-      name.trim() !== "" ||
-      instructions.trim() !== "" ||
-      ingredients.some(
-        (i) =>
-          i.name.trim() !== "" ||
-          i.amount.trim() !== "" ||
-          i.unitOfMeasure.trim() !== ""
-      ) ||
-      imageFile !== null
-    );
-  }, [name, instructions, ingredients, imageFile]);
+  const [showDialog, setShowDialog] = useState(false);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsDirty(hasUnsavedChanges());
-  }, [name, instructions, ingredients, imageFile, hasUnsavedChanges]);
+    const handleBeforeNavigate = (event: Event) => {
+      if (isDirty) {
+        const e = event as PopStateEvent;
+        e.preventDefault();
+        setPendingPath(window.location.pathname);
+        setShowDialog(true);
+      }
+    };
+
+    window.addEventListener("popstate", handleBeforeNavigate);
+    return () => window.removeEventListener("popstate", handleBeforeNavigate);
+  }, [isDirty]);
 
   useBeforeUnload(
     useCallback(
@@ -64,54 +74,26 @@ export function AddCocktailPage() {
     )
   );
 
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const ingredientInputRef = useRef<HTMLSelectElement>(null);
-  const instructionsInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setErrorField(null);
-
-    if (!name.trim()) {
-      setError("Name is required");
-      setErrorField("name");
-      nameInputRef.current?.focus();
-      return;
-    }
-
-    if (!instructions.trim()) {
-      setError("Instructions are required");
-      setErrorField("instructions");
-      instructionsInputRef.current?.focus();
-      return;
-    }
-
-    const validIngredients = ingredients
+  const onSubmit = async (data: CocktailFormData) => {
+    const validIngredients = data.ingredients
       .filter((i) => i.name.trim())
       .map((i) => ({
         name: i.name.trim(),
-        amount: i.amount.trim(),
-        unitOfMeasure: i.unitOfMeasure.trim(),
+        amount: i.amount?.trim() || "",
+        unitOfMeasure: i.unitOfMeasure?.trim() || "",
       }));
 
-    if (validIngredients.length === 0) {
-      setError("At least one ingredient is required");
-      setErrorField("ingredients");
-      ingredientInputRef.current?.focus();
-      return;
-    }
-
     const newCocktail: Omit<CustomCocktail, "id"> = {
-      name: name.trim(),
-      instructions: instructions.trim(),
+      name: data.name.trim(),
+      instructions: data.instructions.trim(),
       ingredients: validIngredients,
-      imageFile: imageFile || undefined,
-      imageUrl: imageFile ? undefined : DEFAULT_COCKTAIL_IMAGE,
-      tags,
-      category: category || "Other/Unknown",
-      glass: glass || "Other/Unknown",
-      isAlcoholic: isAlcoholic === "Yes",
+      imageFile: data.imageFile || undefined,
+      imageUrl: data.imageFile ? undefined : DEFAULT_COCKTAIL_IMAGE,
+      tags: data.tags,
+      category: data.category || "Other/Unknown",
+      glass: data.glass || "Other/Unknown",
+      isAlcoholic: data.isAlcoholic === "Yes",
       dateModified: new Date().toISOString()
     };
 
@@ -121,26 +103,8 @@ export function AddCocktailPage() {
       navigate(`/recipe/${savedCocktail.id}`);
     } catch (err) {
       console.error(err);
-      setError("Failed to save cocktail");
+      setFormError("root", { message: "Failed to save cocktail" });
     }
-  };
-
-  const handleAddIngredient = () => {
-    setIngredients([...ingredients, { name: "", amount: "", unitOfMeasure: "" }]);
-  };
-
-  const handleRemoveIngredient = (index: number) => {
-    setIngredients(ingredients.filter((_, i) => i !== index));
-  };
-
-  const handleIngredientChange = (
-    index: number,
-    field: "name" | "amount" | "unitOfMeasure",
-    value: string
-  ) => {
-    const newIngredients = [...ingredients];
-    newIngredients[index] = { ...newIngredients[index], [field]: value };
-    setIngredients(newIngredients);
   };
 
   const ErrorMessage = ({ message }: { message: string }) => (
@@ -178,7 +142,8 @@ export function AddCocktailPage() {
             <h2 className="card-title text-2xl mb-6">Add New Cocktail</h2>
 
             <div>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              {errors.root && <ErrorMessage message={errors.root.message || ""} />}
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text flex items-center gap-2">
@@ -187,8 +152,8 @@ export function AddCocktailPage() {
                     </span>
                   </label>
                   <ImageUpload
-                    onImageSelect={(file) => setImageFile(file)}
-                    onImageClear={() => setImageFile(null)}
+                    onImageSelect={(file) => setValue("imageFile", file)}
+                    onImageClear={() => setValue("imageFile", null)}
                   />
                 </div>
 
@@ -202,18 +167,11 @@ export function AddCocktailPage() {
                   <div>
                     <input
                       type="text"
-                      ref={nameInputRef}
                       id="name"
-                      className={`input input-bordered w-full ${errorField === "name" ? "input-error" : ""}`}
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        setError("");
-                        setErrorField(null);
-                      }}
-                      required
+                      className={`input input-bordered w-full ${errors.name ? "input-error" : ""}`}
+                      {...register("name")}
                     />
-                    {errorField === "name" && <ErrorMessage message={error} />}
+                    {errors.name && <ErrorMessage message={errors.name.message || ""} />}
                   </div>
                 </div>
 
@@ -224,21 +182,15 @@ export function AddCocktailPage() {
                       Ingredients
                     </span>
                   </label>
-                  {errorField === "ingredients" && <ErrorMessage message={error} />}
+                  {errors.ingredients && <ErrorMessage message={errors.ingredients.message || ""} />}
                   <div>
-                    {ingredients.map((ingredient, index) => (
+                    {fields.map((field, index) => (
                       <div key={index}>
                         <div className="flex flex-wrap gap-3">
                           <div className="relative flex-1">
                             <select
-                              ref={index === 0 ? ingredientInputRef : undefined}
-                              className={`select select-bordered w-full appearance-none ${errorField === "ingredients" ? "select-error" : ""}`}
-                              value={ingredient.name}
-                              onChange={(e) => {
-                                handleIngredientChange(index, "name", e.target.value);
-                                setError("");
-                                setErrorField(null);
-                              }}
+                              className={`select select-bordered w-full appearance-none ${errors.ingredients?.[index]?.name ? "select-error" : ""}`}
+                              {...register(`ingredients.${index}.name`)}
                             >
                               <option value="">Select ingredient</option>
                               {availableIngredients.map((ing) => (
@@ -250,36 +202,26 @@ export function AddCocktailPage() {
                           <input
                             type="text"
                             placeholder="Amount"
-                            className={`input input-bordered flex-1 sm:w-28 ${errorField === "ingredients" ? "input-error" : ""}`}
-                            value={ingredient.amount}
-                            onChange={(e) => {
-                              handleIngredientChange(index, "amount", e.target.value);
-                              setError("");
-                              setErrorField(null);
-                            }}
+                            className={`input input-bordered flex-1 sm:w-28 ${errors.ingredients?.[index]?.amount ? "input-error" : ""}`}
+                            {...register(`ingredients.${index}.amount`)}
                           />
                           <input
                             type="text"
                             placeholder="Unit"
-                            className={`input input-bordered flex-1 sm:w-28 ${errorField === "ingredients" ? "input-error" : ""}`}
-                            value={ingredient.unitOfMeasure}
-                            onChange={(e) => {
-                              handleIngredientChange(index, "unitOfMeasure", e.target.value);
-                              setError("");
-                              setErrorField(null);
-                            }}
+                            className={`input input-bordered flex-1 sm:w-28 ${errors.ingredients?.[index]?.unitOfMeasure ? "input-error" : ""}`}
+                            {...register(`ingredients.${index}.unitOfMeasure`)}
                           />
-                          {ingredients.length > 1 && (
+                          {fields.length > 1 && (
                             <button
                               type="button"
                               className="btn btn-ghost btn-square hover:bg-base-200 transition-colors duration-200"
-                              onClick={() => handleRemoveIngredient(index)}
+                              onClick={() => remove(index)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
                           )}
                         </div>
-                        {index < ingredients.length - 1 && (
+                        {index < fields.length - 1 && (
                           <div className="my-3 border-b border-base-300" />
                         )}
                       </div>
@@ -288,7 +230,7 @@ export function AddCocktailPage() {
                   <button
                     type="button"
                     className="btn btn-ghost mt-2 gap-2 hover:bg-base-200 transition-all duration-200 group"
-                    onClick={handleAddIngredient}
+                    onClick={() => append({ name: "", amount: "", unitOfMeasure: "" })}
                   >
                     <Plus className="h-4 w-4 transition-transform group-hover:rotate-180" />
                     Add Ingredient
@@ -304,18 +246,11 @@ export function AddCocktailPage() {
                   </label>
                   <div>
                     <textarea
-                      ref={instructionsInputRef}
                       id="instructions"
-                      className={`textarea textarea-bordered h-36 w-full ${errorField === "instructions" ? "textarea-error" : ""}`}
-                      value={instructions}
-                      onChange={(e) => {
-                        setInstructions(e.target.value);
-                        setError("");
-                        setErrorField(null);
-                      }}
-                      required
+                      className={`textarea textarea-bordered h-36 w-full ${errors.instructions ? "textarea-error" : ""}`}
+                      {...register("instructions")}
                     />
-                    {errorField === "instructions" && <ErrorMessage message={error} />}
+                    {errors.instructions && <ErrorMessage message={errors.instructions.message || ""} />}
                   </div>
                 </div>
 
@@ -329,13 +264,8 @@ export function AddCocktailPage() {
                   <div className="relative">
                     <select
                       id="category"
-                      className={`select select-bordered w-full appearance-none ${errorField === "category" ? "select-error" : ""}`}
-                      value={category}
-                      onChange={(e) => {
-                        setCategory(e.target.value);
-                        setError("");
-                        setErrorField(null);
-                      }}
+                      className={`select select-bordered w-full appearance-none ${errors.category ? "select-error" : ""}`}
+                      {...register("category")}
                     >
                       <option value="">Select a category</option>
                       {categories.map((cat) => (
@@ -343,7 +273,7 @@ export function AddCocktailPage() {
                       ))}
                     </select>
                     <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-base-content/70" />
-                    {errorField === "category" && <ErrorMessage message={error} />}
+                    {errors.category && <ErrorMessage message={errors.category.message || ""} />}
                   </div>
                 </div>
 
@@ -357,13 +287,8 @@ export function AddCocktailPage() {
                   <div className="relative">
                     <select
                       id="glass"
-                      className={`select select-bordered w-full appearance-none ${errorField === "glass" ? "select-error" : ""}`}
-                      value={glass}
-                      onChange={(e) => {
-                        setGlass(e.target.value);
-                        setError("");
-                        setErrorField(null);
-                      }}
+                      className={`select select-bordered w-full appearance-none ${errors.glass ? "select-error" : ""}`}
+                      {...register("glass")}
                     >
                       <option value="">Select a glass type</option>
                       {glasses.map((g) => (
@@ -371,7 +296,7 @@ export function AddCocktailPage() {
                       ))}
                     </select>
                     <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-base-content/70" />
-                    {errorField === "glass" && <ErrorMessage message={error} />}
+                    {errors.glass && <ErrorMessage message={errors.glass.message || ""} />}
                   </div>
                 </div>
 
@@ -386,8 +311,7 @@ export function AddCocktailPage() {
                     <select
                       id="alcoholic"
                       className="select select-bordered w-full appearance-none"
-                      value={isAlcoholic}
-                      onChange={(e) => setIsAlcoholic(e.target.value)}
+                      {...register("isAlcoholic")}
                     >
                       <option value="">Select alcohol content</option>
                       {alcoholicTypes.map((type) => (
@@ -406,8 +330,8 @@ export function AddCocktailPage() {
                     </span>
                   </label>
                   <TagInput
-                    tags={tags}
-                    onChange={setTags}
+                    tags={watch("tags")}
+                    onChange={(newTags) => setValue("tags", newTags)}
                     placeholder="Enter a tag and press Enter or click Add Tag"
                   />
                 </div>
@@ -430,10 +354,21 @@ export function AddCocktailPage() {
 
       <DeleteDialog
         isOpen={showDialog}
-        onClose={() => setShowDialog(false)}
+        onClose={() => {
+          setShowDialog(false);
+          setPendingPath(null);
+        }}
         onConfirm={() => {
           setShowDialog(false);
-          navigate("/");
+          const imageFile = getValues("imageFile");
+          if (imageFile) {
+            URL.revokeObjectURL(URL.createObjectURL(imageFile));
+          }
+          if (pendingPath) {
+            navigate(pendingPath);
+          } else {
+            navigate("/");
+          }
         }}
         title="Unsaved Changes"
         message="You have unsaved changes. Are you sure you want to leave?"

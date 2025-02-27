@@ -39,7 +39,7 @@ export function DeleteDialog({
         </div>
       </div>
       <form method="dialog" className="modal-backdrop bg-base-100/80">
-        <button onClick={onClose}>close</button>
+        <button>close</button>
       </form>
     </dialog>
   );

@@ -35,10 +35,12 @@ export function CocktailGrid({
     deleteCustomCocktail(cocktailToDelete.id, {
       onSuccess: () => {
         toast.success('Cocktail deleted successfully');
-        setCocktailToDelete(null);
       },
       onError: () => {
         toast.error('Failed to delete cocktail');
+      },
+      onSettled: () => {
+        setCocktailToDelete(null);
       }
     });
   };
