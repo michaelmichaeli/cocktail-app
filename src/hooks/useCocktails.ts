@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { api } from "../lib/api";
 import { storage } from "../lib/storage";
 import { showToast } from "../lib/toast";
+import { getRandomItem, getRandomItems } from "../lib/utils";
 import { Cocktail, CustomCocktail, CocktailWithIngredients, Ingredient } from "../types/cocktail";
 
 const parseMeasurement = (measure: string = ""): { amount: string; unitOfMeasure: string } => {
@@ -95,15 +97,27 @@ export function useCocktails(searchQuery: string = "") {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  const randomCategory = categories[0];
-  const randomGlass = glasses[0];
-  const randomIngredient = ingredients[0];
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedGlass, setSelectedGlass] = useState<string>();
+  const [selectedIngredient, setSelectedIngredient] = useState<string>();
+
+  useEffect(() => {
+    if (categories.length && !selectedCategory) {
+      setSelectedCategory(getRandomItem(categories));
+    }
+    if (glasses.length && !selectedGlass) {
+      setSelectedGlass(getRandomItem(glasses));
+    }
+    if (ingredients.length && !selectedIngredient) {
+      setSelectedIngredient(getRandomItem(ingredients));
+    }
+  }, [categories, glasses, ingredients, selectedCategory, selectedGlass, selectedIngredient]);
 
   const { data: nonAlcoholicCocktails = [], isLoading: isLoadingNonAlcoholic, error: nonAlcoholicError } = useQuery({
     queryKey: ["nonAlcoholicCocktails"],
     queryFn: async () => {
       const result = await api.getNonAlcoholicCocktails();
-      return result;
+      return result.length ? getRandomItems(result, 4) : [];
     },
     staleTime: 60 * 60 * 1000,
     retry: 3,
@@ -111,39 +125,39 @@ export function useCocktails(searchQuery: string = "") {
   });
 
   const { data: categoryCocktails = [], isLoading: isLoadingCategory, error: categoryError } = useQuery({
-    queryKey: ["categoryCocktails", randomCategory],
+    queryKey: ["categoryCocktails", selectedCategory],
     queryFn: async () => {
-      if (!randomCategory) return [];
-      const result = await api.getCocktailsByCategory(randomCategory);
-      return result;
+      if (!selectedCategory) return [];
+      const result = await api.getCocktailsByCategory(selectedCategory);
+      return result.length ? getRandomItems(result, 4) : [];
     },
-    enabled: !!randomCategory,
+    enabled: !!selectedCategory,
     staleTime: 60 * 60 * 1000,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const { data: glassCocktails = [], isLoading: isLoadingGlass, error: glassError } = useQuery({
-    queryKey: ["glassCocktails", randomGlass],
+    queryKey: ["glassCocktails", selectedGlass],
     queryFn: async () => {
-      if (!randomGlass) return [];
-      const result = await api.getCocktailsByGlass(randomGlass);
-      return result;
+      if (!selectedGlass) return [];
+      const result = await api.getCocktailsByGlass(selectedGlass);
+      return result.length ? getRandomItems(result, 4) : [];
     },
-    enabled: !!randomGlass,
+    enabled: !!selectedGlass,
     staleTime: 60 * 60 * 1000,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const { data: ingredientCocktails = [], isLoading: isLoadingIngredient, error: ingredientError } = useQuery({
-    queryKey: ["ingredientCocktails", randomIngredient],
+    queryKey: ["ingredientCocktails", selectedIngredient],
     queryFn: async () => {
-      if (!randomIngredient) return [];
-      const result = await api.getCocktailsByIngredient(randomIngredient);
-      return result;
+      if (!selectedIngredient) return [];
+      const result = await api.getCocktailsByIngredient(selectedIngredient);
+      return result.length ? getRandomItems(result, 4) : [];
     },
-    enabled: !!randomIngredient,
+    enabled: !!selectedIngredient,
     staleTime: 60 * 60 * 1000,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
@@ -210,16 +224,16 @@ export function useCocktails(searchQuery: string = "") {
     ingredientCocktails: ingredientCocktails.map(formatApiCocktail),
     isLoadingIngredient,
     ingredientError,
-    selectedIngredient: randomIngredient,
+    selectedIngredient,
 
     categoryCocktails: categoryCocktails.map(formatApiCocktail),
     isLoadingCategory,
     categoryError,
-    selectedCategory: randomCategory,
+    selectedCategory,
 
     glassCocktails: glassCocktails.map(formatApiCocktail),
     isLoadingGlass,
     glassError,
-    selectedGlass: randomGlass,
+    selectedGlass
   };
 }

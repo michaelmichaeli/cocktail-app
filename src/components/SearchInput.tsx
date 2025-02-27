@@ -1,6 +1,6 @@
 import { FormEvent, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface SearchInputProps {
   initialValue?: string;
@@ -42,20 +42,6 @@ export function SearchInput({ initialValue = "", onSearch, className = "" }: Sea
         onChange={(e) => setInputValue(e.target.value)}
         className="input input-bordered w-full pl-10 pr-10 shadow-sm hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
       />
-      {inputValue && (
-        <button
-          type="button"
-          onClick={() => {
-            if (inputRef.current) {
-              setInputValue("");
-              inputRef.current.focus();
-            }
-          }}
-          className="absolute right-3 top-3.5 text-base-content/50 hover:text-base-content transition-colors"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      )}
     </form>
   );
 }
