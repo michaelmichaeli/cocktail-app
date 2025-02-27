@@ -1,7 +1,4 @@
-interface GridLayout {
-  columns: number;
-  getRowCount: (totalItems: number) => number;
-}
+import type { GridLayout } from '../types/grid';
 
 export const getGridLayout = (): GridLayout => {
   if (typeof window === 'undefined') {

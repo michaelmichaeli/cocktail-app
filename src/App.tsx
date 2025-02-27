@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useFiltersStore } from "./store/filters";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { HomePage } from "./pages/HomePage";
 import { AddCocktailPage } from "./pages/AddCocktailPage";
 import { RecipePage } from "./pages/RecipePage";
@@ -24,6 +25,7 @@ function App() {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1 pb-6">
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/by-ingredient" element={<IngredientPage />} />

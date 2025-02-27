@@ -13,7 +13,7 @@ export function SearchInput({ initialValue = "", onSearch, className = "", varia
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(initialValue);
   const navigate = useNavigate();
-  
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -24,6 +24,7 @@ export function SearchInput({ initialValue = "", onSearch, className = "", varia
         onSearch(searchQuery);
       } else {
         navigate(`/search?search=${encodeURIComponent(searchQuery)}`);
+        sessionStorage.removeItem('cocktail-filters');
       }
     }
   };

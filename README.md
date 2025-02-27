@@ -1,41 +1,47 @@
-# Cocktail App
+# 🍸 Cocktail App
 
-A modern cocktail recipe application built with React, Vite, and daisyUI.
+A modern cocktail recipe application for discovering and creating your own cocktail recipes.
 
-## Features
+[Screenshot to be added]
 
-- Search cocktails from an external API
-- View detailed cocktail recipes with ingredients and instructions
-- Add custom cocktails with rich details:
-  - Ingredients with amounts and units
-  - Comprehensive instructions
-  - Image upload
-  - Tags for easy categorization
-  - Alcoholic/Non-alcoholic designation
-  - Category selection
-  - Glass type specification
-  - Last modified timestamp
-- Advanced filtering capabilities:
-  - Filter by alcoholic content
-  - Filter by category
-  - Filter by glass type
-  - Filter by tags
-- Responsive design
-- Toast notifications
-- Unsaved changes warnings
-- Image preview modal
-- Dark/light theme support
+## 🚀 Live Demo
 
-## Tech Stack
+[Link to deployed app]
 
-- React + TypeScript
-- Vite
-- TailwindCSS
-- daisyUI for UI components
-- React Query for data fetching
-- React Router for navigation
+## ✨ Features
 
-## Getting Started
+- **Search & Discovery**
+  - Search from extensive cocktail database
+  - Advanced filtering system (by category, glass, ingredients)
+  - View detailed recipes with ingredients and instructions
+  - Note: API returns maximum 25 results per search query
+
+- **Custom Cocktails**
+  - Create your own cocktail recipes
+  - Add ingredients with amounts and units
+  - Upload custom images
+  - Set categories and tags
+  - Track modifications with timestamps
+
+- **Rich UI/UX**
+  - Responsive design for all devices
+  - Dark/light theme support
+  - Toast notifications with status colors
+  - Image preview modal
+  - Scroll-to-top functionality
+  - Form validation and error handling
+
+## 🛠️ Built with
+
+- [React + TypeScript](https://react.dev/) - Frontend framework
+- [Vite](https://vitejs.dev/) - Build tool
+- [TailwindCSS](https://tailwindcss.com/) - Styling
+- [daisyUI](https://daisyui.com/) - UI components
+- [React Query](https://tanstack.com/query/latest) - Data fetching
+- [React Router](https://reactrouter.com/) - Navigation
+- [Zustand](https://zustand-demo.pmnd.rs/) - State management
+
+## 🚀 Quick Start
 
 ```bash
 # Install dependencies
@@ -48,17 +54,30 @@ pnpm dev
 pnpm build
 ```
 
-## UI Components
+## 📱 Usage Guide
 
-The app uses daisyUI components for all UI elements:
+1. **Search Cocktails**
+   - Use the search bar to find cocktails
+   - Apply filters to refine results
+   - View detailed recipes with ingredients and instructions
 
-- `card` - For cocktail cards and content containers
-- `btn` - For buttons and actions
-- `input` - For text inputs
-- `textarea` - For multiline text input
-- `form-control` - For form elements
-- `modal` - For dialogs and image preview
-- `alert` - For notifications and errors
-- `navbar` - For navigation
-- `loading` - For loading states
-- `toast` - For toast notifications
+2. **Create Custom Cocktails**
+   - Click "Add Cocktail" in navigation
+   - Fill in recipe details and ingredients
+   - Upload an image (optional)
+   - Save to your collection
+
+3. **Filter & Browse**
+   - Browse by category, glass type, or ingredients
+   - Toggle alcoholic/non-alcoholic
+   - Save filters for quick access
+
+## ⚠️ Known Limitations
+
+- The external cocktail API has a limit of 25 results per search query
+- Image uploads are stored locally and may not persist across sessions
+- Custom cocktails are stored in browser localStorage
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first.
