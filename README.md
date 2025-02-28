@@ -2,7 +2,8 @@
 
 A modern cocktail recipe application for discovering and creating your own cocktail recipes.
 
-[Screenshot to be added]
+![image](https://github.com/user-attachments/assets/ac52a8b9-8af0-4da4-85d8-e0675eac0ebe)
+![image](https://github.com/user-attachments/assets/0edc662d-ae55-4304-af64-cc1f6df96ac7)
 
 ## 🚀 Live Demo
 
