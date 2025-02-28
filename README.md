@@ -6,7 +6,36 @@ A modern cocktail recipe application for discovering and creating your own cockt
 
 ## 🚀 Live Demo
 
-[Link to deployed app]
+[Live Demo](https://cocktail-ov8y78vna-michaelmichaelis-projects.vercel.app)
+
+## 📦 Deployment
+
+### Deploying to Vercel
+
+1. **GitHub Integration (Recommended)**
+   - Fork this repository
+   - Go to [Vercel](https://vercel.com)
+   - Create a new project
+   - Import your forked repository
+   - Vercel will automatically detect it as a Vite project
+   - Click "Deploy"
+
+2. **Using Vercel CLI**
+   ```bash
+   # Install Vercel CLI
+   npm i -g vercel
+
+   # Login to Vercel
+   vercel login
+
+   # Deploy to Vercel
+   vercel
+   ```
+
+The project includes a `vercel.json` configuration file that handles:
+- SPA routing (all routes redirect to index.html)
+- Build settings for Vite
+- Caching headers for optimal performance
 
 ## ✨ Features
 

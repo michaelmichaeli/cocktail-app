@@ -25,7 +25,7 @@ export function useCustomCocktails() {
     onError: (error, variables) => {
       variables.onError?.(error);
     },
-    onSettled: (_, error, variables) => {
+    onSettled: (_, __, variables) => {
       variables.onSettled?.();
     }
   });
