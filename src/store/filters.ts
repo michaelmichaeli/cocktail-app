@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { type StateCreator } from 'zustand'
 import { cocktailsApi } from '../api/cocktails'
-import type { Filters } from '../types/filters'
+import type { Filters } from '../types/features/filters'
 
 type State = Filters & {
   fetchFilters: () => Promise<void>

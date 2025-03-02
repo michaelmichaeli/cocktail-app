@@ -1,6 +1,6 @@
 import { ChangeEvent, DragEvent, useState } from 'react'
 import { Upload, X, Image as ImageIcon } from 'lucide-react'
-import { ImageUploadState } from '../types/cocktail'
+import { ImageUploadState } from '../../types/features/cocktails'
 
 interface ImageUploadProps {
   onImageSelect: (file: File) => void

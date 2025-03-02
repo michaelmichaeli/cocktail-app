@@ -1,15 +1,16 @@
+import type { BaseProps } from "../common";
+
 export interface SelectOption {
   value: string;
   label: string;
 }
 
-export interface BaseSelectProps {
+export interface BaseSelectProps extends BaseProps {
   label?: string;
   placeholder?: string;
   error?: string;
   isLoading?: boolean;
   isDisabled?: boolean;
-  className?: string;
 }
 
 export interface SingleSelectProps extends BaseSelectProps {
@@ -18,4 +19,9 @@ export interface SingleSelectProps extends BaseSelectProps {
   options: SelectOption[];
   onChange: (value: string) => void;
   required?: boolean;
+}
+
+export interface UseFormNavigationProps {
+  isDirty: boolean;
+  onSave?: () => void;
 }

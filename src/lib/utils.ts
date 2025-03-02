@@ -1,10 +1,4 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { Cocktail, CocktailWithIngredients, Ingredient } from "../types/cocktail"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+import { Cocktail, CocktailWithIngredients, Ingredient } from "../types/features/cocktails"
 
 export const generateId = (): string => {
   return Math.random().toString(36).substring(2) + Date.now().toString(36)

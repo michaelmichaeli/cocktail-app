@@ -8,7 +8,7 @@ import {
 	FolderKanban,
 	Star,
 } from "lucide-react";
-import type { CocktailWithIngredients } from "../types/cocktail";
+import type { CocktailWithIngredients } from "../types/features/cocktails";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 interface CocktailCardProps {

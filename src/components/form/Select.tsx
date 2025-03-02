@@ -1,5 +1,5 @@
 import { ChevronDown, Loader2 } from "lucide-react";
-import type { SingleSelectProps } from "../../types/form";
+import type { SingleSelectProps } from "../../types/ui/form";
 
 export function Select({
   label,

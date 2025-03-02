@@ -10,7 +10,7 @@ import { showToast } from "../lib/toast";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { FilterBar } from "../components/FilterBar";
 import { ErrorState } from "../components/ErrorState";
-import type { CocktailWithIngredients } from "../types/cocktail";
+import type { CocktailWithIngredients } from "../types/features/cocktails";
 
 export function SearchResultsPage() {
   const [searchParams] = useSearchParams();

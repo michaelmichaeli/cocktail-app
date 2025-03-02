@@ -1,4 +1,4 @@
-import type { GridLayout } from '../types/grid';
+import type { GridLayout } from '../types/ui/layout';
 
 export const getGridLayout = (): GridLayout => {
   if (typeof window === 'undefined') {

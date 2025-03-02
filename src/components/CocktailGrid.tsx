@@ -4,7 +4,7 @@ import { CocktailCard } from './CocktailCard';
 import { CocktailCardSkeleton } from './CocktailCardSkeleton';
 import { EmptyState } from './EmptyState';
 import { DeleteDialog } from './DeleteDialog';
-import { CocktailWithIngredients } from '../types/cocktail';
+import { CocktailWithIngredients } from '../types/features/cocktails';
 import { useCustomCocktails } from '../hooks/useCustomCocktails';
 import { toast } from '../lib/toast';
 

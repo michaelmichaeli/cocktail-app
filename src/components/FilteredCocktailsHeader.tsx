@@ -1,19 +1,19 @@
 import { type ReactNode } from "react";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
-interface FilterHeaderProps {
+interface FilteredCocktailsHeaderProps {
   title: string;
   filterType: "ingredient" | "glass" | "category";
   filterValue: string;
   icon: ReactNode;
 }
 
-export function FilterHeader({
+export function FilteredCocktailsHeader({
   title,
   filterType,
   filterValue,
   icon,
-}: FilterHeaderProps) {
+}: FilteredCocktailsHeaderProps) {
   return (
     <div className="flex items-start gap-4 mb-6">
       {filterType === "ingredient" ? (

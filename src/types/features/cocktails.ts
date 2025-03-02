@@ -1,3 +1,5 @@
+import type { BaseProps } from "../common";
+
 export interface Ingredient {
   name: string;
   amount: string;
@@ -49,4 +51,26 @@ export interface ImageUploadState {
 
 export interface CocktailApiResponse {
   drinks: Cocktail[] | null
+}
+
+// Component props
+
+export interface CocktailGridProps extends BaseProps {
+  cocktails: CocktailWithIngredients[];
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
+}
+
+export interface CocktailCardProps extends BaseProps {
+  cocktail: CocktailWithIngredients;
+  onDelete?: () => void;
+}
+
+export interface RecipeHeaderProps extends BaseProps {
+  name: string;
+  glass?: string;
+  category?: string;
+  isAlcoholic?: boolean;
+  imageUrl?: string;
+  lastModified?: Date;
 }

@@ -1,6 +1,7 @@
 import { FormEvent, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
+import { storage } from "../../lib/storage";
 
 interface SearchInputProps {
   initialValue?: string;
@@ -24,7 +25,7 @@ export function SearchInput({ initialValue = "", onSearch, className = "", varia
         onSearch(searchQuery);
       } else {
         navigate(`/search?search=${encodeURIComponent(searchQuery)}`);
-        sessionStorage.removeItem('cocktail-filters');
+        storage.clearCocktailFilters();
       }
     }
   };

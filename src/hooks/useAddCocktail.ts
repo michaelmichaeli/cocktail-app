@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { storage } from "../lib/storage";
 import { showToast } from "../lib/toast";
-import type { CustomCocktail } from "../types/cocktail";
+import type { CustomCocktail } from "../types/features/cocktails";
 
 export function useAddCocktail() {
   const queryClient = useQueryClient();

@@ -1,6 +1,6 @@
 import { ExternalLink, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { SearchInput } from "../components/SearchInput";
+import { SearchInput } from "../components/form/SearchInput";
 import { CocktailGrid } from "../components/CocktailGrid";
 import { useHomePageCocktails } from "../hooks/useHomePageCocktails";
 

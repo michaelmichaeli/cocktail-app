@@ -1,6 +1,7 @@
-import { Plus, Trash2, ChevronDown } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { UseFormRegister, useFieldArray, FieldArrayWithId, FieldErrors } from "react-hook-form";
-import { FormErrorMessage } from "../FormErrorMessage";
+import { FormErrorMessage } from "./FormErrorMessage";
+import { Select } from "./Select";
 import { CocktailFormData } from "../../lib/schemas";
 
 interface IngredientsFieldProps {
@@ -30,21 +31,18 @@ export function IngredientsField({
         {fields.map((field: FieldArrayWithId<CocktailFormData, "ingredients">, index: number) => (
           <div key={field.id}>
             <div className="flex flex-wrap gap-3">
-              <div className="relative flex-1">
-                <select
-                  className={`select select-bordered w-full appearance-none ${
-                    errors?.[index]?.name ? "select-error" : ""
-                  }`}
-                  {...register(`ingredients.${index}.name`)}
-                >
-                  <option value="">Select ingredient</option>
-                  {availableIngredients.map((ing) => (
-                    <option key={ing} value={ing}>
-                      {ing}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-base-content/70" />
+              <div className="flex-1">
+                <Select
+                  name={`ingredients.${index}.name`}
+                  placeholder="Select ingredient"
+                  options={availableIngredients.map(ing => ({ value: ing, label: ing }))}
+                  value={field.name}
+                  onChange={(value) => {
+                    const event = { target: { value, name: `ingredients.${index}.name` } };
+                    register(`ingredients.${index}.name`).onChange(event);
+                  }}
+                  error={errors?.[index]?.name?.message}
+                />
               </div>
               <input
                 type="text"

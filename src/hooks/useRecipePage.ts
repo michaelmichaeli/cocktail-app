@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cocktailsApi } from "../api/cocktails";
 import { storage } from "../lib/storage";
 import { showToast } from "../lib/toast";
-import type { Ingredient } from "../types/cocktail";
+import type { Ingredient } from "../types/features/cocktails";
 
 export function useRecipePage(id: string | undefined) {
   const queryClient = useQueryClient();

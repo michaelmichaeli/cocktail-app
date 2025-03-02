@@ -1,4 +1,4 @@
-import { CustomCocktail } from '../types/cocktail'
+import { CustomCocktail } from '../types/features/cocktails'
 import { generateId } from './utils'
 
 const STORAGE_KEY = 'custom_cocktails'
@@ -56,4 +56,7 @@ export const storage = {
   getCustomCocktails,
   addCustomCocktail,
   deleteCustomCocktail,
+  clearCocktailFilters: () => {
+    sessionStorage.removeItem('cocktail-filters');
+  }
 }

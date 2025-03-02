@@ -1,5 +1,5 @@
 import { UseFormRegister } from "react-hook-form";
-import { FormErrorMessage } from "../FormErrorMessage";
+import { FormErrorMessage } from "./FormErrorMessage";
 import { CocktailFormData } from "../../lib/schemas";
 
 interface TextFieldProps {

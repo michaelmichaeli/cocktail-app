@@ -6,9 +6,9 @@ import { useFilteredCocktails, FilterType } from "../hooks/useFilteredCocktails"
 import { cocktailsApi } from "../api/cocktails";
 import { CocktailGrid } from "../components/CocktailGrid";
 import { ErrorState } from "../components/ErrorState";
-import { FilterHeader } from "../components/FilterHeader";
-import { FilterHeaderSkeleton } from "../components/FilterHeaderSkeleton";
-import type { Cocktail } from "../types/cocktail";
+import { FilteredCocktailsHeader } from "../components/FilteredCocktailsHeader";
+import { FilteredCocktailsHeaderSkeleton } from "../components/FilteredCocktailsHeaderSkeleton";
+import type { Cocktail } from "../types/features/cocktails";
 
 interface FilterDetails {
   title: string;
@@ -73,9 +73,9 @@ export function FilteredCocktailsPage({ type }: { type: FilterType }) {
   return (
     <div className="container max-w-4xl mx-auto p-6 space-y-6">
       {isLoading ? (
-        <FilterHeaderSkeleton />
+        <FilteredCocktailsHeaderSkeleton />
       ) : (
-        <FilterHeader
+        <FilteredCocktailsHeader
           title={config.title}
           filterType={type}
           filterValue={filterValue}

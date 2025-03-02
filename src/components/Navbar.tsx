@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Wine, PlusCircle } from "lucide-react";
-import { SearchInput } from "./SearchInput";
+import { SearchInput } from "./form/SearchInput";
 
 export function Navbar() {
   const location = useLocation();

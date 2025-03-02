@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { cocktailsApi } from "../api/cocktails";
 import { useCustomCocktails } from "./useCustomCocktails";
-import { Cocktail, CocktailWithIngredients } from "../types/cocktail";
+import { Cocktail, CocktailWithIngredients } from "../types/features/cocktails";
 
 export type FilterType = 'ingredient' | 'glass' | 'category';
 
