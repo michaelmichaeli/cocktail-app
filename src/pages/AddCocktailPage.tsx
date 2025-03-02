@@ -12,6 +12,7 @@ import { DeleteDialog } from "../components/DeleteDialog";
 import { TagInput } from "../components/form/TagInput";
 import { TextField } from "../components/form/TextField";
 import { SelectField } from "../components/form/SelectField";
+import { AlcoholicTypeSelect } from "../components/form/AlcoholicTypeSelect";
 import { IngredientsField } from "../components/form/IngredientsField";
 import { LoadingState } from "../components/LoadingState";
 import { ErrorState } from "../components/ErrorState";
@@ -22,7 +23,7 @@ import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 export function AddCocktailPage() {
   const navigate = useNavigate();
   const { addCustomCocktail, isAddingCocktail } = useAddCocktail();
-  const { categories, glasses, ingredients: availableIngredients, alcoholicTypes, isLoading: isLoadingFilters, error: filtersError } = useFiltersStore();
+  const { categories, glasses, ingredients: availableIngredients, isLoading: isLoadingFilters, error: filtersError } = useFiltersStore();
 
   const {
     register,
@@ -73,9 +74,9 @@ export function AddCocktailPage() {
       imageFile: data.imageFile || undefined,
       imageUrl: data.imageFile ? undefined : DEFAULT_COCKTAIL_IMAGE,
       tags: data.tags,
-      category: data.category || "Other/Unknown",
-      glass: data.glass || "Other/Unknown",
-      isAlcoholic: data.isAlcoholic === "Yes",
+      category: data.category,
+      glass: data.glass,
+      alcoholicType: data.alcoholicType,
       dateModified: new Date().toISOString()
     };
 
@@ -168,15 +169,14 @@ export function AddCocktailPage() {
                   name="glass"
                 />
 
-                <SelectField
-                  id="alcoholic"
-                  label="Contains Alcohol"
+                <AlcoholicTypeSelect
+                  id="alcoholicType"
+                  label="Alcohol Content"
                   icon={<Beer className="h-4 w-4" />}
-                  options={alcoholicTypes}
                   placeholder="Select alcohol content"
-                  error={errors.isAlcoholic?.message}
+                  error={errors.alcoholicType?.message}
                   register={register}
-                  name="isAlcoholic"
+                  name="alcoholicType"
                 />
 
                 <div className="form-control">

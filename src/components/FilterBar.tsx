@@ -1,21 +1,16 @@
 import { useCallback, useMemo } from "react";
 import { Loader2, XCircle } from "lucide-react";
 import { useFiltersStore } from "../store/filters";
+import { AlcoholicType } from "../types/features/cocktails";
+import type { FilterOptions } from "../types/features/filters";
 
 interface FilterBarProps {
   initialFilters?: FilterOptions;
   onFilterChange: (filters: FilterOptions) => void;
 }
 
-export interface FilterOptions {
-  isAlcoholic?: boolean | null;
-  category?: string;
-  glass?: string;
-  tags?: string[];
-}
-
 const defaultFilters: FilterOptions = {
-  isAlcoholic: null,
+  alcoholicType: null,
   category: undefined,
   glass: undefined,
   tags: []
@@ -28,7 +23,6 @@ export function FilterBar({ initialFilters, onFilterChange }: FilterBarProps) {
     categories,
     glasses,
     ingredients,
-    alcoholicTypes,
     isLoading,
     error
   } = useFiltersStore();
@@ -45,7 +39,7 @@ export function FilterBar({ initialFilters, onFilterChange }: FilterBarProps) {
   }, [onFilterChange]);
 
   const hasActiveFilters = useMemo(() => 
-    filters.isAlcoholic !== null ||
+    filters.alcoholicType !== null ||
     filters.category !== undefined ||
     filters.glass !== undefined ||
     (filters.tags?.length || 0) > 0
@@ -88,23 +82,18 @@ export function FilterBar({ initialFilters, onFilterChange }: FilterBarProps) {
           ) : (
             <select
               className="select select-bordered w-full"
-              value={filters.isAlcoholic === null ? "" : String(filters.isAlcoholic)}
+              value={filters.alcoholicType || ""}
               onChange={(e) => {
                 const value = e.target.value;
                 handleFilterChange(
-                  "isAlcoholic",
-                  value === "" ? null : value === "true"
+                  "alcoholicType",
+                  value === "" ? null : Object.values(AlcoholicType).find(t => t === value) || AlcoholicType.OPTIONAL
                 );
               }}
             >
               <option value="">All</option>
-              {alcoholicTypes.map((type) => (
-                <option 
-                  key={type} 
-                  value={type === 'Alcoholic' ? 'true' : 'false'}
-                >
-                  {type}
-                </option>
+              {Object.values(AlcoholicType).map((type) => (
+                <option key={type} value={type}>{type}</option>
               ))}
             </select>
           )}

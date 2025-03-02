@@ -1,19 +1,22 @@
-import { Trash2, Wine, GlassWater, FolderKanban, CupSoda } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Trash2 } from "lucide-react";
+import { AlcoholBadge } from "./ui/AlcoholBadge";
+import { CategoryBadge } from "./ui/CategoryBadge";
+import { GlassBadge } from "./ui/GlassBadge";
+import type { AlcoholicType } from "../types/features/cocktails";
 
 interface RecipeHeaderProps {
   name: string;
   isCustom: boolean;
-  isAlcoholic?: boolean;
-  category: string;
-  glass: string;
+  alcoholicType?: AlcoholicType;
+  category?: string;
+  glass?: string;
   onDelete?: () => void;
 }
 
 export function RecipeHeader({
   name,
   isCustom,
-  isAlcoholic,
+  alcoholicType,
   category,
   glass,
   onDelete,
@@ -33,24 +36,9 @@ export function RecipeHeader({
         )}
       </div>
       <div className="flex flex-wrap gap-2 mt-4">
-        <span className={`badge ${isAlcoholic ? 'badge-secondary' : 'badge-primary'} gap-2 p-4 text-base font-medium`}>
-          {isAlcoholic ? <Wine className="h-5 w-5" /> : <GlassWater className="h-5 w-5" />}
-          {isAlcoholic ? 'Alcoholic' : 'Non-Alcoholic'}
-        </span>
-        <Link
-          to={`/by-category?c=${encodeURIComponent(category || 'Unknown')}`}
-          className="badge badge-accent gap-2 p-4 text-base font-medium hover:brightness-110 transition-all"
-        >
-          <FolderKanban className="h-5 w-5" />
-          {category}
-        </Link>
-        <Link
-          to={`/by-glass?g=${encodeURIComponent(glass || 'Unknown')}`}
-          className="badge badge-info gap-2 p-4 text-base font-medium hover:brightness-110 transition-all"
-        >
-          <CupSoda className="h-5 w-5" />
-          {glass}
-        </Link>
+        {alcoholicType && <AlcoholBadge type={alcoholicType} size="md" />}
+        {category && <CategoryBadge category={category} size="md" />}
+        {glass && <GlassBadge glass={glass} size="md" />}
       </div>
     </header>
   );

@@ -1,5 +1,5 @@
 import type { BaseProps } from "../common";
-import type { Cocktail } from "./cocktails";
+import type { Cocktail, AlcoholicType } from "./cocktails";
 
 export type FilterType = 'ingredient' | 'glass' | 'category';
 
@@ -26,7 +26,7 @@ export interface FilterListResponse {
 }
 
 export interface FilterOptions {
-  isAlcoholic?: boolean | null;
+  alcoholicType?: AlcoholicType | null;
   category?: string;
   glass?: string;
   tags?: string[];

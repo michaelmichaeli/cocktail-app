@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { AlcoholicType } from "../types/features/cocktails";
 
 export const ingredientSchema = z.object({
   name: z.string().min(1, "Ingredient name is required"),
@@ -13,7 +14,9 @@ export const cocktailFormSchema = z.object({
   tags: z.array(z.string()),
   category: z.string().optional(),
   glass: z.string().optional(),
-  isAlcoholic: z.string().optional(),
+ alcoholicType: z.string()
+  .transform(val => val === "" ? undefined : val)
+  .pipe(z.nativeEnum(AlcoholicType).optional()),
   imageFile: z.instanceof(File).nullable()
 });
 

@@ -1,12 +1,12 @@
-import { Cocktail, CocktailWithIngredients, Ingredient } from "../types/features/cocktails"
+import { Cocktail, CocktailWithIngredients, Ingredient, AlcoholicType } from "../types/features/cocktails";
 
 export const generateId = (): string => {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36)
-}
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
 
 export const getRandomItem = <T>(array: T[]): T => {
-  return array[Math.floor(Math.random() * array.length)]
-}
+  return array[Math.floor(Math.random() * array.length)];
+};
 
 export const getRandomItems = <T>(array: T[], count: number): T[] => {
   const available = [...array];
@@ -16,7 +16,7 @@ export const getRandomItems = <T>(array: T[], count: number): T[] => {
     result.push(available.splice(randomIndex, 1)[0]);
   }
   return result;
-}
+};
 
 const parseMeasurement = (measure: string = ""): { amount: string; unitOfMeasure: string } => {
   const match = measure.trim().match(/^([\d./\s]+)?\s*(.*)$/);
@@ -54,7 +54,7 @@ export const formatApiCocktail = (c: Cocktail): CocktailWithIngredients => {
     tags: c.strTags?.split(',').map(tag => tag.trim()) || [],
     category: c.strCategory,
     glass: c.strGlass,
-    isAlcoholic: c.strAlcoholic?.toLowerCase().includes('alcoholic') ?? undefined,
+    alcoholicType: Object.values(AlcoholicType).find(t => t === c.strAlcoholic),
     dateModified: c.dateModified || new Date().toISOString()
   };
-}
+};

@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cocktailsApi } from "../api/cocktails";
 import { storage } from "../lib/storage";
 import { showToast } from "../lib/toast";
-import type { Ingredient } from "../types/features/cocktails";
+import { Ingredient, AlcoholicType } from "../types/features/cocktails";
 
 export function useRecipePage(id: string | undefined) {
   const queryClient = useQueryClient();
@@ -48,9 +48,11 @@ export function useRecipePage(id: string | undefined) {
       } : undefined
     }).filter((ing): ing is Ingredient => ing !== undefined),
     tags: apiCocktail.strTags?.split(',').map(tag => tag.trim()) || [],
-    category: apiCocktail.strCategory || 'Unknown',
-    glass: apiCocktail.strGlass || 'Unknown',
-    isAlcoholic: apiCocktail.strAlcoholic?.toLowerCase().includes('alcoholic') ?? false,
+    category: apiCocktail.strCategory,
+    glass: apiCocktail.strGlass,
+    alcoholicType: apiCocktail.strAlcoholic 
+      ? Object.values(AlcoholicType).find(t => t === apiCocktail.strAlcoholic) || AlcoholicType.OPTIONAL 
+      : AlcoholicType.OPTIONAL,
     dateModified: apiCocktail.dateModified || new Date().toISOString()
   } : null);
 

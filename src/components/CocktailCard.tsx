@@ -1,13 +1,8 @@
 import { Link } from "react-router-dom";
-import {
-	Trash2,
-	Wine,
-	GlassWater,
-	Tags,
-	CupSoda,
-	FolderKanban,
-	Star,
-} from "lucide-react";
+import { Trash2, Tags, Star } from "lucide-react";
+import { AlcoholBadge } from "./ui/AlcoholBadge";
+import { CategoryBadge } from "./ui/CategoryBadge";
+import { GlassBadge } from "./ui/GlassBadge";
 import type { CocktailWithIngredients } from "../types/features/cocktails";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
@@ -46,31 +41,14 @@ export function CocktailCard({
 								Custom
 							</span>
 						)}
-						{cocktail.isAlcoholic !== undefined && (
-							<span
-								className={`badge ${
-									cocktail.isAlcoholic ? "badge-secondary" : "badge-primary"
-								} badge-sm gap-1`}
-							>
-								{cocktail.isAlcoholic ? (
-									<Wine className="h-3 w-3" />
-								) : (
-									<GlassWater className="h-3 w-3" />
-								)}
-								{cocktail.isAlcoholic ? "Alcoholic" : "Non-Alcoholic"}
-							</span>
+						{cocktail.alcoholicType && (
+							<AlcoholBadge type={cocktail.alcoholicType} size="sm" />
 						)}
 						{cocktail.category && (
-							<span className="badge badge-accent badge-sm gap-1">
-								<FolderKanban className="h-3 w-3" />
-								{cocktail.category}
-							</span>
+							<CategoryBadge category={cocktail.category} size="sm" noLink />
 						)}
 						{cocktail.glass && (
-							<span className="badge badge-outline badge-sm gap-1">
-								<CupSoda className="h-3 w-3" />
-								{cocktail.glass}
-							</span>
+							<GlassBadge glass={cocktail.glass} size="sm" noLink />
 						)}
 						{cocktail.tags?.map((tag, index) => (
 							<span key={index} className="badge badge-ghost badge-sm gap-1">

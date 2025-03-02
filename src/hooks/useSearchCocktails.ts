@@ -5,7 +5,8 @@ import { cocktailsApi } from "../api/cocktails";
 import { storage } from "../lib/storage";
 import { formatApiCocktail } from "../lib/utils";
 import { showToast } from "../lib/toast";
-import type { FilterOptions } from "../components/FilterBar";
+import type { FilterOptions } from "../types/features/filters";
+import type { AlcoholicType } from "../types/features/cocktails";
 
 export function useSearchCocktails(initialSearchQuery: string = "") {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,13 +47,13 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
   });
 
   const getFiltersFromParams = useCallback((): FilterOptions => {
-    const isAlcoholic = searchParams.get("alcoholic");
+    const alcoholicType = searchParams.get("alcoholicType");
     const category = searchParams.get("category");
     const glass = searchParams.get("glass");
     const ingredients = searchParams.get("ingredients");
 
     return {
-      isAlcoholic: isAlcoholic === null ? null : isAlcoholic === "true",
+      alcoholicType: alcoholicType ? decodeURIComponent(alcoholicType) as AlcoholicType : null,
       category: category ? decodeURIComponent(category) : undefined,
       glass: glass ? decodeURIComponent(glass) : undefined,
       tags: ingredients ? decodeURIComponent(ingredients).split(",").filter(Boolean) : [],
@@ -64,7 +65,7 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
   useEffect(() => {
     const loadFilters = async () => {
       const hasUrlParams = 
-        searchParams.has("alcoholic") ||
+        searchParams.has("alcoholicType") ||
         searchParams.has("category") ||
         searchParams.has("glass") ||
         searchParams.has("ingredients");
@@ -75,7 +76,7 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
           if (!savedFilters) return;
 
           const hasFilters = (
-            savedFilters.isAlcoholic !== null ||
+            savedFilters.alcoholicType !== null ||
             savedFilters.category !== undefined ||
             savedFilters.glass !== undefined ||
             (savedFilters.tags?.length || 0) > 0
@@ -84,8 +85,8 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
           if (hasFilters) {
             setSearchParams(current => {
               const newParams = new URLSearchParams(current);
-              if (savedFilters.isAlcoholic !== null) {
-                newParams.set("alcoholic", String(savedFilters.isAlcoholic));
+              if (savedFilters.alcoholicType) {
+                newParams.set("alcoholicType", encodeURIComponent(savedFilters.alcoholicType));
               }
               if (savedFilters.category) {
                 newParams.set("category", encodeURIComponent(savedFilters.category));
@@ -114,13 +115,13 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
     setSearchParams(params => {
       const newParams = new URLSearchParams(params);
 
-      newParams.delete("alcoholic");
+      newParams.delete("alcoholicType");
       newParams.delete("category");
       newParams.delete("glass");
       newParams.delete("ingredients");
 
-      if (filters.isAlcoholic !== null && filters.isAlcoholic !== undefined) {
-        newParams.set("alcoholic", String(filters.isAlcoholic));
+      if (filters.alcoholicType) {
+        newParams.set("alcoholicType", encodeURIComponent(filters.alcoholicType));
       }
       if (filters.category) {
         newParams.set("category", encodeURIComponent(filters.category));
@@ -137,8 +138,8 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
   }, [setSearchParams]);
 
   const filteredCocktails = useMemo(() => cocktails.filter(cocktail => {
-    if (currentFilters.isAlcoholic !== null && currentFilters.isAlcoholic !== undefined) {
-      if (cocktail.isAlcoholic !== currentFilters.isAlcoholic) return false;
+    if (currentFilters.alcoholicType) {
+      if (cocktail.alcoholicType !== currentFilters.alcoholicType) return false;
     }
     
     if (currentFilters.category) {
@@ -151,7 +152,7 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
     
     if (currentFilters.tags && currentFilters.tags.length > 0) {
       const cocktailTags = cocktail.tags || [];
-      if (!currentFilters.tags.some(tag => cocktailTags.includes(tag))) return false;
+      if (!currentFilters.tags.some((tag: string) => cocktailTags.includes(tag))) return false;
     }
     
     return true;

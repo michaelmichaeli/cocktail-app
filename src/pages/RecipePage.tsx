@@ -46,9 +46,9 @@ export function RecipePage() {
             <RecipeHeader
               name={cocktail.name}
               isCustom={isCustom}
-              isAlcoholic={cocktail.isAlcoholic}
-              category={cocktail.category || "Unknown"}
-              glass={cocktail.glass || "Unknown"}
+              alcoholicType={cocktail.alcoholicType}
+              category={cocktail.category}
+              glass={cocktail.glass}
               onDelete={() => setShowDeleteDialog(true)}
             />
 

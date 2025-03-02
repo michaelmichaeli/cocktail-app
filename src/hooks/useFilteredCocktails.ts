@@ -50,7 +50,7 @@ const mapApiCocktailToCommon = (c: Cocktail): CocktailWithIngredients => {
     instructions: c.strInstructions || '',
     imageUrl: c.strDrinkThumb,
     ingredients,
-    isAlcoholic: c.strAlcoholic?.toLowerCase().includes('alcoholic') ?? undefined,
+    alcoholicType: c.strAlcoholic,
     category: c.strCategory,
     glass: c.strGlass,
     tags: c.strTags?.split(',').map(tag => tag.trim()) || [],

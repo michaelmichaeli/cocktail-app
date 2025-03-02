@@ -6,6 +6,12 @@ export interface Ingredient {
   unitOfMeasure: string;
 }
 
+export enum AlcoholicType {
+  ALCOHOLIC = 'Alcoholic',
+  NON_ALCOHOLIC = 'Non alcoholic',
+  OPTIONAL = 'Optional alcohol'
+}
+
 export interface Cocktail {
   idDrink: string;
   strDrink: string;
@@ -14,7 +20,7 @@ export interface Cocktail {
   strTags?: string;
   strCategory?: string;
   strGlass?: string;
-  strAlcoholic?: string;
+  strAlcoholic?: AlcoholicType;
   dateModified?: string;
   [key: string]: string | undefined;
 }
@@ -34,7 +40,7 @@ export interface CustomCocktail {
   tags?: string[];
   category?: string;
   glass?: string;
-  isAlcoholic?: boolean;
+  alcoholicType?: AlcoholicType | undefined | null;
   dateModified: string;
 }
 
@@ -53,8 +59,6 @@ export interface CocktailApiResponse {
   drinks: Cocktail[] | null
 }
 
-// Component props
-
 export interface CocktailGridProps extends BaseProps {
   cocktails: CocktailWithIngredients[];
   isLoading?: boolean;
@@ -70,7 +74,7 @@ export interface RecipeHeaderProps extends BaseProps {
   name: string;
   glass?: string;
   category?: string;
-  isAlcoholic?: boolean | null;
+  alcoholicType?: AlcoholicType;
   imageUrl?: string;
   lastModified?: Date;
 }
