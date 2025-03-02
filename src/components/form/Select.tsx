@@ -1,4 +1,4 @@
-import { ChevronDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { SingleSelectProps } from "../../types/ui/form";
 
 export function Select({
@@ -48,7 +48,7 @@ export function Select({
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin text-base-content/50" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-base-content/50" />
+            null
           )}
         </div>
       </div>
