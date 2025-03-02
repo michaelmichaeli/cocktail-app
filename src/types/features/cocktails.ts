@@ -70,7 +70,7 @@ export interface RecipeHeaderProps extends BaseProps {
   name: string;
   glass?: string;
   category?: string;
-  isAlcoholic?: boolean;
+  isAlcoholic?: boolean | null;
   imageUrl?: string;
   lastModified?: Date;
 }

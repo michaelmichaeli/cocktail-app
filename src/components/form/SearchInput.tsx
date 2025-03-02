@@ -15,7 +15,7 @@ export function SearchInput({ initialValue = "", onSearch, className = "", varia
   const [inputValue, setInputValue] = useState(initialValue);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const searchQuery = formData.get("search")?.toString().trim() || "";
@@ -24,8 +24,8 @@ export function SearchInput({ initialValue = "", onSearch, className = "", varia
       if (onSearch) {
         onSearch(searchQuery);
       } else {
+        await storage.clearFilters();
         navigate(`/search?search=${encodeURIComponent(searchQuery)}`);
-        storage.clearCocktailFilters();
       }
     }
   };

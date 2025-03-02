@@ -7,8 +7,6 @@ import { formatApiCocktail } from "../lib/utils";
 import { showToast } from "../lib/toast";
 import type { FilterOptions } from "../components/FilterBar";
 
-const FILTER_STORAGE_KEY = 'cocktail-filters';
-
 export function useSearchCocktails(initialSearchQuery: string = "") {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('search') || initialSearchQuery;
@@ -64,51 +62,54 @@ export function useSearchCocktails(initialSearchQuery: string = "") {
   const currentFilters = useMemo(() => getFiltersFromParams(), [getFiltersFromParams]);
 
   useEffect(() => {
-    const hasUrlParams = 
-      searchParams.has("alcoholic") ||
-      searchParams.has("category") ||
-      searchParams.has("glass") ||
-      searchParams.has("ingredients");
+    const loadFilters = async () => {
+      const hasUrlParams = 
+        searchParams.has("alcoholic") ||
+        searchParams.has("category") ||
+        searchParams.has("glass") ||
+        searchParams.has("ingredients");
 
-    if (!hasUrlParams) {
-      const stored = sessionStorage.getItem(FILTER_STORAGE_KEY);
-      if (!stored) return;
+      if (!hasUrlParams) {
+        try {
+          const savedFilters = await storage.getFilters();
+          if (!savedFilters) return;
 
-      try {
-        const savedFilters = JSON.parse(stored);
-        const hasFilters = (
-          savedFilters.isAlcoholic !== null ||
-          savedFilters.category !== undefined ||
-          savedFilters.glass !== undefined ||
-          (savedFilters.tags?.length || 0) > 0
-        );
+          const hasFilters = (
+            savedFilters.isAlcoholic !== null ||
+            savedFilters.category !== undefined ||
+            savedFilters.glass !== undefined ||
+            (savedFilters.tags?.length || 0) > 0
+          );
 
-        if (hasFilters) {
-          setSearchParams(current => {
-            const newParams = new URLSearchParams(current);
-            if (savedFilters.isAlcoholic !== null) {
-              newParams.set("alcoholic", String(savedFilters.isAlcoholic));
-            }
-            if (savedFilters.category) {
-              newParams.set("category", encodeURIComponent(savedFilters.category));
-            }
-            if (savedFilters.glass) {
-              newParams.set("glass", encodeURIComponent(savedFilters.glass));
-            }
-            if (savedFilters.tags?.length) {
-              newParams.set("ingredients", encodeURIComponent(savedFilters.tags.join(",")));
-            }
-            return newParams;
-          }, { replace: true });
+          if (hasFilters) {
+            setSearchParams(current => {
+              const newParams = new URLSearchParams(current);
+              if (savedFilters.isAlcoholic !== null) {
+                newParams.set("alcoholic", String(savedFilters.isAlcoholic));
+              }
+              if (savedFilters.category) {
+                newParams.set("category", encodeURIComponent(savedFilters.category));
+              }
+              if (savedFilters.glass) {
+                newParams.set("glass", encodeURIComponent(savedFilters.glass));
+              }
+              if (savedFilters.tags?.length) {
+                newParams.set("ingredients", encodeURIComponent(savedFilters.tags.join(",")));
+              }
+              return newParams;
+            }, { replace: true });
+          }
+        } catch {
+          await storage.clearFilters();
         }
-      } catch {
-        sessionStorage.removeItem(FILTER_STORAGE_KEY);
       }
-    }
+    };
+
+    loadFilters();
   }, [searchParams, setSearchParams]);
 
-  const updateFilters = useCallback((filters: FilterOptions) => {
-    sessionStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
+  const updateFilters = useCallback(async (filters: FilterOptions) => {
+    await storage.saveFilters(filters);
 
     setSearchParams(params => {
       const newParams = new URLSearchParams(params);
