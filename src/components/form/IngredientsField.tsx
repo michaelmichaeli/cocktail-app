@@ -31,7 +31,7 @@ export function IngredientsField({
         {fields.map((field: FieldArrayWithId<CocktailFormData, "ingredients">, index: number) => (
           <div key={field.id}>
             <div className="flex flex-wrap gap-3">
-              <div className="flex-1">
+              <div className="w-full">
                 <Select
                   name={`ingredients.${index}.name`}
                   placeholder="Select ingredient"
