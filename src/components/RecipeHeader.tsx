@@ -7,7 +7,7 @@ import type { AlcoholicType } from "../types/features/cocktails";
 interface RecipeHeaderProps {
   name: string;
   isCustom: boolean;
-  alcoholicType?: AlcoholicType;
+  alcoholicType?: AlcoholicType | null;
   category?: string;
   glass?: string;
   onDelete?: () => void;
