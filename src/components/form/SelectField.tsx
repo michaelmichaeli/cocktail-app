@@ -1,4 +1,3 @@
-import { ChevronDown } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { CocktailFormData } from "../../lib/schemas";
@@ -45,7 +44,6 @@ export function SelectField({
             </option>
           ))}
         </select>
-        <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-base-content/70" />
         {error && <FormErrorMessage message={error} />}
       </div>
     </div>
