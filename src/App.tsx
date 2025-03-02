@@ -11,13 +11,26 @@ import { GlassPage } from "./pages/GlassPage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
+import { showToast } from "./lib/toast";
+import { LoadingState } from "./components/LoadingState";
 
 function App() {
-  const { fetchFilters } = useFiltersStore();
+  const { fetchFilters, isLoading } = useFiltersStore();
 
   useEffect(() => {
-    fetchFilters();
+    const init = async () => {
+      try {
+        await fetchFilters();
+      } catch (error) {
+        showToast('Failed to initialize app: ' + error, 'error');
+      }
+    };
+    init();
   }, [fetchFilters]);
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <Router>
