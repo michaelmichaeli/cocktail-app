@@ -87,7 +87,7 @@ export function FilterBar({ initialFilters, onFilterChange }: FilterBarProps) {
                 const value = e.target.value;
                 handleFilterChange(
                   "alcoholicType",
-                  value === "" ? null : Object.values(AlcoholicType).find(t => t === value) || AlcoholicType.OPTIONAL
+                  value === "" ? null : Object.values(AlcoholicType).find(t => t === value) || AlcoholicType.Optional
                 );
               }}
             >

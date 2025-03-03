@@ -1,6 +1,6 @@
-import { UseFormRegister } from "react-hook-form";
-import { FormErrorMessage } from "./FormErrorMessage";
+import { UseFormRegister, Path } from "react-hook-form";
 import { CocktailFormData } from "../../lib/schemas";
+import { FormErrorMessage } from "./FormErrorMessage";
 
 interface SelectFieldProps {
   id: string;
@@ -10,7 +10,7 @@ interface SelectFieldProps {
   placeholder: string;
   error?: string;
   register: UseFormRegister<CocktailFormData>;
-  name: keyof CocktailFormData;
+  name: Path<CocktailFormData>;
 }
 
 export function SelectField({

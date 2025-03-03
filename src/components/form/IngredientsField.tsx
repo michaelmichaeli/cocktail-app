@@ -1,7 +1,7 @@
 import { Plus, Trash2, Beaker } from "lucide-react";
 import { UseFormRegister, useFieldArray, FieldArrayWithId, FieldErrors } from "react-hook-form";
 import { FormErrorMessage } from "./FormErrorMessage";
-import { Select } from "./Select";
+import { SelectField } from "./SelectField";
 import { CocktailFormData } from "../../lib/schemas";
 
 interface IngredientsFieldProps {
@@ -33,16 +33,15 @@ export function IngredientsField({
           <div key={field.id}>
             <div className="flex flex-wrap gap-3">
               <div className="w-full">
-                <Select
+                <SelectField
+                  id={`ingredient-${index}`}
+                  label=""
+                  icon={null}
                   name={`ingredients.${index}.name`}
+                  options={availableIngredients}
                   placeholder="Select ingredient"
-                  options={availableIngredients.map(ing => ({ value: ing, label: ing }))}
-                  value={field.name}
-                  onChange={(value) => {
-                    const event = { target: { value, name: `ingredients.${index}.name` } };
-                    register(`ingredients.${index}.name`).onChange(event);
-                  }}
                   error={errors?.[index]?.name?.message}
+                  register={register}
                 />
               </div>
               <input

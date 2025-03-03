@@ -47,12 +47,12 @@ export function useRecipePage(id: string | undefined) {
         unitOfMeasure: unitOfMeasure || ''
       } : undefined
     }).filter((ing): ing is Ingredient => ing !== undefined),
-    tags: apiCocktail.strTags?.split(',').map(tag => tag.trim()) || [],
+    tags: apiCocktail.strTags?.split(',').map((tag: string) => tag.trim()) || [],
     category: apiCocktail.strCategory,
     glass: apiCocktail.strGlass,
     alcoholicType: apiCocktail.strAlcoholic 
-      ? Object.values(AlcoholicType).find(t => t === apiCocktail.strAlcoholic) || AlcoholicType.OPTIONAL 
-      : AlcoholicType.OPTIONAL,
+      ? Object.values(AlcoholicType).find(t => t === apiCocktail.strAlcoholic) || AlcoholicType.Optional
+      : AlcoholicType.Optional,
     dateModified: apiCocktail.dateModified || new Date().toISOString()
   } : null);
 
