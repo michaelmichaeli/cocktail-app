@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { useAddCocktail } from "../hooks/useAddCocktail";
 import { useFiltersStore } from "../store/filters";
-import { showToast } from "../lib/toast";
-import { CustomCocktail } from "../types/features/cocktails";
+import { toast } from "../lib/toast";
+import { NewCustomCocktail } from "../types/features/cocktails";
 import { CocktailFormData, cocktailFormSchema } from "../lib/schemas";
 import { ImageUpload } from "../components/form/ImageUpload";
 import { DeleteDialog } from "../components/DeleteDialog";
@@ -67,22 +67,22 @@ export function AddCocktailPage() {
         unitOfMeasure: i.unitOfMeasure?.trim() || "",
       }));
 
-    const newCocktail: Omit<CustomCocktail, "id"> = {
+    const newCocktail: NewCustomCocktail = {
       name: data.name.trim(),
       instructions: data.instructions.trim(),
       ingredients: validIngredients,
+      imageUrl: DEFAULT_COCKTAIL_IMAGE,
       imageFile: data.imageFile || undefined,
-      imageUrl: data.imageFile ? undefined : DEFAULT_COCKTAIL_IMAGE,
       tags: data.tags,
       category: data.category,
       glass: data.glass,
-      alcoholicType: data.alcoholicType,
+      alcoholicType: data.alcoholicType || 'Optional',
       dateModified: new Date().toISOString()
     };
 
     try {
       const savedCocktail = await addCustomCocktail(newCocktail);
-      showToast("Cocktail was successfully saved!", "success");
+      toast.success("Cocktail was successfully saved!");
       navigate(`/recipe/${savedCocktail.id}`);
     } catch (err) {
       console.error(err);

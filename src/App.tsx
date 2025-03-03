@@ -11,7 +11,7 @@ import { GlassPage } from "./pages/GlassPage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
-import { showToast } from "./lib/toast";
+import { toast } from "./lib/toast";
 import { LoadingState } from "./components/LoadingState";
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
       try {
         await fetchFilters();
       } catch (error) {
-        showToast('Failed to initialize app: ' + error, 'error');
+        toast.error('Failed to initialize app: ' + error);
       }
     };
     init();

@@ -2,14 +2,18 @@ export interface CustomCocktail {
   id: string;
   name: string;
   instructions: string;
-  imageUrl: string;
+  imageUrl?: string;
   ingredients: Ingredient[];
-  alcoholicType: string;
+  alcoholicType?: string;
   category?: string;
   glass?: string;
   tags: string[];
   dateModified: string;
   isCustom?: boolean;
+}
+
+export interface NewCustomCocktail extends Omit<CustomCocktail, 'id'> {
+  imageFile?: File;
 }
 
 export interface Ingredient {

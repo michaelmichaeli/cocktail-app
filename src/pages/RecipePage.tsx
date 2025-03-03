@@ -2,12 +2,13 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { UtensilsCrossed, ScrollText, Calendar, Tags } from "lucide-react";
 import { useRecipePage } from "../hooks/useRecipePage";
-import { showToast } from "../lib/toast";
+import { toast } from "../lib/toast";
 import { DeleteDialog } from "../components/DeleteDialog";
 import { LoadingState } from "../components/LoadingState";
 import { ErrorState } from "../components/ErrorState";
 import { ImageWithModal } from "../components/ImageWithModal";
 import { RecipeHeader } from "../components/RecipeHeader";
+import { AlcoholicType } from "../types/features/cocktails";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 export function RecipePage() {
@@ -46,7 +47,7 @@ export function RecipePage() {
             <RecipeHeader
               name={cocktail.name}
               isCustom={isCustom}
-              alcoholicType={cocktail.alcoholicType}
+              alcoholicType={cocktail.alcoholicType as AlcoholicType}
               category={cocktail.category}
               glass={cocktail.glass}
               onDelete={() => setShowDeleteDialog(true)}
@@ -98,7 +99,7 @@ export function RecipePage() {
                   Tags
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {(cocktail.tags || []).map((tag, index) => (
+                  {(cocktail.tags || []).map((tag: string, index: number) => (
                     <span key={index} className="badge badge-ghost gap-2 p-3 text-base">
                       <Tags className="h-4 w-4" />
                       {tag}
@@ -122,7 +123,7 @@ export function RecipePage() {
         onConfirm={async () => {
           if (!isDeletingCocktail) {
             await deleteCustomCocktail(cocktail.id);
-            showToast("Cocktail deleted successfully", "success");
+            toast.success("Cocktail deleted successfully");
             navigate("/");
           }
         }}

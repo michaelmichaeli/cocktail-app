@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { Loader2, XCircle } from "lucide-react";
 import { useFiltersStore } from "../store/filters";
 import { AlcoholicType } from "../types/features/cocktails";
-import type { FilterOptions } from "../types/features/filters";
+import type { FilterOptions } from "../types";
 
 interface FilterBarProps {
   initialFilters?: FilterOptions;

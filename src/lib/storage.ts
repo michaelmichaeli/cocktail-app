@@ -1,6 +1,5 @@
-import { CustomCocktail } from '../types/features/cocktails';
-import { FilterOptions } from '../components/FilterBar';
 import { generateId } from './utils';
+import { CustomCocktail, FilterOptions, NewCustomCocktail } from '../types';
 
 const STORAGE_KEYS = {
   CUSTOM_COCKTAILS: 'custom_cocktails',
@@ -50,7 +49,7 @@ export const storage = {
     await set(STORAGE_KEYS.CUSTOM_COCKTAILS, cocktails);
   },
 
-  addCustomCocktail: async (cocktail: Omit<CustomCocktail, "id">): Promise<CustomCocktail> => {
+  addCustomCocktail: async (cocktail: NewCustomCocktail): Promise<CustomCocktail> => {
     let imageUrl: string | undefined;
 
     if (cocktail.imageFile) {

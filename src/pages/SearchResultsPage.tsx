@@ -6,7 +6,7 @@ import { CocktailCard } from "../components/CocktailCard";
 import { CocktailCardSkeleton } from "../components/CocktailCardSkeleton";
 import { EmptyState } from "../components/EmptyState";
 import { DeleteDialog } from "../components/DeleteDialog";
-import { showToast } from "../lib/toast";
+import { toast } from "../lib/toast";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { FilterBar } from "../components/FilterBar";
 import { ErrorState } from "../components/ErrorState";
@@ -101,7 +101,7 @@ export function SearchResultsPage() {
         onConfirm={async () => {
           if (cocktailToDelete && !isDeletingCocktail) {
             await deleteCustomCocktail(cocktailToDelete);
-            showToast("Cocktail deleted successfully", "success");
+            toast.success("Cocktail deleted successfully");
             setCocktailToDelete(null);
           }
         }}

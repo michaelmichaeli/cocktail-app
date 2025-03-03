@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cocktailsApi } from "../api/cocktails";
 import { storage } from "../lib/storage";
-import { showToast } from "../lib/toast";
+import { toast } from "../lib/toast";
 import { Ingredient, AlcoholicType } from "../types/features/cocktails";
 
 export function useRecipePage(id: string | undefined) {
@@ -22,10 +22,10 @@ export function useRecipePage(id: string | undefined) {
     mutationFn: storage.deleteCustomCocktail,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customCocktails"] });
-      showToast("Cocktail deleted successfully", "success");
+      toast.success("Cocktail deleted successfully");
     },
     onError: (error) => {
-      showToast("Failed to delete cocktail: " + error, "error");
+      toast.error("Failed to delete cocktail: " + error);
     }
   });
 
