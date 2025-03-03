@@ -128,7 +128,7 @@ export function RecipePage() {
           }
         }}
         title="Delete Cocktail"
-        description="Are you sure you want to delete this cocktail? This action cannot be undone."
+        message="Are you sure you want to delete this cocktail? This action cannot be undone."
       />
     </div>
   );

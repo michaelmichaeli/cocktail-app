@@ -1,5 +1,5 @@
 import axios, { isAxiosError } from 'axios'
-import { Cocktail, CocktailApiResponse } from '../types/features/cocktails'
+import { ApiCocktail as Cocktail, CocktailApiResponse } from '../types/features/cocktails/models'
 import { FilterListResponse } from '../types/features/filters'
 
 const BASE_URL = '/api'

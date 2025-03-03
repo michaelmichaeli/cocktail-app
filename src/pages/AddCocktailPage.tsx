@@ -19,6 +19,7 @@ import { ErrorState } from "../components/ErrorState";
 import { FormErrorMessage } from "../components/form/FormErrorMessage";
 import { useFormNavigation } from "../hooks/useFormNavigation";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
+import { AlcoholicType } from "../types/features/cocktails";
 
 export function AddCocktailPage() {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ export function AddCocktailPage() {
       tags: data.tags,
       category: data.category,
       glass: data.glass,
-      alcoholicType: data.alcoholicType || 'Optional',
+      alcoholicType: data.alcoholicType === AlcoholicType.Optional ? undefined : data.alcoholicType,
       dateModified: new Date().toISOString()
     };
 
@@ -117,7 +118,7 @@ export function AddCocktailPage() {
                   </label>
                   <ImageUpload
                     onImageSelect={(file) => setValue("imageFile", file)}
-                    onImageClear={() => setValue("imageFile", null)}
+                    initialImage={undefined}
                   />
                 </div>
 
@@ -214,7 +215,7 @@ export function AddCocktailPage() {
         onClose={handleClose}
         onConfirm={handleConfirm}
         title="Unsaved Changes"
-        description="You have unsaved changes. Are you sure you want to leave?"
+        message="You have unsaved changes. Are you sure you want to leave?"
       />
     </div>
   );

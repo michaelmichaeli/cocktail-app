@@ -1,10 +1,7 @@
 import type { FilteredCocktailsHeaderProps } from "../types";
-import { FilteredCocktailsHeaderProps as OldFilteredCocktailsHeaderProps } from "../types/features/filters";
-import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
 
 export function FilteredCocktailsHeader({
   title,
-  filterType,
   filterValue,
   icon,
 }: FilteredCocktailsHeaderProps) {
