@@ -5,32 +5,38 @@ import { ApiCocktail, CustomCocktail } from "../types/features/cocktails";
 import { FilterType, FilterConfig } from '../types/features/filters/index';
 import { filterIcons } from '../components/FilterIcon';
 
+const hasIngredient = (cocktail: CustomCocktail, searchTerm: string): boolean => 
+  cocktail.ingredients.some(ingredient => 
+    ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+const matchesGlassType = (cocktail: CustomCocktail, glassType: string): boolean => 
+  cocktail.glass?.toLowerCase() === glassType.toLowerCase();
+
+const matchesCategory = (cocktail: CustomCocktail, category: string): boolean => 
+  cocktail.category?.toLowerCase() === category.toLowerCase();
+
 const filterConfigs: Record<FilterType, FilterConfig> = {
   ingredient: {
     title: "Ingredient",
     icon: filterIcons.ingredient,
     param: "i",
     fetch: cocktailsApi.getCocktailsByIngredient,
-    matchCustom: (cocktail, value) => 
-      cocktail.ingredients?.some(ing => 
-        ing.name.toLowerCase().includes(value.toLowerCase())
-      ) || false
+    matchCustom: hasIngredient
   },
   glass: {
     title: "Glass",
     icon: filterIcons.glass,
     param: "g",
     fetch: cocktailsApi.getCocktailsByGlass,
-    matchCustom: (cocktail, value) => 
-      (cocktail.glass?.toLowerCase() || '') === value.toLowerCase()
+    matchCustom: matchesGlassType
   },
   category: {
     title: "Category",
     icon: filterIcons.category,
     param: "c",
     fetch: cocktailsApi.getCocktailsByCategory,
-    matchCustom: (cocktail, value) => 
-      (cocktail.category?.toLowerCase() || '') === value.toLowerCase()
+    matchCustom: matchesCategory
   }
 };
 
