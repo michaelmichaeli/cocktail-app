@@ -1,10 +1,10 @@
 import { create } from 'zustand'
 import { type StateCreator } from 'zustand'
 import { cocktailsApi } from '../api/cocktails'
-import type { Filters } from '../types/features/filters'
+import { type Filters } from '../types/features/filters'
 
-type State = Filters & {
-  fetchFilters: () => Promise<void>
+export interface State extends Filters {
+  fetchFilters: () => Promise<void>;
 }
 
 const createStore: StateCreator<State> = (set) => ({

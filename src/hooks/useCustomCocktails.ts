@@ -1,11 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { storage } from "../lib/storage";
-
-interface DeleteCallbacks {
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
-  onSettled?: () => void;
-}
+import { cocktailsApi } from "../api/cocktails";
+import { DeleteCallbacks } from '../types';
 
 export function useCustomCocktails() {
   const queryClient = useQueryClient();

@@ -3,14 +3,8 @@ import { Trash2, Tags, Star } from "lucide-react";
 import { AlcoholBadge } from "./ui/AlcoholBadge";
 import { CategoryBadge } from "./ui/CategoryBadge";
 import { GlassBadge } from "./ui/GlassBadge";
-import type { CocktailWithIngredients } from "../types/features/cocktails";
+import type { CocktailCardProps } from "../types";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
-
-interface CocktailCardProps {
-	cocktail: CocktailWithIngredients;
-	onDelete?: (id: string) => void;
-	className?: string;
-}
 
 export function CocktailCard({
 	cocktail,

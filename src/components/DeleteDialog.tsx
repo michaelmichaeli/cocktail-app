@@ -1,20 +1,7 @@
 import { useEffect } from "react";
+import { DeleteDialogProps } from '../types';
 
-interface DeleteDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  message: string;
-}
-
-export function DeleteDialog({
-  isOpen,
-  onClose,
-  onConfirm,
-  title,
-  message,
-}: DeleteDialogProps) {
+export function DeleteDialog({ isOpen, onClose, onConfirm, title, message }: DeleteDialogProps) {
   useEffect(() => {
     const dialog = document.getElementById("deleteDialog") as HTMLDialogElement;
     if (isOpen) {

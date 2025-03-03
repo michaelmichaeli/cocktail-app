@@ -1,40 +1,41 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CupSoda, FolderKanban, UtensilsCrossed } from "lucide-react";
-import type { ReactNode } from "react";
-import { useFilteredCocktails, FilterType } from "../hooks/useFilteredCocktails";
+import { useFilteredCocktails } from "../hooks/useFilteredCocktails";
 import { cocktailsApi } from "../api/cocktails";
 import { CocktailGrid } from "../components/CocktailGrid";
 import { ErrorState } from "../components/ErrorState";
 import { FilteredCocktailsHeader } from "../components/FilteredCocktailsHeader";
 import { FilteredCocktailsHeaderSkeleton } from "../components/FilteredCocktailsHeaderSkeleton";
-import type { Cocktail } from "../types/features/cocktails";
+import type { FilterType, FilterConfig } from '../types/features/filters/index';
+import type { CocktailWithIngredients } from '../types/features/cocktails';
 
-interface FilterDetails {
-  title: string;
-  icon: ReactNode;
-  param: string;
-  fetch: (value: string) => Promise<Cocktail[]>;
-}
-
-const filterConfigs: Record<FilterType, FilterDetails> = {
+const filterConfigs: Record<FilterType, FilterConfig> = {
   ingredient: {
     title: 'Cocktails with',
     icon: <UtensilsCrossed className="h-6 w-6" />,
     param: 'i',
-    fetch: cocktailsApi.getCocktailsByIngredient
+    fetch: cocktailsApi.getCocktailsByIngredient,
+    matchCustom: (cocktail: CocktailWithIngredients, value: string) => 
+      cocktail.ingredients?.some(ing => 
+        ing.name.toLowerCase().includes(value.toLowerCase())
+      ) || false
   },
   glass: {
     title: 'Cocktails served in',
     icon: <CupSoda className="h-6 w-6" />,
     param: 'g',
-    fetch: cocktailsApi.getCocktailsByGlass
+    fetch: cocktailsApi.getCocktailsByGlass,
+    matchCustom: (cocktail: CocktailWithIngredients, value: string) => 
+      (cocktail.glass?.toLowerCase() || '') === value.toLowerCase()
   },
   category: {
     title: 'Cocktails in category',
     icon: <FolderKanban className="h-6 w-6" />,
     param: 'c',
-    fetch: cocktailsApi.getCocktailsByCategory
+    fetch: cocktailsApi.getCocktailsByCategory,
+    matchCustom: (cocktail: CocktailWithIngredients, value: string) => 
+      (cocktail.category?.toLowerCase() || '') === value.toLowerCase()
   }
 };
 

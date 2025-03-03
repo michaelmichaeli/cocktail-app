@@ -7,13 +7,17 @@ import { DeleteDialog } from './DeleteDialog';
 import { CocktailWithIngredients } from '../types/features/cocktails';
 import { useCustomCocktails } from '../hooks/useCustomCocktails';
 import { toast } from '../lib/toast';
+import { LoadingState } from './LoadingState';
+import { ErrorState } from './ErrorState';
+import { BaseProps } from '../types';
 
-interface CocktailGridProps {
+interface CocktailGridProps extends BaseProps {
   cocktails: CocktailWithIngredients[];
-  isLoading: boolean;
-  error: Error | null;
-  title: string;
+  isLoading?: boolean;
+  error?: Error | null;
   emptyMessage?: string;
+  title?: string;
+  onDelete?: (id: string) => void;
   headerContent?: ReactNode;
 }
 
@@ -44,6 +48,7 @@ export function CocktailGrid({
       }
     });
   };
+
   return (
     <section className="space-y-6">
       <div className="flex justify-between items-center gap-4">
@@ -81,6 +86,7 @@ export function CocktailGrid({
           message={emptyMessage}
         />
       )}
+
       <DeleteDialog
         isOpen={!!cocktailToDelete}
         onClose={() => setCocktailToDelete(null)}

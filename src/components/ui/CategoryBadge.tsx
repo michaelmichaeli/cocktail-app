@@ -1,13 +1,8 @@
+import { CategoryBadgeProps } from '../../types';
 import { FolderKanban } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-interface CategoryBadgeProps {
-  category: string;
-  size?: "sm" | "md";
-  noLink?: boolean;
-}
-
-export function CategoryBadge({ category, size = "sm", noLink }: CategoryBadgeProps) {
+export function CategoryBadge({ category, size = "md", noLink }: CategoryBadgeProps) {
   const navigate = useNavigate();
   const iconClass = size === "sm" ? "h-3 w-3" : "h-5 w-5";
   const badgeSize = size === "sm" ? "badge-sm" : "p-4 text-base font-medium";

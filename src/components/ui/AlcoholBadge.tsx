@@ -1,28 +1,24 @@
 import { type ReactElement } from "react";
 import { Wine, GlassWater, Beer } from "lucide-react";
 import { AlcoholicType } from "../../types/features/cocktails";
+import { AlcoholBadgeProps } from '../../types';
 
-interface AlcoholBadgeProps {
-  type?: AlcoholicType;
-  size?: "sm" | "md";
-}
-
-export function AlcoholBadge({ type, size = "sm" }: AlcoholBadgeProps) {
+export function AlcoholBadge({ type, size = "md", noLink }: AlcoholBadgeProps) {
   const iconClass = size === "sm" ? "h-3 w-3" : "h-5 w-5";
   const badgeSize = size === "sm" ? "badge-sm" : "p-4 text-base font-medium";
 
-  const validType = type || AlcoholicType.OPTIONAL;
+  const validType = type || AlcoholicType.Optional;
   
   const config: Record<AlcoholicType, { icon: ReactElement; badgeClass: string }> = {
-    [AlcoholicType.ALCOHOLIC]: {
+    [AlcoholicType.Alcoholic]: {
       icon: <Wine className={iconClass} />,
       badgeClass: 'badge-secondary'
     },
-    [AlcoholicType.NON_ALCOHOLIC]: {
+    [AlcoholicType.NonAlcoholic]: {
       icon: <GlassWater className={iconClass} />,
       badgeClass: 'badge-primary'
     },
-    [AlcoholicType.OPTIONAL]: {
+    [AlcoholicType.Optional]: {
       icon: <Beer className={iconClass} />,
       badgeClass: 'badge-accent'
     }

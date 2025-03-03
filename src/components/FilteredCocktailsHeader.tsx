@@ -1,12 +1,6 @@
 import { type ReactNode } from "react";
+import { FilteredCocktailsHeaderProps } from "../types/features/filters";
 import DEFAULT_COCKTAIL_IMAGE from "../assets/default-cocktail.png";
-
-interface FilteredCocktailsHeaderProps {
-  title: string;
-  filterType: "ingredient" | "glass" | "category";
-  filterValue: string;
-  icon: ReactNode;
-}
 
 export function FilteredCocktailsHeader({
   title,

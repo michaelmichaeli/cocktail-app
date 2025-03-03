@@ -1,4 +1,4 @@
-type ToastType = 'success' | 'error' | 'info' | 'warning';
+import { ToastType } from '../types';
 
 export function showToast(message: string, type: ToastType = 'info') {
   const toast = document.createElement('div');

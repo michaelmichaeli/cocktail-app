@@ -1,20 +1,14 @@
+import { GlassBadgeProps } from '../../types';
 import { CupSoda } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-interface GlassBadgeProps {
-  glass: string;
-  size?: "sm" | "md";
-  noLink?: boolean;
-}
-
-export function GlassBadge({ glass, size = "sm", noLink }: GlassBadgeProps) {
+export function GlassBadge({ glass, size = "md", noLink }: GlassBadgeProps) {
   const navigate = useNavigate();
   const iconClass = size === "sm" ? "h-3 w-3" : "h-5 w-5";
   const badgeSize = size === "sm" ? "badge-sm" : "p-4 text-base font-medium";
   
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     navigate(`/by-glass?g=${encodeURIComponent(glass)}`);
   };
   

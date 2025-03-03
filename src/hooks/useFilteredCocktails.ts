@@ -2,21 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { cocktailsApi } from "../api/cocktails";
 import { useCustomCocktails } from "./useCustomCocktails";
 import { Cocktail, CocktailWithIngredients } from "../types/features/cocktails";
-
-export type FilterType = 'ingredient' | 'glass' | 'category';
-
-interface FilterConfig {
-  fetch: (value: string) => Promise<Cocktail[]>;
-  matchCustom: (cocktail: CocktailWithIngredients, value: string) => boolean;
-}
+import { FilterType, FilterConfig } from '../types/features/filters/index';
 
 const filterConfigs: Record<FilterType, FilterConfig> = {
   ingredient: {
     fetch: cocktailsApi.getCocktailsByIngredient,
     matchCustom: (cocktail, value) => 
-      cocktail.ingredients.some(ing => 
+      cocktail.ingredients?.some(ing => 
         ing.name.toLowerCase().includes(value.toLowerCase())
-      )
+      ) || false
   },
   glass: {
     fetch: cocktailsApi.getCocktailsByGlass,
@@ -58,22 +52,22 @@ const mapApiCocktailToCommon = (c: Cocktail): CocktailWithIngredients => {
   };
 };
 
-export function useFilteredCocktails(type: FilterType, filterValue: string) {
+export function useFilteredCocktails(type: FilterType, value: string) {
   const { cocktails: customCocktails, isLoading: isLoadingCustom } = useCustomCocktails();
   
   const { data: apiCocktails = [], isLoading: isLoadingApi, error } = useQuery({
-    queryKey: [type, filterValue],
+    queryKey: [type, value],
     queryFn: async () => {
-      if (!filterValue) return [];
-      const apiCocktails = await filterConfigs[type].fetch(filterValue);
+      if (!value) return [];
+      const apiCocktails = await filterConfigs[type].fetch(value);
       return apiCocktails.map(mapApiCocktailToCommon);
     },
-    enabled: !!filterValue,
+    enabled: !!value,
   });
 
-  const filteredCustomCocktails = filterValue
+  const filteredCustomCocktails = value
     ? customCocktails.filter(cocktail => 
-        filterConfigs[type].matchCustom(cocktail, filterValue)
+        filterConfigs[type].matchCustom(cocktail, value)
       )
     : [];
 

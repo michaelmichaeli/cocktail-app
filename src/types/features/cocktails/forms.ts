@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { AlcoholicType } from "../types/features/cocktails";
-import type { CocktailFormData, IngredientFormData } from '../types/features/cocktails';
+import { AlcoholicType } from "./models";
 
 export const ingredientSchema = z.object({
   name: z.string().min(1, "Ingredient name is required"),
@@ -15,10 +14,11 @@ export const cocktailFormSchema = z.object({
   tags: z.array(z.string()),
   category: z.string().optional(),
   glass: z.string().optional(),
- alcoholicType: z.string()
-  .transform(val => val === "" ? undefined : val)
-  .pipe(z.nativeEnum(AlcoholicType).optional()),
+  alcoholicType: z.string()
+    .transform(val => val === "" ? undefined : val)
+    .pipe(z.nativeEnum(AlcoholicType).optional()),
   imageFile: z.instanceof(File).nullable()
 });
 
-export type { CocktailFormData, IngredientFormData };
+export type CocktailFormData = z.infer<typeof cocktailFormSchema>;
+export type IngredientFormData = z.infer<typeof ingredientSchema>; 
