@@ -8,9 +8,7 @@ export const getGridLayout = (): GridLayout => {
     };
   }
 
-  const columns = window.innerWidth < 640 ? 1 : 
-                 window.innerWidth < 1024 ? 2 : 
-                 window.innerWidth < 1280 ? 3 : 4;
+  const columns = window.innerWidth < 640 ? 1 : 4;
   
   return {
     columns,

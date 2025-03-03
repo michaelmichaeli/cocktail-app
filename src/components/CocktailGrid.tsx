@@ -57,7 +57,7 @@ export function CocktailGrid({
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, index) => (
             <CocktailCardSkeleton key={index} />
           ))}
@@ -69,7 +69,7 @@ export function CocktailGrid({
           message={error.message || 'Failed to load cocktails'}
         />
       ) : cocktails.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
           {cocktails.map((cocktail) => (
             <CocktailCard 
               key={cocktail.id} 

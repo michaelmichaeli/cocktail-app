@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Beaker } from "lucide-react";
 import { UseFormRegister, useFieldArray, FieldArrayWithId, FieldErrors } from "react-hook-form";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { Select } from "./Select";
@@ -23,6 +23,7 @@ export function IngredientsField({
     <div className="form-control">
       <label className="label">
         <span className="label-text flex items-center gap-2">
+          <Beaker className="h-4 w-4" />
           Ingredients
         </span>
       </label>

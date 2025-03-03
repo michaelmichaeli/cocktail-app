@@ -28,15 +28,17 @@ export function Navbar() {
               </div>
             )}
 
-            {!isAddPage && (
-              <Link
-                to="/add"
-                className="btn btn-secondary gap-2 h-9 min-h-0 px-3 shrink-0 hidden md:flex"
-              >
-                <PlusCircle className="h-4 w-4" />
-                <span>Add Cocktail</span>
-              </Link>
-            )}
+            <div className="hidden md:block">
+              {!isAddPage && (
+                <Link
+                  to="/add"
+                  className="btn btn-secondary gap-2 h-9 min-h-0 px-3 shrink-0"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  <span>Add Cocktail</span>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
