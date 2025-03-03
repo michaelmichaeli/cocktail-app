@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Cocktail, CustomCocktail, AlcoholicType } from '../cocktails';
+import type { ApiCocktail, CustomCocktail, AlcoholicType } from '../cocktails';
 import type { BaseProps } from '../../common';
 
 export type FilterType = 'ingredient' | 'glass' | 'category';
@@ -8,7 +8,7 @@ export interface FilterConfig {
   title: string;
   icon: ReactNode;
   param: string;
-  fetch: (value: string) => Promise<Cocktail[]>;
+  fetch: (value: string) => Promise<ApiCocktail[]>;
   matchCustom: (cocktail: CustomCocktail, value: string) => boolean;
 }
 
@@ -22,7 +22,7 @@ export interface FilterPageDetails {
   title: string;
   icon: ReactNode;
   param: string;
-  fetch: (value: string) => Promise<Cocktail[]>;
+  fetch: (value: string) => Promise<ApiCocktail[]>;
 }
 
 export interface FilterBarProps extends BaseProps {

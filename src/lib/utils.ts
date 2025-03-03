@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Cocktail, CustomCocktail, Ingredient, AlcoholicType } from "../types/features/cocktails";
+import { ApiCocktail, CustomCocktail, Ingredient, AlcoholicType } from "../types/features/cocktails";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,7 +32,7 @@ const parseMeasurement = (measure: string = ""): { amount: string; unitOfMeasure
   };
 };
 
-export const formatApiCocktail = (c: Cocktail): CustomCocktail => {
+export const formatApiCocktail = (c: ApiCocktail): CustomCocktail => {
   const ingredients: Ingredient[] = [];
   let i = 1;
   
@@ -57,7 +57,7 @@ export const formatApiCocktail = (c: Cocktail): CustomCocktail => {
     instructions: c.strInstructions,
     imageUrl: c.strDrinkThumb,
     ingredients,
-    tags: c.strTags?.split(',').map(tag => tag.trim()) || [],
+    tags: c.strTags?.split(',').map((tag: string) => tag.trim()) || [],
     category: c.strCategory,
     glass: c.strGlass,
     alcoholicType: Object.values(AlcoholicType).find(t => t === c.strAlcoholic),

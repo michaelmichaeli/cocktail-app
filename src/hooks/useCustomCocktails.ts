@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { storage } from "../lib/storage";
-import { cocktailsApi } from "../api/cocktails";
-import { DeleteCallbacks } from '../types';
+import { OptionalDeleteCallbacks, UseCustomCocktailsResult } from '../types/hooks';
 
-export function useCustomCocktails() {
+export function useCustomCocktails(): UseCustomCocktailsResult {
   const queryClient = useQueryClient();
 
   const { data: customCocktails = [], isLoading } = useQuery({
@@ -12,7 +11,7 @@ export function useCustomCocktails() {
     staleTime: 0
   });
 
-  const deleteMutation = useMutation<void, Error, { id: string; } & DeleteCallbacks>({
+  const deleteMutation = useMutation<void, Error, { id: string; } & OptionalDeleteCallbacks>({
     mutationFn: ({ id }) => storage.deleteCustomCocktail(id),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['customCocktails'] });
@@ -31,7 +30,7 @@ export function useCustomCocktails() {
   return {
     cocktails,
     isLoading,
-    deleteCustomCocktail: (id: string, callbacks?: DeleteCallbacks) => 
+    deleteCustomCocktail: (id: string, callbacks?: OptionalDeleteCallbacks) => 
       deleteMutation.mutate({ id, ...callbacks }),
     isDeletingCocktail: deleteMutation.isPending
   };
