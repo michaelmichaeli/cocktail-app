@@ -10,7 +10,7 @@ import { showToast } from "../lib/toast";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { FilterBar } from "../components/FilterBar";
 import { ErrorState } from "../components/ErrorState";
-import type { CocktailWithIngredients } from "../types/features/cocktails";
+import type { CustomCocktail } from "../types/features/cocktails";
 
 export function SearchResultsPage() {
   const [searchParams] = useSearchParams();
@@ -27,7 +27,7 @@ export function SearchResultsPage() {
     updateFilters
   } = useSearchCocktails(searchQuery);
 
-  const renderCocktailCard = useCallback((cocktail: CocktailWithIngredients) => (
+  const renderCocktailCard = useCallback((cocktail: CustomCocktail) => (
     <div 
       key={cocktail.id}
       className="transition-opacity duration-300 ease-in-out opacity-100"

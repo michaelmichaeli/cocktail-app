@@ -8,7 +8,7 @@ import { ErrorState } from "../components/ErrorState";
 import { FilteredCocktailsHeader } from "../components/FilteredCocktailsHeader";
 import { FilteredCocktailsHeaderSkeleton } from "../components/FilteredCocktailsHeaderSkeleton";
 import type { FilterType, FilterConfig } from '../types/features/filters/index';
-import type { CocktailWithIngredients } from '../types/features/cocktails';
+import type { CustomCocktail } from '../types/features/cocktails';
 
 const filterConfigs: Record<FilterType, FilterConfig> = {
   ingredient: {
@@ -16,7 +16,7 @@ const filterConfigs: Record<FilterType, FilterConfig> = {
     icon: <UtensilsCrossed className="h-6 w-6" />,
     param: 'i',
     fetch: cocktailsApi.getCocktailsByIngredient,
-    matchCustom: (cocktail: CocktailWithIngredients, value: string) => 
+    matchCustom: (cocktail: CustomCocktail, value: string) => 
       cocktail.ingredients?.some(ing => 
         ing.name.toLowerCase().includes(value.toLowerCase())
       ) || false
@@ -26,7 +26,7 @@ const filterConfigs: Record<FilterType, FilterConfig> = {
     icon: <CupSoda className="h-6 w-6" />,
     param: 'g',
     fetch: cocktailsApi.getCocktailsByGlass,
-    matchCustom: (cocktail: CocktailWithIngredients, value: string) => 
+    matchCustom: (cocktail: CustomCocktail, value: string) => 
       (cocktail.glass?.toLowerCase() || '') === value.toLowerCase()
   },
   category: {
@@ -34,7 +34,7 @@ const filterConfigs: Record<FilterType, FilterConfig> = {
     icon: <FolderKanban className="h-6 w-6" />,
     param: 'c',
     fetch: cocktailsApi.getCocktailsByCategory,
-    matchCustom: (cocktail: CocktailWithIngredients, value: string) => 
+    matchCustom: (cocktail: CustomCocktail, value: string) => 
       (cocktail.category?.toLowerCase() || '') === value.toLowerCase()
   }
 };

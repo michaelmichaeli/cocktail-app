@@ -1,11 +1,11 @@
 import type { BaseProps } from '../../common';
-import type { CocktailWithIngredients } from './models';
+import type { CustomCocktail } from './models';
 
 export * from './models';
 export * from './forms';
 
 export interface CocktailCardProps extends BaseProps {
-  cocktail: CocktailWithIngredients;
+  cocktail: CustomCocktail;
   onDelete?: (id: string) => void;
 }
 

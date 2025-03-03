@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Cocktail, CocktailWithIngredients, Ingredient, AlcoholicType } from "../types/features/cocktails";
+import { Cocktail, CustomCocktail, Ingredient, AlcoholicType } from "../types/features/cocktails";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,7 +32,7 @@ const parseMeasurement = (measure: string = ""): { amount: string; unitOfMeasure
   };
 };
 
-export const formatApiCocktail = (c: Cocktail): CocktailWithIngredients => {
+export const formatApiCocktail = (c: Cocktail): CustomCocktail => {
   const ingredients: Ingredient[] = [];
   let i = 1;
   

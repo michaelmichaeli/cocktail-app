@@ -1,4 +1,4 @@
-export interface CocktailWithIngredients {
+export interface CustomCocktail {
   id: string;
   name: string;
   instructions: string;
@@ -22,4 +22,22 @@ export enum AlcoholicType {
   Alcoholic = "Alcoholic",
   NonAlcoholic = "Non alcoholic",
   Optional = "Optional alcohol"
+}
+
+export interface ApiCocktail {
+  idDrink: string;
+  strDrink: string;
+  strInstructions: string;
+  strDrinkThumb: string;
+  strAlcoholic: string;
+  strCategory?: string;
+  strGlass?: string;
+  strTags?: string;
+  dateModified?: string;
+  [key: `strIngredient${number}`]: string | null;
+  [key: `strMeasure${number}`]: string | null;
+}
+
+export interface CocktailApiResponse {
+  drinks: ApiCocktail[] | null;
 } 

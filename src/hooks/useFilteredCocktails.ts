@@ -1,11 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { cocktailsApi } from "../api/cocktails";
 import { useCustomCocktails } from "./useCustomCocktails";
-import { Cocktail, CocktailWithIngredients } from "../types/features/cocktails";
+import { ApiCocktail, CustomCocktail } from "../types/features/cocktails";
 import { FilterType, FilterConfig } from '../types/features/filters/index';
+import { filterIcons } from '../components/FilterIcon';
 
 const filterConfigs: Record<FilterType, FilterConfig> = {
   ingredient: {
+    title: "Ingredient",
+    icon: filterIcons.ingredient,
+    param: "i",
     fetch: cocktailsApi.getCocktailsByIngredient,
     matchCustom: (cocktail, value) => 
       cocktail.ingredients?.some(ing => 
@@ -13,18 +17,24 @@ const filterConfigs: Record<FilterType, FilterConfig> = {
       ) || false
   },
   glass: {
+    title: "Glass",
+    icon: filterIcons.glass,
+    param: "g",
     fetch: cocktailsApi.getCocktailsByGlass,
     matchCustom: (cocktail, value) => 
       (cocktail.glass?.toLowerCase() || '') === value.toLowerCase()
   },
   category: {
+    title: "Category",
+    icon: filterIcons.category,
+    param: "c",
     fetch: cocktailsApi.getCocktailsByCategory,
     matchCustom: (cocktail, value) => 
       (cocktail.category?.toLowerCase() || '') === value.toLowerCase()
   }
 };
 
-const mapApiCocktailToCommon = (c: Cocktail): CocktailWithIngredients => {
+const mapApiCocktailToCommon = (c: ApiCocktail): CustomCocktail => {
   const ingredients = [];
   for (let i = 1; i <= 15; i++) {
     const name = c[`strIngredient${i}`];
@@ -47,7 +57,7 @@ const mapApiCocktailToCommon = (c: Cocktail): CocktailWithIngredients => {
     alcoholicType: c.strAlcoholic,
     category: c.strCategory,
     glass: c.strGlass,
-    tags: c.strTags?.split(',').map(tag => tag.trim()) || [],
+    tags: c.strTags?.split(',').map((tag: string) => tag.trim()) || [],
     dateModified: c.dateModified || new Date().toISOString()
   };
 };

@@ -4,15 +4,13 @@ import { CocktailCard } from './CocktailCard';
 import { CocktailCardSkeleton } from './CocktailCardSkeleton';
 import { EmptyState } from './EmptyState';
 import { DeleteDialog } from './DeleteDialog';
-import { CocktailWithIngredients } from '../types/features/cocktails';
+import { CustomCocktail } from '../types/features/cocktails';
 import { useCustomCocktails } from '../hooks/useCustomCocktails';
 import { toast } from '../lib/toast';
-import { LoadingState } from './LoadingState';
-import { ErrorState } from './ErrorState';
 import { BaseProps } from '../types';
 
 interface CocktailGridProps extends BaseProps {
-  cocktails: CocktailWithIngredients[];
+  cocktails: CustomCocktail[];
   isLoading?: boolean;
   error?: Error | null;
   emptyMessage?: string;
@@ -29,7 +27,7 @@ export function CocktailGrid({
   emptyMessage = 'No cocktails found',
   headerContent,
 }: CocktailGridProps) {
-  const [cocktailToDelete, setCocktailToDelete] = useState<CocktailWithIngredients | null>(null);
+  const [cocktailToDelete, setCocktailToDelete] = useState<CustomCocktail | null>(null);
 
   const { deleteCustomCocktail } = useCustomCocktails();
 
