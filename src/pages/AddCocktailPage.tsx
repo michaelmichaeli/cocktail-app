@@ -8,7 +8,7 @@ import { toast } from "../lib/toast";
 import { NewCustomCocktail } from "../types/features/cocktails";
 import { CocktailFormData, cocktailFormSchema } from "../lib/schemas";
 import { ImageUpload } from "../components/form/ImageUpload";
-import { DeleteDialog } from "../components/DeleteDialog";
+import { DeleteDialog } from "../components/ui/DeleteDialog";
 import { TagInput } from "../components/form/TagInput";
 import { TextField } from "../components/form/TextField";
 import { SelectField } from "../components/form/SelectField";
@@ -214,7 +214,7 @@ export function AddCocktailPage() {
         onClose={handleClose}
         onConfirm={handleConfirm}
         title="Unsaved Changes"
-        message="You have unsaved changes. Are you sure you want to leave?"
+        description="You have unsaved changes. Are you sure you want to leave?"
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import { AlcoholicType } from '../../features/cocktails';
+import type { ErrorStateProps, DeleteDialogProps } from '../../ui/components';
 
 export interface CategoryBadgeProps {
   category: string;
@@ -22,11 +23,6 @@ export interface LoadingStateProps {
   message?: string;
 }
 
-export interface ErrorStateProps {
-  title?: string;
-  message: string;
-}
-
 export interface EmptyStateProps {
   message: string;
 }
@@ -35,3 +31,5 @@ export interface ImageWithModalProps {
   src: string;
   alt: string;
 }
+
+export type { ErrorStateProps, DeleteDialogProps };

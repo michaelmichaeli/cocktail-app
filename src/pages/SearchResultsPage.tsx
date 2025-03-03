@@ -5,7 +5,7 @@ import { useSearchCocktails } from "../hooks/useSearchCocktails";
 import { CocktailCard } from "../components/CocktailCard";
 import { CocktailCardSkeleton } from "../components/CocktailCardSkeleton";
 import { EmptyState } from "../components/EmptyState";
-import { DeleteDialog } from "../components/DeleteDialog";
+import { DeleteDialog } from "../components/ui/DeleteDialog";
 import { toast } from "../lib/toast";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { FilterBar } from "../components/FilterBar";
@@ -106,7 +106,7 @@ export function SearchResultsPage() {
           }
         }}
         title="Delete Cocktail"
-        message="Are you sure you want to delete this cocktail? This action cannot be undone."
+        description="Are you sure you want to delete this cocktail? This action cannot be undone."
       />
 
       <ScrollToTop />

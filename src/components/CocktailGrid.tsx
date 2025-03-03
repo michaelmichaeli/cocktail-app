@@ -3,7 +3,7 @@ import { AlertCircle } from 'lucide-react';
 import { CocktailCard } from './CocktailCard';
 import { CocktailCardSkeleton } from './CocktailCardSkeleton';
 import { EmptyState } from './EmptyState';
-import { DeleteDialog } from './DeleteDialog';
+import { DeleteDialog } from './ui/DeleteDialog';
 import { CustomCocktail } from '../types/features/cocktails';
 import { useCustomCocktails } from '../hooks/useCustomCocktails';
 import { toast } from '../lib/toast';

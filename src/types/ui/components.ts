@@ -50,8 +50,8 @@ export interface FilteredCocktailsHeaderProps extends BaseProps {
 }
 
 export interface ErrorStateProps extends BaseProps {
-  title: string;
-  message?: string;
+  title?: string;
+  message: string;
 }
 
 export interface EmptyStateProps extends BaseProps {

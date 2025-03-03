@@ -33,8 +33,16 @@ export interface IngredientsFieldProps {
 }
 
 export interface ImageUploadProps {
-  onImageSelect: (file: File) => void;
-  error?: string;
+  onImageSelect: (file: File | null) => void;
+  initialImage?: string;
+  className?: string;
+}
+
+export interface ImageUploadState {
+  previewUrl: string | null;
+  file: File | null;
+  error: string | null;
+  isUploading: boolean;
 }
 
 export interface FormErrorMessageProps {

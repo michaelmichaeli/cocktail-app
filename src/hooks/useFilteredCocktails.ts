@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { cocktailsApi } from "../api/cocktails";
 import { useCustomCocktails } from "./useCustomCocktails";
-import { ApiCocktail, CustomCocktail } from "../types/features/cocktails";
+import { AlcoholicType, ApiCocktail, CustomCocktail } from "../types/features/cocktails";
 import { FilterType, FilterConfig } from '../types/features/filters/index';
 import { filterIcons } from '../components/FilterIcon';
 
@@ -60,7 +60,7 @@ const mapApiCocktailToCommon = (c: ApiCocktail): CustomCocktail => {
     instructions: c.strInstructions || '',
     imageUrl: c.strDrinkThumb,
     ingredients,
-    alcoholicType: c.strAlcoholic,
+    alcoholicType: c.strAlcoholic as AlcoholicType | undefined,
     category: c.strCategory,
     glass: c.strGlass,
     tags: c.strTags?.split(',').map((tag: string) => tag.trim()) || [],

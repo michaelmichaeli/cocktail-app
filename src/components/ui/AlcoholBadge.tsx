@@ -1,9 +1,9 @@
 import { type ReactElement } from "react";
 import { Wine, GlassWater, Beer } from "lucide-react";
 import { AlcoholicType } from "../../types/features/cocktails";
-import { AlcoholBadgeProps } from '../../types';
+import { AlcoholBadgeProps } from "../../types/components/ui";
 
-export function AlcoholBadge({ type, size = "md", noLink }: AlcoholBadgeProps) {
+export function AlcoholBadge({ type, size = "md" }: AlcoholBadgeProps) {
   const iconClass = size === "sm" ? "h-3 w-3" : "h-5 w-5";
   const badgeSize = size === "sm" ? "badge-sm" : "p-4 text-base font-medium";
 

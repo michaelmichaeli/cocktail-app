@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { UtensilsCrossed, ScrollText, Calendar, Tags } from "lucide-react";
 import { useRecipePage } from "../hooks/useRecipePage";
 import { toast } from "../lib/toast";
-import { DeleteDialog } from "../components/DeleteDialog";
+import { DeleteDialog } from "../components/ui/DeleteDialog";
 import { LoadingState } from "../components/LoadingState";
 import { ErrorState } from "../components/ErrorState";
 import { ImageWithModal } from "../components/ImageWithModal";
@@ -128,7 +128,7 @@ export function RecipePage() {
           }
         }}
         title="Delete Cocktail"
-        message="Are you sure you want to delete this cocktail? This action cannot be undone."
+        description="Are you sure you want to delete this cocktail? This action cannot be undone."
       />
     </div>
   );

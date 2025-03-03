@@ -1,5 +1,6 @@
 import type { BaseProps } from '../../common';
 import type { CustomCocktail } from './models';
+import { AlcoholicType } from './models';
 
 export * from './models';
 export * from './forms';
@@ -31,8 +32,4 @@ export interface Ingredient {
   unitOfMeasure: string;
 }
 
-export enum AlcoholicType {
-  Alcoholic = "Alcoholic",
-  NonAlcoholic = "Non alcoholic",
-  Optional = "Optional alcohol"
-} 
+export { AlcoholicType }; 

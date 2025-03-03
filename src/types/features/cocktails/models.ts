@@ -4,7 +4,7 @@ export interface CustomCocktail {
   instructions: string;
   imageUrl?: string;
   ingredients: Ingredient[];
-  alcoholicType?: string;
+  alcoholicType?: AlcoholicType;
   category?: string;
   glass?: string;
   tags: string[];
@@ -33,13 +33,12 @@ export interface ApiCocktail {
   strDrink: string;
   strInstructions: string;
   strDrinkThumb: string;
-  strAlcoholic: string;
-  strCategory?: string;
-  strGlass?: string;
   strTags?: string;
+  strCategory: string;
+  strGlass: string;
+  strAlcoholic: string;
   dateModified?: string;
-  [key: `strIngredient${number}`]: string | null;
-  [key: `strMeasure${number}`]: string | null;
+  [key: string]: string | undefined;
 }
 
 export interface CocktailApiResponse {
